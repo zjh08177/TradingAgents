@@ -20,6 +20,10 @@ from rich import box
 from rich.align import Align
 from rich.rule import Rule
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
 from cli.models import AnalystType
@@ -392,7 +396,7 @@ def update_display(layout, spinner_text=None):
 
 
 def get_user_selections():
-    """Get all user selections before starting the analysis display."""
+    """Get user ticker selection with simplified interface and sensible defaults."""
     # Display ASCII art welcome message
     with open("./cli/static/welcome.txt", "r") as f:
         welcome_ascii = f.read()
@@ -417,68 +421,38 @@ def get_user_selections():
     console.print(Align.center(welcome_box))
     console.print()  # Add a blank line after the welcome box
 
-    # Create a boxed questionnaire for each step
-    def create_question_box(title, prompt, default=None):
-        box_content = f"[bold]{title}[/bold]\n"
-        box_content += f"[dim]{prompt}[/dim]"
-        if default:
-            box_content += f"\n[dim]Default: {default}[/dim]"
-        return Panel(box_content, border_style="blue", padding=(1, 2))
-
-    # Step 1: Ticker symbol
-    console.print(
-        create_question_box(
-            "Step 1: Ticker Symbol", "Enter the ticker symbol to analyze", "SPY"
-        )
+    # Simplified input - only ask for ticker symbol
+    ticker_box = Panel(
+        "[bold]Enter Ticker Symbol[/bold]\n[dim]Enter the stock ticker you want to analyze (e.g., AAPL, TSLA, SPY)[/dim]\n[dim]Default: SPY[/dim]",
+        border_style="blue",
+        padding=(1, 2)
     )
+    console.print(ticker_box)
     selected_ticker = get_ticker()
 
-    # Step 2: Analysis date
-    default_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    console.print(
-        create_question_box(
-            "Step 2: Analysis Date",
-            "Enter the analysis date (YYYY-MM-DD)",
-            default_date,
-        )
-    )
-    analysis_date = get_analysis_date()
+    # Use sensible defaults for all other parameters
+    analysis_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    selected_analysts = [AnalystType.MARKET, AnalystType.SOCIAL, AnalystType.NEWS, AnalystType.FUNDAMENTALS]
+    selected_research_depth = 5
+    selected_llm_provider = "openai"
+    backend_url = "https://api.openai.com/v1"
+    selected_shallow_thinker = "gpt-4o"
+    selected_deep_thinker = "o3"
 
-    # Step 3: Select analysts
-    console.print(
-        create_question_box(
-            "Step 3: Analysts Team", "Select your LLM analyst agents for the analysis"
-        )
-    )
-    selected_analysts = select_analysts()
-    console.print(
-        f"[green]Selected analysts:[/green] {', '.join(analyst.value for analyst in selected_analysts)}"
-    )
+    # Display the configuration being used
+    config_info = f"""[bold green]Configuration:[/bold green]
+• [bold]Ticker:[/bold] {selected_ticker}
+• [bold]Date:[/bold] {analysis_date} (latest trading day)
+• [bold]Analysts:[/bold] All analysts (Market, Social, News, Fundamentals)
+• [bold]Research Depth:[/bold] Deep (5 rounds of debate)
+• [bold]LLM Provider:[/bold] OpenAI
+• [bold]Quick Thinking:[/bold] GPT-4o
+• [bold]Deep Thinking:[/bold] o3
 
-    # Step 4: Research depth
-    console.print(
-        create_question_box(
-            "Step 4: Research Depth", "Select your research depth level"
-        )
-    )
-    selected_research_depth = select_research_depth()
+[dim]Starting analysis with optimized settings...[/dim]"""
 
-    # Step 5: OpenAI backend
-    console.print(
-        create_question_box(
-            "Step 5: OpenAI backend", "Select which service to talk to"
-        )
-    )
-    selected_llm_provider, backend_url = select_llm_provider()
-    
-    # Step 6: Thinking agents
-    console.print(
-        create_question_box(
-            "Step 6: Thinking Agents", "Select your thinking agents for analysis"
-        )
-    )
-    selected_shallow_thinker = select_shallow_thinking_agent(selected_llm_provider)
-    selected_deep_thinker = select_deep_thinking_agent(selected_llm_provider)
+    console.print(Panel(config_info, border_style="green", padding=(1, 2), title="Analysis Configuration"))
+    console.print()
 
     return {
         "ticker": selected_ticker,
@@ -494,7 +468,8 @@ def get_user_selections():
 
 def get_ticker():
     """Get ticker symbol from user input."""
-    return typer.prompt("", default="SPY")
+    ticker = typer.prompt("", default="SPY")
+    return ticker.strip().upper()
 
 
 def get_analysis_date():
@@ -731,9 +706,113 @@ def extract_content_string(content):
     else:
         return str(content)
 
-def run_analysis():
-    # First get all user selections
-    selections = get_user_selections()
+def get_user_selections_advanced():
+    """Get all user selections with advanced configuration options."""
+    # Display ASCII art welcome message
+    with open("./cli/static/welcome.txt", "r") as f:
+        welcome_ascii = f.read()
+
+    # Create welcome box content
+    welcome_content = f"{welcome_ascii}\n"
+    welcome_content += "[bold green]TradingAgents: Multi-Agents LLM Financial Trading Framework - CLI (Advanced Mode)[/bold green]\n\n"
+    welcome_content += "[bold]Workflow Steps:[/bold]\n"
+    welcome_content += "I. Analyst Team → II. Research Team → III. Trader → IV. Risk Management → V. Portfolio Management\n\n"
+    welcome_content += (
+        "[dim]Built by [Tauric Research](https://github.com/TauricResearch)[/dim]"
+    )
+
+    # Create and center the welcome box
+    welcome_box = Panel(
+        welcome_content,
+        border_style="green",
+        padding=(1, 2),
+        title="Welcome to TradingAgents - Advanced Mode",
+        subtitle="Multi-Agents LLM Financial Trading Framework",
+    )
+    console.print(Align.center(welcome_box))
+    console.print()  # Add a blank line after the welcome box
+
+    # Create a boxed questionnaire for each step
+    def create_question_box(title, prompt, default=None):
+        box_content = f"[bold]{title}[/bold]\n"
+        box_content += f"[dim]{prompt}[/dim]"
+        if default:
+            box_content += f"\n[dim]Default: {default}[/dim]"
+        return Panel(box_content, border_style="blue", padding=(1, 2))
+
+    # Step 1: Ticker symbol
+    console.print(
+        create_question_box(
+            "Step 1: Ticker Symbol", "Enter the ticker symbol to analyze", "SPY"
+        )
+    )
+    selected_ticker = get_ticker()
+
+    # Step 2: Analysis date
+    default_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    console.print(
+        create_question_box(
+            "Step 2: Analysis Date",
+            "Enter the analysis date (YYYY-MM-DD)",
+            default_date,
+        )
+    )
+    analysis_date = get_analysis_date()
+
+    # Step 3: Select analysts
+    console.print(
+        create_question_box(
+            "Step 3: Analysts Team", "Select your LLM analyst agents for the analysis"
+        )
+    )
+    selected_analysts = select_analysts()
+    console.print(
+        f"[green]Selected analysts:[/green] {', '.join(analyst.value for analyst in selected_analysts)}"
+    )
+
+    # Step 4: Research depth
+    console.print(
+        create_question_box(
+            "Step 4: Research Depth", "Select your research depth level"
+        )
+    )
+    selected_research_depth = select_research_depth()
+
+    # Step 5: OpenAI backend
+    console.print(
+        create_question_box(
+            "Step 5: LLM Provider", "Select which service to talk to"
+        )
+    )
+    selected_llm_provider, backend_url = select_llm_provider()
+    
+    # Step 6: Thinking agents
+    console.print(
+        create_question_box(
+            "Step 6: Thinking Agents", "Select your thinking agents for analysis"
+        )
+    )
+    selected_shallow_thinker = select_shallow_thinking_agent(selected_llm_provider)
+    selected_deep_thinker = select_deep_thinking_agent(selected_llm_provider)
+
+    return {
+        "ticker": selected_ticker,
+        "analysis_date": analysis_date,
+        "analysts": selected_analysts,
+        "research_depth": selected_research_depth,
+        "llm_provider": selected_llm_provider.lower(),
+        "backend_url": backend_url,
+        "shallow_thinker": selected_shallow_thinker,
+        "deep_thinker": selected_deep_thinker,
+    }
+
+
+def run_analysis(advanced_mode=False):
+    # Get user selections based on mode
+    if advanced_mode:
+        selections = get_user_selections_advanced()
+    else:
+        selections = get_user_selections()
 
     # Create config with selected research depth
     config = DEFAULT_CONFIG.copy()
@@ -1097,8 +1176,32 @@ def run_analysis():
 
 
 @app.command()
-def analyze():
-    run_analysis()
+def analyze(
+    advanced: bool = typer.Option(
+        False, 
+        "--advanced", 
+        "-a", 
+        help="Use advanced configuration mode with full customization options"
+    )
+):
+    """Run trading analysis with simplified or advanced configuration."""
+    run_analysis(advanced_mode=advanced)
+
+
+@app.callback(invoke_without_command=True)
+def main(
+    ctx: typer.Context,
+    advanced: bool = typer.Option(
+        False, 
+        "--advanced", 
+        "-a", 
+        help="Use advanced configuration mode with full customization options"
+    )
+):
+    """TradingAgents CLI: Multi-Agents LLM Financial Trading Framework"""
+    if ctx.invoked_subcommand is None:
+        # Default behavior - run analysis
+        run_analysis(advanced_mode=advanced)
 
 
 if __name__ == "__main__":
