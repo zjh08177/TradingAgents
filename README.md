@@ -1,6 +1,41 @@
-<p align="center">
-  <img src="assets/TauricResearch.png" style="width: 60%; height: auto;">
-</p>
+# 🚀 Trading Agents
+
+<div align="center">
+  <img src="assets/TauricResearch.png" alt="Tauric Logo" width="400"/>
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+  ![Platform](https://img.shields.io/badge/platform-Windows%20|%20macOS%20|%20Linux-lightgrey.svg)
+</div>
+
+## 📁 Project Structure
+
+The project is organized into clear, separate components:
+
+```
+TradingAgents/
+├── backend/              # Python backend server and trading logic
+│   ├── api.py           # FastAPI server
+│   ├── tradingagents/   # Core trading agents and logic
+│   ├── cli/             # Command-line interface
+│   └── requirements.txt # Python dependencies
+├── ios/                 # iOS mobile application
+│   └── TradingDummy/    # Swift/SwiftUI app project
+├── docs/                # All documentation
+│   ├── PRD.md          # Product requirements
+│   ├── DOCUMENTATION.md # Technical documentation
+│   └── FASTAPI_SETUP.md # API setup guide
+├── assets/              # Images and media assets
+├── README.md           # This file
+└── LICENSE             # MIT license
+```
+
+### Quick Navigation
+- 🐍 [Backend Setup](backend/README.md) - Python server and trading agents
+- 📱 [iOS App Setup](ios/README.md) - Mobile application
+- 📚 [Documentation](docs/README.md) - All project documentation
+
+## Overview
 
 <div align="center" style="line-height: 1;">
   <a href="https://arxiv.org/abs/2412.20138" target="_blank"><img alt="arXiv" src="https://img.shields.io/badge/arXiv-2412.20138-B31B1B?logo=arxiv"/></a>
@@ -93,7 +128,7 @@ Our framework decomposes complex trading tasks into specialized roles. This ensu
 
 ## Installation and CLI
 
-### Installation
+### Backend Installation
 
 Clone TradingAgents:
 ```bash
@@ -107,8 +142,9 @@ conda create -n tradingagents python=3.13
 conda activate tradingagents
 ```
 
-Install dependencies:
+Install backend dependencies:
 ```bash
+cd backend
 pip install -r requirements.txt
 ```
 
@@ -126,11 +162,36 @@ export OPENAI_API_KEY=$YOUR_OPENAI_API_KEY
 
 ### CLI Usage
 
-You can also try out the CLI directly by running:
+From the backend directory, you can try out the CLI directly by running:
 ```bash
 python -m cli.main
 ```
 You will see a screen where you can select your desired tickers, date, LLMs, research depth, etc.
+
+### FastAPI Server
+
+Alternatively, you can run the FastAPI server for REST API access:
+```bash
+python run_api.py
+```
+
+The server will start at `http://localhost:8000`. You can then use the iOS app or make API calls directly.
+
+### iOS App
+
+To use the iOS companion app:
+
+1. Navigate to the iOS directory:
+   ```bash
+   cd ios/TradingDummy
+   ```
+
+2. Open the project in Xcode:
+   ```bash
+   open TradingDummy.xcodeproj
+   ```
+
+3. Make sure the backend server is running, then build and run the app (⌘+R)
 
 <p align="center">
   <img src="assets/cli/cli_init.png" width="100%" style="display: inline-block; margin: 0 2%;">

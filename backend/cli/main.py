@@ -1182,10 +1182,32 @@ def analyze(
         "--advanced", 
         "-a", 
         help="Use advanced configuration mode with full customization options"
+    ),
+    streaming: bool = typer.Option(
+        False,
+        "--streaming",
+        "-s", 
+        help="Enable real-time streaming of analysis reports as they're generated"
     )
 ):
     """Run trading analysis with simplified or advanced configuration."""
-    run_analysis(advanced_mode=advanced)
+    if streaming:
+        run_analysis_streaming(advanced_mode=advanced)
+    else:
+        run_analysis(advanced_mode=advanced)
+
+
+@app.command()
+def stream(
+    advanced: bool = typer.Option(
+        False, 
+        "--advanced", 
+        "-a", 
+        help="Use advanced configuration mode with full customization options"
+    )
+):
+    """Run real-time streaming trading analysis."""
+    run_analysis_streaming(advanced_mode=advanced)
 
 
 @app.callback(invoke_without_command=True)
@@ -1196,12 +1218,510 @@ def main(
         "--advanced", 
         "-a", 
         help="Use advanced configuration mode with full customization options"
+    ),
+    streaming: bool = typer.Option(
+        False,
+        "--streaming",
+        "-s", 
+        help="Enable real-time streaming of analysis reports as they're generated"
     )
 ):
     """TradingAgents CLI: Multi-Agents LLM Financial Trading Framework"""
     if ctx.invoked_subcommand is None:
         # Default behavior - run analysis
-        run_analysis(advanced_mode=advanced)
+        if streaming:
+            run_analysis_streaming(advanced_mode=advanced)
+        else:
+            run_analysis(advanced_mode=advanced)
+
+
+class StreamingMessageBuffer(MessageBuffer):
+    """Enhanced MessageBuffer for real-time content streaming"""
+    
+    def __init__(self, max_length=100):
+        super().__init__(max_length)
+        self.streaming_content = {
+            "current_agent": None,
+            "current_content": "",
+            "content_buffer": "",
+            "last_streamed_length": 0
+        }
+        self.content_callbacks = []
+    
+    def add_content_callback(self, callback):
+        """Add a callback to be called when new content is streamed"""
+        self.content_callbacks.append(callback)
+    
+    def stream_content(self, agent_name, content_chunk):
+        """Stream content in real-time"""
+        self.streaming_content["current_agent"] = agent_name
+        self.streaming_content["content_buffer"] += content_chunk
+        
+        # Call registered callbacks with new content
+        for callback in self.content_callbacks:
+            callback(agent_name, content_chunk, self.streaming_content["content_buffer"])
+    
+    def finalize_streaming_content(self, section_name):
+        """Finalize the streaming content into a report section"""
+        if self.streaming_content["content_buffer"]:
+            self.update_report_section(section_name, self.streaming_content["content_buffer"])
+            self.streaming_content["content_buffer"] = ""
+            self.streaming_content["last_streamed_length"] = 0
+
+
+def create_streaming_layout():
+    """Create layout optimized for streaming content"""
+    layout = Layout()
+    layout.split_column(
+        Layout(name="header", size=3),
+        Layout(name="main"),
+        Layout(name="footer", size=3),
+    )
+    layout["main"].split_column(
+        Layout(name="upper", ratio=2),
+        Layout(name="streaming_content", ratio=4),
+        Layout(name="analysis", ratio=3)
+    )
+    layout["upper"].split_row(
+        Layout(name="progress", ratio=2), Layout(name="messages", ratio=3)
+    )
+    return layout
+
+
+def update_streaming_display(layout, streaming_buffer, spinner_text=None):
+    """Update display with streaming content"""
+    # Update header
+    layout["header"].update(
+        Panel(
+            "[bold green]Welcome to TradingAgents CLI[/bold green]\n"
+            "[dim]© [Tauric Research](https://github.com/TauricResearch)[/dim]",
+            title="Welcome to TradingAgents",
+            border_style="green",
+        )
+    )
+
+    # Update progress panel using streaming_buffer
+    progress_table = Table(show_header=False, box=box.MINIMAL)
+    progress_table.add_column("Agent", style="cyan", no_wrap=True)
+    progress_table.add_column("Status", style="magenta")
+
+    for agent, status in streaming_buffer.agent_status.items():
+        if status == "completed":
+            status_icon = "✅"
+        elif status == "in_progress":
+            status_icon = "🔄"
+        else:
+            status_icon = "⏳"
+        progress_table.add_row(agent, f"{status_icon} {status.title()}")
+
+    layout["progress"].update(
+        Panel(
+            progress_table,
+            title="Agent Progress",
+            border_style="blue"
+        )
+    )
+
+    # Update messages panel using streaming_buffer
+    messages_content = []
+    for timestamp, msg_type, content in list(streaming_buffer.messages)[-10:]:  # Show last 10 messages
+        messages_content.append(f"[dim]{timestamp}[/dim] [{msg_type}] {content}")
+
+    if spinner_text:
+        messages_content.append(f"[yellow]⚡ {spinner_text}[/yellow]")
+
+    layout["messages"].update(
+        Panel(
+            "\n".join(messages_content),
+            title="Recent Messages",
+            border_style="yellow"
+        )
+    )
+    
+    # Add streaming content panel
+    if streaming_buffer.streaming_content["current_agent"] and streaming_buffer.streaming_content["content_buffer"]:
+        agent_name = streaming_buffer.streaming_content["current_agent"]
+        content = streaming_buffer.streaming_content["content_buffer"]
+        
+        # Limit display content to prevent overwhelming the terminal
+        display_content = content[-2000:] if len(content) > 2000 else content
+        if len(content) > 2000:
+            display_content = "...\n" + display_content
+        
+        streaming_panel = Panel(
+            Markdown(display_content),
+            title=f"🔴 Live: {agent_name}",
+            border_style="red",
+            expand=True
+        )
+        layout["streaming_content"].update(streaming_panel)
+    else:
+        layout["streaming_content"].update(
+            Panel(
+                "[dim]Waiting for content to stream...[/dim]",
+                title="📡 Streaming Content",
+                border_style="dim"
+            )
+        )
+
+    # Update analysis panel using streaming_buffer
+    if streaming_buffer.current_report:
+        layout["analysis"].update(
+            Panel(
+                Markdown(streaming_buffer.current_report),
+                title="Latest Report Section", 
+                border_style="green"
+            )
+        )
+    else:
+        layout["analysis"].update(
+            Panel(
+                "[dim]Analysis reports will appear here...[/dim]",
+                title="Analysis Reports",
+                border_style="dim"
+            )
+        )
+
+    # Footer with instructions
+    layout["footer"].update(
+        Panel(
+            "[bold]TradingAgents Streaming Analysis[/bold] | Press Ctrl+C to stop",
+            style="bold white on blue"
+        )
+    )
+
+
+def update_research_team_status_streaming(streaming_buffer, status):
+    """Update all research team agent statuses for streaming"""
+    research_agents = ["Bull Researcher", "Bear Researcher", "Research Manager"]
+    for agent in research_agents:
+        streaming_buffer.update_agent_status(agent, status)
+
+
+def run_analysis_streaming(advanced_mode=False):
+    """
+    Streaming version of run_analysis that delivers reports in real-time
+    """
+    # Get user selections based on mode
+    if advanced_mode:
+        selections = get_user_selections_advanced()
+    else:
+        selections = get_user_selections()
+
+    # Create config with selected research depth
+    config = DEFAULT_CONFIG.copy()
+    config["max_debate_rounds"] = selections["research_depth"]
+    config["max_risk_discuss_rounds"] = selections["research_depth"]
+    config["quick_think_llm"] = selections["shallow_thinker"]
+    config["deep_think_llm"] = selections["deep_thinker"]
+    config["backend_url"] = selections["backend_url"]
+    config["llm_provider"] = selections["llm_provider"].lower()
+
+    # Initialize the graph
+    graph = TradingAgentsGraph(
+        [analyst.value for analyst in selections["analysts"]], config=config, debug=True
+    )
+
+    # Create result directory
+    results_dir = Path(config["results_dir"]) / selections["ticker"] / selections["analysis_date"]
+    results_dir.mkdir(parents=True, exist_ok=True)
+    report_dir = results_dir / "reports"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    log_file = results_dir / "message_tool.log"
+    log_file.touch(exist_ok=True)
+
+    # Use streaming message buffer instead of regular one
+    streaming_buffer = StreamingMessageBuffer()
+
+    def save_message_decorator(obj, func_name):
+        func = getattr(obj, func_name)
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            func(*args, **kwargs)
+            timestamp, message_type, content = obj.messages[-1]
+            content = content.replace("\n", " ")  # Replace newlines with spaces
+            with open(log_file, "a") as f:
+                f.write(f"{timestamp} [{message_type}] {content}\n")
+        return wrapper
+    
+    def save_tool_call_decorator(obj, func_name):
+        func = getattr(obj, func_name)
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            func(*args, **kwargs)
+            timestamp, tool_name, args = obj.tool_calls[-1]
+            args_str = ", ".join(f"{k}={v}" for k, v in args.items())
+            with open(log_file, "a") as f:
+                f.write(f"{timestamp} [Tool Call] {tool_name}({args_str})\n")
+        return wrapper
+
+    def save_report_section_decorator(obj, func_name):
+        func = getattr(obj, func_name)
+        @wraps(func)
+        def wrapper(section_name, content):
+            func(section_name, content)
+            if section_name in obj.report_sections and obj.report_sections[section_name] is not None:
+                content = obj.report_sections[section_name]
+                if content:
+                    file_name = f"{section_name}.md"
+                    with open(report_dir / file_name, "w") as f:
+                        f.write(content)
+        return wrapper
+
+    streaming_buffer.add_message = save_message_decorator(streaming_buffer, "add_message")
+    streaming_buffer.add_tool_call = save_tool_call_decorator(streaming_buffer, "add_tool_call")
+    streaming_buffer.update_report_section = save_report_section_decorator(streaming_buffer, "update_report_section")
+
+    # Create streaming layout
+    layout = create_streaming_layout()
+
+    # Agent mapping for streaming
+    agent_mapping = {
+        "market": "Market Analyst",
+        "social": "Social Media Analyst", 
+        "news": "News Analyst",
+        "fundamentals": "Fundamentals Analyst",
+        "bull": "Bull Researcher",
+        "bear": "Bear Researcher", 
+        "research_manager": "Research Manager",
+        "trader": "Trading Team",
+        "risky": "Risky Analyst",
+        "safe": "Safe Analyst",
+        "neutral": "Neutral Analyst",
+        "portfolio": "Portfolio Manager"
+    }
+
+    with Live(layout, refresh_per_second=8) as live:  # Higher refresh rate for streaming
+        # Initial display
+        update_streaming_display(layout, streaming_buffer)
+
+        # Add initial messages
+        streaming_buffer.add_message("System", f"Selected ticker: {selections['ticker']}")
+        streaming_buffer.add_message(
+            "System", f"Analysis date: {selections['analysis_date']}"
+        )
+        streaming_buffer.add_message(
+            "System",
+            f"Selected analysts: {', '.join(analyst.value for analyst in selections['analysts'])}",
+        )
+        update_streaming_display(layout, streaming_buffer)
+
+        # Reset agent statuses
+        for agent in streaming_buffer.agent_status:
+            streaming_buffer.update_agent_status(agent, "pending")
+
+        # Reset report sections
+        for section in streaming_buffer.report_sections:
+            streaming_buffer.report_sections[section] = None
+        streaming_buffer.current_report = None
+        streaming_buffer.final_report = None
+
+        # Update agent status to in_progress for the first analyst
+        first_analyst = f"{selections['analysts'][0].value.capitalize()} Analyst"
+        streaming_buffer.update_agent_status(first_analyst, "in_progress")
+        update_streaming_display(layout, streaming_buffer)
+
+        # Create spinner text
+        spinner_text = (
+            f"Analyzing {selections['ticker']} on {selections['analysis_date']}..."
+        )
+        update_streaming_display(layout, streaming_buffer, spinner_text)
+
+        # Initialize state and get graph args
+        init_agent_state = graph.propagator.create_initial_state(
+            selections["ticker"], selections["analysis_date"]
+        )
+        args = graph.propagator.get_graph_args()
+
+        # Stream the analysis with real-time content delivery
+        trace = []
+        current_streaming_agent = None
+        
+        for chunk in graph.graph.stream(init_agent_state, **args):
+            if len(chunk["messages"]) > 0:
+                # Get the last message from the chunk
+                last_message = chunk["messages"][-1]
+
+                # Extract message content and type
+                if hasattr(last_message, "content"):
+                    content = extract_content_string(last_message.content)
+                    msg_type = "Reasoning"
+                    
+                    # Detect which agent is currently speaking and stream content
+                    agent_detected = None
+                    for key, agent_name in agent_mapping.items():
+                        if any(keyword in content.lower() for keyword in [key, agent_name.lower()]):
+                            agent_detected = agent_name
+                            break
+                    
+                    # If we detected an agent or have ongoing streaming
+                    if agent_detected or current_streaming_agent:
+                        if agent_detected and agent_detected != current_streaming_agent:
+                            # New agent started - finalize previous and start new
+                            if current_streaming_agent:
+                                section_map = {
+                                    "Market Analyst": "market_report",
+                                    "Social Media Analyst": "sentiment_report", 
+                                    "News Analyst": "news_report",
+                                    "Fundamentals Analyst": "fundamentals_report",
+                                    "Research Manager": "investment_plan",
+                                    "Trading Team": "trader_investment_plan",
+                                    "Portfolio Manager": "final_trade_decision"
+                                }
+                                if current_streaming_agent in section_map:
+                                    streaming_buffer.finalize_streaming_content(section_map[current_streaming_agent])
+                            
+                            current_streaming_agent = agent_detected
+                            streaming_buffer.update_agent_status(agent_detected, "in_progress")
+                        
+                        # Stream the content in real-time
+                        if current_streaming_agent:
+                            streaming_buffer.stream_content(current_streaming_agent, content + "\n")
+                
+                else:
+                    content = str(last_message)
+                    msg_type = "System"
+
+                # Add message to buffer
+                streaming_buffer.add_message(msg_type, content[:200] + "..." if len(content) > 200 else content)
+
+                # Handle tool calls
+                if hasattr(last_message, "tool_calls"):
+                    for tool_call in last_message.tool_calls:
+                        if isinstance(tool_call, dict):
+                            streaming_buffer.add_tool_call(
+                                tool_call["name"], tool_call["args"]
+                            )
+                        else:
+                            streaming_buffer.add_tool_call(tool_call.name, tool_call.args)
+
+                # Handle section completions and agent status updates
+                # Analyst Team Reports
+                if "market_report" in chunk and chunk["market_report"]:
+                    streaming_buffer.update_report_section("market_report", chunk["market_report"])
+                    streaming_buffer.update_agent_status("Market Analyst", "completed")
+                    current_streaming_agent = None
+                    if "social" in [a.value for a in selections["analysts"]]:
+                        streaming_buffer.update_agent_status("Social Media Analyst", "in_progress")
+
+                if "sentiment_report" in chunk and chunk["sentiment_report"]:
+                    streaming_buffer.update_report_section("sentiment_report", chunk["sentiment_report"])
+                    streaming_buffer.update_agent_status("Social Media Analyst", "completed")
+                    current_streaming_agent = None
+                    if "news" in [a.value for a in selections["analysts"]]:
+                        streaming_buffer.update_agent_status("News Analyst", "in_progress")
+
+                if "news_report" in chunk and chunk["news_report"]:
+                    streaming_buffer.update_report_section("news_report", chunk["news_report"])
+                    streaming_buffer.update_agent_status("News Analyst", "completed")
+                    current_streaming_agent = None
+                    if "fundamentals" in [a.value for a in selections["analysts"]]:
+                        streaming_buffer.update_agent_status("Fundamentals Analyst", "in_progress")
+
+                if "fundamentals_report" in chunk and chunk["fundamentals_report"]:
+                    streaming_buffer.update_report_section("fundamentals_report", chunk["fundamentals_report"])
+                    streaming_buffer.update_agent_status("Fundamentals Analyst", "completed")
+                    current_streaming_agent = None
+                    update_research_team_status_streaming(streaming_buffer, "in_progress")
+
+                # Research Team - Handle Investment Debate State with streaming
+                if "investment_debate_state" in chunk and chunk["investment_debate_state"]:
+                    debate_state = chunk["investment_debate_state"]
+
+                    if "bull_history" in debate_state and debate_state["bull_history"]:
+                        update_research_team_status_streaming(streaming_buffer, "in_progress")
+                        bull_responses = debate_state["bull_history"].split("\n")
+                        latest_bull = bull_responses[-1] if bull_responses else ""
+                        if latest_bull:
+                            streaming_buffer.stream_content("Bull Researcher", latest_bull + "\n")
+
+                    if "bear_history" in debate_state and debate_state["bear_history"]:
+                        update_research_team_status_streaming(streaming_buffer, "in_progress")
+                        bear_responses = debate_state["bear_history"].split("\n")
+                        latest_bear = bear_responses[-1] if bear_responses else ""
+                        if latest_bear:
+                            streaming_buffer.stream_content("Bear Researcher", latest_bear + "\n")
+
+                    if "judge_decision" in debate_state and debate_state["judge_decision"]:
+                        streaming_buffer.stream_content("Research Manager", debate_state["judge_decision"] + "\n")
+                        streaming_buffer.finalize_streaming_content("investment_plan")
+                        update_research_team_status_streaming(streaming_buffer, "completed")
+                        streaming_buffer.update_agent_status("Risky Analyst", "in_progress")
+                        current_streaming_agent = None
+
+                # Trading Team with streaming
+                if "trader_investment_plan" in chunk and chunk["trader_investment_plan"]:
+                    streaming_buffer.update_report_section("trader_investment_plan", chunk["trader_investment_plan"])
+                    streaming_buffer.update_agent_status("Risky Analyst", "in_progress")
+                    current_streaming_agent = None
+
+                # Risk Management Team with streaming
+                if "risk_debate_state" in chunk and chunk["risk_debate_state"]:
+                    risk_state = chunk["risk_debate_state"]
+
+                    if "current_risky_response" in risk_state and risk_state["current_risky_response"]:
+                        streaming_buffer.update_agent_status("Risky Analyst", "in_progress")
+                        streaming_buffer.stream_content("Risky Analyst", risk_state["current_risky_response"] + "\n")
+
+                    if "current_safe_response" in risk_state and risk_state["current_safe_response"]:
+                        streaming_buffer.update_agent_status("Safe Analyst", "in_progress")
+                        streaming_buffer.stream_content("Safe Analyst", risk_state["current_safe_response"] + "\n")
+
+                    if "current_neutral_response" in risk_state and risk_state["current_neutral_response"]:
+                        streaming_buffer.update_agent_status("Neutral Analyst", "in_progress")
+                        streaming_buffer.stream_content("Neutral Analyst", risk_state["current_neutral_response"] + "\n")
+
+                    if "judge_decision" in risk_state and risk_state["judge_decision"]:
+                        streaming_buffer.stream_content("Portfolio Manager", risk_state["judge_decision"] + "\n")
+                        streaming_buffer.finalize_streaming_content("final_trade_decision")
+                        
+                        # Mark all risk team as completed
+                        streaming_buffer.update_agent_status("Risky Analyst", "completed")
+                        streaming_buffer.update_agent_status("Safe Analyst", "completed")
+                        streaming_buffer.update_agent_status("Neutral Analyst", "completed")
+                        streaming_buffer.update_agent_status("Portfolio Manager", "completed")
+                        current_streaming_agent = None
+
+                # Update the display with streaming content
+                update_streaming_display(layout, streaming_buffer)
+
+            trace.append(chunk)
+
+        # Finalize any remaining streaming content
+        if current_streaming_agent:
+            section_map = {
+                "Market Analyst": "market_report",
+                "Social Media Analyst": "sentiment_report", 
+                "News Analyst": "news_report",
+                "Fundamentals Analyst": "fundamentals_report",
+                "Research Manager": "investment_plan",
+                "Trading Team": "trader_investment_plan",
+                "Portfolio Manager": "final_trade_decision"
+            }
+            if current_streaming_agent in section_map:
+                streaming_buffer.finalize_streaming_content(section_map[current_streaming_agent])
+
+        # Get final state and decision
+        final_state = trace[-1]
+        decision = graph.process_signal(final_state["final_trade_decision"])
+
+        # Update all agent statuses to completed
+        for agent in streaming_buffer.agent_status:
+            streaming_buffer.update_agent_status(agent, "completed")
+
+        streaming_buffer.add_message(
+            "Analysis", f"Completed streaming analysis for {selections['analysis_date']}"
+        )
+
+        # Update final report sections
+        for section in streaming_buffer.report_sections.keys():
+            if section in final_state:
+                streaming_buffer.update_report_section(section, final_state[section])
+
+        # Display the complete final report
+        display_complete_report(final_state)
+
+        update_streaming_display(layout, streaming_buffer)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,10 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
+from dotenv import load_dotenv
+
+# Load environment variables so OpenAI tools can access API keys
+load_dotenv()
 
 
 def get_finnhub_news(
@@ -287,25 +291,47 @@ def get_google_news(
     curr_date: Annotated[str, "Curr date in yyyy-mm-dd format"],
     look_back_days: Annotated[int, "how many days to look back"],
 ) -> str:
-    query = query.replace(" ", "+")
+    import logging
+    import time
+    logger = logging.getLogger(__name__)
+    
+    # Enhanced logging - Tool entry (for comparison with failing tools)
+    start_time = time.time()
+    logger.info(f"🔧 TOOL START: get_google_news | Agent: News Analyst | Query: {query} | Date: {curr_date}")
+    
+    try:
+        query = query.replace(" ", "+")
 
-    start_date = datetime.strptime(curr_date, "%Y-%m-%d")
-    before = start_date - relativedelta(days=look_back_days)
-    before = before.strftime("%Y-%m-%d")
+        start_date = datetime.strptime(curr_date, "%Y-%m-%d")
+        before = start_date - relativedelta(days=look_back_days)
+        before = before.strftime("%Y-%m-%d")
 
-    news_results = getNewsData(query, before, curr_date)
+        news_results = getNewsData(query, before, curr_date)
 
-    news_str = ""
+        news_str = ""
 
-    for news in news_results:
-        news_str += (
-            f"### {news['title']} (source: {news['source']}) \n\n{news['snippet']}\n\n"
-        )
+        for news in news_results:
+            news_str += (
+                f"### {news['title']} (source: {news['source']}) \n\n{news['snippet']}\n\n"
+            )
 
-    if len(news_results) == 0:
-        return ""
-
-    return f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
+        if len(news_results) == 0:
+            result = ""
+        else:
+            result = f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
+        
+        # Enhanced logging - Success
+        duration = time.time() - start_time
+        logger.info(f"✅ TOOL SUCCESS: get_google_news | Duration: {duration:.2f}s | Results count: {len(news_results)}")
+        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        return result
+        
+    except Exception as e:
+        # Enhanced logging - Error (for comparison)
+        duration = time.time() - start_time
+        logger.error(f"❌ TOOL ERROR: get_google_news | Duration: {duration:.2f}s")
+        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        raise e
 
 
 def get_reddit_global_news(
@@ -630,41 +656,60 @@ def get_YFin_data_online(
     start_date: Annotated[str, "Start date in yyyy-mm-dd format"],
     end_date: Annotated[str, "End date in yyyy-mm-dd format"],
 ):
+    import logging
+    import time
+    logger = logging.getLogger(__name__)
+    
+    # Enhanced logging - Tool entry (for comparison with failing tools)
+    start_time = time.time()
+    logger.info(f"🔧 TOOL START: get_YFin_data_online | Agent: Market Analyst | Symbol: {symbol} | Range: {start_date} to {end_date}")
+    
+    try:
+        datetime.strptime(start_date, "%Y-%m-%d")
+        datetime.strptime(end_date, "%Y-%m-%d")
 
-    datetime.strptime(start_date, "%Y-%m-%d")
-    datetime.strptime(end_date, "%Y-%m-%d")
+        # Create ticker object
+        ticker = yf.Ticker(symbol.upper())
 
-    # Create ticker object
-    ticker = yf.Ticker(symbol.upper())
+        # Fetch historical data for the specified date range
+        data = ticker.history(start=start_date, end=end_date)
 
-    # Fetch historical data for the specified date range
-    data = ticker.history(start=start_date, end=end_date)
+        # Check if data is empty
+        if data.empty:
+            result = f"No data found for symbol '{symbol}' between {start_date} and {end_date}"
+        else:
+            # Remove timezone info from index for cleaner output
+            if data.index.tz is not None:
+                data.index = data.index.tz_localize(None)
 
-    # Check if data is empty
-    if data.empty:
-        return (
-            f"No data found for symbol '{symbol}' between {start_date} and {end_date}"
-        )
+            # Round numerical values to 2 decimal places for cleaner display
+            numeric_columns = ["Open", "High", "Low", "Close", "Adj Close"]
+            for col in numeric_columns:
+                if col in data.columns:
+                    data[col] = data[col].round(2)
 
-    # Remove timezone info from index for cleaner output
-    if data.index.tz is not None:
-        data.index = data.index.tz_localize(None)
+            # Convert DataFrame to CSV string
+            csv_string = data.to_csv()
 
-    # Round numerical values to 2 decimal places for cleaner display
-    numeric_columns = ["Open", "High", "Low", "Close", "Adj Close"]
-    for col in numeric_columns:
-        if col in data.columns:
-            data[col] = data[col].round(2)
+            # Add header information
+            header = f"# Stock data for {symbol.upper()} from {start_date} to {end_date}\n"
+            header += f"# Total records: {len(data)}\n"
+            header += f"# Data retrieved on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
 
-    # Convert DataFrame to CSV string
-    csv_string = data.to_csv()
-
-    # Add header information
-    header = f"# Stock data for {symbol.upper()} from {start_date} to {end_date}\n"
-    header += f"# Total records: {len(data)}\n"
-    header += f"# Data retrieved on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
-
-    return header + csv_string
+            result = header + csv_string
+        
+        # Enhanced logging - Success
+        duration = time.time() - start_time
+        logger.info(f"✅ TOOL SUCCESS: get_YFin_data_online | Duration: {duration:.2f}s | Records: {len(data) if not data.empty else 0}")
+        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        return result
+        
+    except Exception as e:
+        # Enhanced logging - Error (for comparison)
+        duration = time.time() - start_time
+        logger.error(f"❌ TOOL ERROR: get_YFin_data_online | Duration: {duration:.2f}s")
+        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        raise e
 
 
 def get_YFin_data(
@@ -703,12 +748,27 @@ def get_YFin_data(
 
 
 def get_stock_news_openai(ticker, curr_date):
-    config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
-
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
+    import logging
+    import time
+    logger = logging.getLogger(__name__)
+    
+    # Import shared client functions from api.py
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    from api import get_shared_openai_client, get_compatible_model_for_tools
+    
+    # Use shared client and compatible model
+    client = get_shared_openai_client()
+    model = get_compatible_model_for_tools()
+    
+    # Enhanced logging - Tool entry
+    start_time = time.time()
+    logger.info(f"🔧 TOOL START: get_stock_news_openai | Agent: Social Media Analyst | Ticker: {ticker} | Date: {curr_date} | Model: {model}")
+    
+    request_params = {
+        "model": model,
+        "input": [
             {
                 "role": "system",
                 "content": [
@@ -719,31 +779,68 @@ def get_stock_news_openai(ticker, curr_date):
                 ],
             }
         ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
+        "text": {"format": {"type": "text"}},
+        "reasoning": {},
+        "tools": [
             {
                 "type": "web_search_preview",
                 "user_location": {"type": "approximate"},
                 "search_context_size": "low",
             }
         ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
+        "temperature": 1,
+        "max_output_tokens": 4096,
+        "top_p": 1,
+        "store": True,
+    }
+    
+    # Log full request parameters
+    logger.info(f"📤 TOOL REQUEST PARAMS: {request_params}")
 
-    return response.output[1].content[0].text
+    try:
+        response = client.responses.create(**request_params)
+        
+        # Enhanced logging - Success
+        duration = time.time() - start_time
+        logger.info(f"✅ TOOL SUCCESS: get_stock_news_openai | Duration: {duration:.2f}s")
+        logger.info(f"📥 TOOL RESPONSE STRUCTURE: {type(response)} | Available attrs: {dir(response)}")
+        
+        result = response.output[1].content[0].text
+        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        return result
+        
+    except Exception as e:
+        # Enhanced logging - Error
+        duration = time.time() - start_time
+        logger.error(f"❌ TOOL ERROR: get_stock_news_openai | Duration: {duration:.2f}s")
+        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        if hasattr(e, 'response'):
+            logger.error(f"🔍 ERROR RESPONSE: {e.response.text if hasattr(e.response, 'text') else 'No response text'}")
+        raise e
 
 
 def get_global_news_openai(curr_date):
-    config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
-
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
+    import logging
+    import time
+    logger = logging.getLogger(__name__)
+    
+    # Import shared client functions from api.py
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    from api import get_shared_openai_client, get_compatible_model_for_tools
+    
+    # Use shared client and compatible model
+    client = get_shared_openai_client()
+    model = get_compatible_model_for_tools()
+    
+    # Enhanced logging - Tool entry
+    start_time = time.time()
+    logger.info(f"🔧 TOOL START: get_global_news_openai | Agent: News Analyst | Date: {curr_date} | Model: {model}")
+    
+    request_params = {
+        "model": model,
+        "input": [
             {
                 "role": "system",
                 "content": [
@@ -754,31 +851,68 @@ def get_global_news_openai(curr_date):
                 ],
             }
         ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
+        "text": {"format": {"type": "text"}},
+        "reasoning": {},
+        "tools": [
             {
                 "type": "web_search_preview",
                 "user_location": {"type": "approximate"},
                 "search_context_size": "low",
             }
         ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
+        "temperature": 1,
+        "max_output_tokens": 4096,
+        "top_p": 1,
+        "store": True,
+    }
+    
+    # Log full request parameters
+    logger.info(f"📤 TOOL REQUEST PARAMS: {request_params}")
 
-    return response.output[1].content[0].text
+    try:
+        response = client.responses.create(**request_params)
+        
+        # Enhanced logging - Success
+        duration = time.time() - start_time
+        logger.info(f"✅ TOOL SUCCESS: get_global_news_openai | Duration: {duration:.2f}s")
+        logger.info(f"📥 TOOL RESPONSE STRUCTURE: {type(response)} | Available attrs: {dir(response)}")
+        
+        result = response.output[1].content[0].text
+        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        return result
+        
+    except Exception as e:
+        # Enhanced logging - Error
+        duration = time.time() - start_time
+        logger.error(f"❌ TOOL ERROR: get_global_news_openai | Duration: {duration:.2f}s")
+        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        if hasattr(e, 'response'):
+            logger.error(f"🔍 ERROR RESPONSE: {e.response.text if hasattr(e.response, 'text') else 'No response text'}")
+        raise e
 
 
 def get_fundamentals_openai(ticker, curr_date):
-    config = get_config()
-    client = OpenAI(base_url=config["backend_url"])
-
-    response = client.responses.create(
-        model=config["quick_think_llm"],
-        input=[
+    import logging
+    import time
+    logger = logging.getLogger(__name__)
+    
+    # Import shared client functions from api.py
+    import sys
+    import os
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    from api import get_shared_openai_client, get_compatible_model_for_tools
+    
+    # Use shared client and compatible model
+    client = get_shared_openai_client()
+    model = get_compatible_model_for_tools()
+    
+    # Enhanced logging - Tool entry
+    start_time = time.time()
+    logger.info(f"🔧 TOOL START: get_fundamentals_openai | Agent: Fundamentals Analyst | Ticker: {ticker} | Date: {curr_date} | Model: {model}")
+    
+    request_params = {
+        "model": model,
+        "input": [
             {
                 "role": "system",
                 "content": [
@@ -789,19 +923,41 @@ def get_fundamentals_openai(ticker, curr_date):
                 ],
             }
         ],
-        text={"format": {"type": "text"}},
-        reasoning={},
-        tools=[
+        "text": {"format": {"type": "text"}},
+        "reasoning": {},
+        "tools": [
             {
                 "type": "web_search_preview",
                 "user_location": {"type": "approximate"},
                 "search_context_size": "low",
             }
         ],
-        temperature=1,
-        max_output_tokens=4096,
-        top_p=1,
-        store=True,
-    )
+        "temperature": 1,
+        "max_output_tokens": 4096,
+        "top_p": 1,
+        "store": True,
+    }
+    
+    # Log full request parameters
+    logger.info(f"📤 TOOL REQUEST PARAMS: {request_params}")
 
-    return response.output[1].content[0].text
+    try:
+        response = client.responses.create(**request_params)
+        
+        # Enhanced logging - Success
+        duration = time.time() - start_time
+        logger.info(f"✅ TOOL SUCCESS: get_fundamentals_openai | Duration: {duration:.2f}s")
+        logger.info(f"📥 TOOL RESPONSE STRUCTURE: {type(response)} | Available attrs: {dir(response)}")
+        
+        result = response.output[1].content[0].text
+        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        return result
+        
+    except Exception as e:
+        # Enhanced logging - Error
+        duration = time.time() - start_time
+        logger.error(f"❌ TOOL ERROR: get_fundamentals_openai | Duration: {duration:.2f}s")
+        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        if hasattr(e, 'response'):
+            logger.error(f"🔍 ERROR RESPONSE: {e.response.text if hasattr(e.response, 'text') else 'No response text'}")
+        raise e

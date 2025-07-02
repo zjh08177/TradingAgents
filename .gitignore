@@ -1,16 +1,226 @@
-env/
+# Python
 __pycache__/
-.DS_Store
-*.csv
-src/
-eval_results/
-eval_data/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
-
-# Environment variables
+.installed.cfg
+*.egg
+MANIFEST
 .env
 .env.local
 .env.*.local
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.tox/
+.nox/
 
-# Results folder - ignore all analysis outputs
+# UV Package Manager
+uv.lock
+
+# Project specific - Results & Evaluation Data
 results/
+eval_results/
+backend/eval_results/
+backend/results/
+data_cache/
+backend/tradingagents/dataflows/data_cache/
+*.log
+logs/
+*.out
+*.pid
+
+# API & Runtime Files
+*.sock
+.restart_api_*
+api_*.log
+server_*.log
+
+# Configuration & Secrets
+config.local.*
+*.key
+*.pem
+*.p12
+*.p8
+api_keys.txt
+secrets.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Xcode & iOS
+*.xcuserstate
+*.xcuserdatad
+project.xcworkspace/
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcscmblueprint
+*.xcarchive
+timeline.xctimeline
+playground.xcworkspace
+.build/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# CocoaPods
+Pods/
+*.podspec
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Accio dependency management
+Dependencies/
+.accio/
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/readme.md
+
+# Code Injection
+iOSInjectionProject/
+
+# IDE & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.sublime-workspace
+.sublime-project
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Vim
+*.swp
+*.swo
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.tmp
+
+# Temporary files
+.tmp/
+temp/
+tmp/
+*.temp
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath
+*.sage.py
+
+# Spyder
+.spyderproject
+.spyproject
+
+# Rope
+.ropeproject
+
+# mkdocs
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
