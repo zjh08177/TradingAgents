@@ -293,11 +293,13 @@ def get_google_news(
 ) -> str:
     import logging
     import time
+    import json
     logger = logging.getLogger(__name__)
     
     # Enhanced logging - Tool entry (for comparison with failing tools)
     start_time = time.time()
     logger.info(f"🔧 TOOL START: get_google_news | Agent: News Analyst | Query: {query} | Date: {curr_date}")
+    logger.info(f"📤 TOOL PARAMS: query={query}, curr_date={curr_date}, look_back_days={look_back_days}")
     
     try:
         query = query.replace(" ", "+")
@@ -306,7 +308,22 @@ def get_google_news(
         before = start_date - relativedelta(days=look_back_days)
         before = before.strftime("%Y-%m-%d")
 
+        # Log the API call
+        logger.info(f"🌐 Calling getNewsData with query='{query}', start='{before}', end='{curr_date}'")
         news_results = getNewsData(query, before, curr_date)
+        
+        # Enhanced logging - Raw response
+        logger.info(f"🌐 RAW RESPONSE TYPE: {type(news_results)}")
+        logger.info(f"🌐 RAW RESPONSE LENGTH: {len(news_results)} items")
+        
+        if news_results and len(news_results) > 0:
+            # Log first few results in detail
+            for i, news_item in enumerate(news_results[:3]):  # First 3 items
+                logger.info(f"📰 NEWS[{i}] STRUCTURE: {list(news_item.keys()) if isinstance(news_item, dict) else 'Not a dict'}")
+                if isinstance(news_item, dict):
+                    logger.info(f"📰 NEWS[{i}] TITLE: {news_item.get('title', 'N/A')[:100]}...")
+                    logger.info(f"📰 NEWS[{i}] SOURCE: {news_item.get('source', 'N/A')}")
+                    logger.info(f"📰 NEWS[{i}] SNIPPET LENGTH: {len(news_item.get('snippet', '')) if news_item.get('snippet') else 0} chars")
 
         news_str = ""
 
@@ -323,14 +340,19 @@ def get_google_news(
         # Enhanced logging - Success
         duration = time.time() - start_time
         logger.info(f"✅ TOOL SUCCESS: get_google_news | Duration: {duration:.2f}s | Results count: {len(news_results)}")
-        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        logger.info(f"📝 TOOL OUTPUT LENGTH: {len(result)} characters")
+        logger.info(f"📝 TOOL OUTPUT PREVIEW (first 500 chars):\n{result[:500]}...")
         return result
         
     except Exception as e:
         # Enhanced logging - Error (for comparison)
         duration = time.time() - start_time
         logger.error(f"❌ TOOL ERROR: get_google_news | Duration: {duration:.2f}s")
-        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
+        logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
+        logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
+        import traceback
+        logger.error(f"🚨 TRACEBACK:\n{traceback.format_exc()}")
         raise e
 
 
@@ -658,26 +680,44 @@ def get_YFin_data_online(
 ):
     import logging
     import time
+    import json
     logger = logging.getLogger(__name__)
     
     # Enhanced logging - Tool entry (for comparison with failing tools)
     start_time = time.time()
     logger.info(f"🔧 TOOL START: get_YFin_data_online | Agent: Market Analyst | Symbol: {symbol} | Range: {start_date} to {end_date}")
+    logger.info(f"📤 TOOL PARAMS: symbol={symbol}, start_date={start_date}, end_date={end_date}")
     
     try:
         datetime.strptime(start_date, "%Y-%m-%d")
         datetime.strptime(end_date, "%Y-%m-%d")
 
         # Create ticker object
+        logger.info(f"🌐 Creating yfinance Ticker object for {symbol.upper()}")
         ticker = yf.Ticker(symbol.upper())
 
         # Fetch historical data for the specified date range
+        logger.info(f"🌐 Fetching historical data from yfinance...")
         data = ticker.history(start=start_date, end=end_date)
+        
+        # Enhanced logging - Raw response
+        logger.info(f"🌐 RAW DATA TYPE: {type(data)}")
+        logger.info(f"🌐 RAW DATA SHAPE: {data.shape if hasattr(data, 'shape') else 'N/A'}")
+        logger.info(f"🌐 RAW DATA COLUMNS: {list(data.columns) if hasattr(data, 'columns') else 'N/A'}")
+        logger.info(f"🌐 RAW DATA INDEX TYPE: {type(data.index) if hasattr(data, 'index') else 'N/A'}")
 
         # Check if data is empty
         if data.empty:
+            logger.warning(f"⚠️  No data found for {symbol} in range {start_date} to {end_date}")
             result = f"No data found for symbol '{symbol}' between {start_date} and {end_date}"
         else:
+            # Log sample of data
+            logger.info(f"📊 DATA SAMPLE (first 3 rows):")
+            if len(data) > 0:
+                sample_data = data.head(3).to_dict('records')
+                for i, row in enumerate(sample_data):
+                    logger.info(f"📊 ROW[{i}]: {json.dumps({k: float(v) if isinstance(v, (int, float)) else str(v) for k, v in row.items()}, indent=2)}")
+            
             # Remove timezone info from index for cleaner output
             if data.index.tz is not None:
                 data.index = data.index.tz_localize(None)
@@ -701,14 +741,19 @@ def get_YFin_data_online(
         # Enhanced logging - Success
         duration = time.time() - start_time
         logger.info(f"✅ TOOL SUCCESS: get_YFin_data_online | Duration: {duration:.2f}s | Records: {len(data) if not data.empty else 0}")
-        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        logger.info(f"📝 TOOL OUTPUT LENGTH: {len(result)} characters")
+        logger.info(f"📝 TOOL OUTPUT PREVIEW (first 500 chars):\n{result[:500]}...")
         return result
         
     except Exception as e:
         # Enhanced logging - Error (for comparison)
         duration = time.time() - start_time
         logger.error(f"❌ TOOL ERROR: get_YFin_data_online | Duration: {duration:.2f}s")
-        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
+        logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
+        logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
+        import traceback
+        logger.error(f"🚨 TRACEBACK:\n{traceback.format_exc()}")
         raise e
 
 
@@ -750,6 +795,7 @@ def get_YFin_data(
 def get_stock_news_openai(ticker, curr_date):
     import logging
     import time
+    import json
     logger = logging.getLogger(__name__)
     
     # Import shared client functions from api.py
@@ -795,33 +841,70 @@ def get_stock_news_openai(ticker, curr_date):
     }
     
     # Log full request parameters
-    logger.info(f"📤 TOOL REQUEST PARAMS: {request_params}")
+    logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
         response = client.responses.create(**request_params)
         
-        # Enhanced logging - Success
+        # Enhanced logging - Raw response details
         duration = time.time() - start_time
         logger.info(f"✅ TOOL SUCCESS: get_stock_news_openai | Duration: {duration:.2f}s")
-        logger.info(f"📥 TOOL RESPONSE STRUCTURE: {type(response)} | Available attrs: {dir(response)}")
         
+        # Log complete raw response
+        logger.info(f"🌐 RAW RESPONSE TYPE: {type(response)}")
+        logger.info(f"🌐 RAW RESPONSE ATTRS: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+        
+        # Try to log different response formats
+        try:
+            if hasattr(response, 'model_dump'):
+                logger.info(f"🌐 RAW RESPONSE (model_dump):\n{json.dumps(response.model_dump(), indent=2, default=str)}")
+            elif hasattr(response, '__dict__'):
+                logger.info(f"🌐 RAW RESPONSE (__dict__):\n{json.dumps(response.__dict__, indent=2, default=str)}")
+        except Exception as e:
+            logger.warning(f"⚠️  Could not serialize full response: {e}")
+        
+        # Log output structure
+        if hasattr(response, 'output'):
+            logger.info(f"📋 OUTPUT TYPE: {type(response.output)}")
+            logger.info(f"📋 OUTPUT LENGTH: {len(response.output) if hasattr(response.output, '__len__') else 'N/A'}")
+            
+            # Log each output item
+            for i, output_item in enumerate(response.output):
+                logger.info(f"📋 OUTPUT[{i}] TYPE: {type(output_item)}")
+                if hasattr(output_item, 'content'):
+                    logger.info(f"📋 OUTPUT[{i}] CONTENT TYPE: {type(output_item.content)}")
+                    logger.info(f"📋 OUTPUT[{i}] CONTENT LENGTH: {len(output_item.content) if hasattr(output_item.content, '__len__') else 'N/A'}")
+        
+        # Extract result
         result = response.output[1].content[0].text
-        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        logger.info(f"📝 EXTRACTED TEXT LENGTH: {len(result)} characters")
+        logger.info(f"📝 EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")
+        
         return result
         
     except Exception as e:
-        # Enhanced logging - Error
+        # Enhanced logging - Error with full details
         duration = time.time() - start_time
         logger.error(f"❌ TOOL ERROR: get_stock_news_openai | Duration: {duration:.2f}s")
-        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
+        logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
+        logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
+        
         if hasattr(e, 'response'):
-            logger.error(f"🔍 ERROR RESPONSE: {e.response.text if hasattr(e.response, 'text') else 'No response text'}")
+            logger.error(f"🔍 ERROR RESPONSE STATUS: {getattr(e.response, 'status_code', 'N/A')}")
+            logger.error(f"🔍 ERROR RESPONSE HEADERS: {getattr(e.response, 'headers', 'N/A')}")
+            logger.error(f"🔍 ERROR RESPONSE TEXT: {getattr(e.response, 'text', 'N/A')}")
+        
+        if hasattr(e, 'body'):
+            logger.error(f"🔍 ERROR BODY: {e.body}")
+        
         raise e
 
 
 def get_global_news_openai(curr_date):
     import logging
     import time
+    import json
     logger = logging.getLogger(__name__)
     
     # Import shared client functions from api.py
@@ -867,33 +950,70 @@ def get_global_news_openai(curr_date):
     }
     
     # Log full request parameters
-    logger.info(f"📤 TOOL REQUEST PARAMS: {request_params}")
+    logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
         response = client.responses.create(**request_params)
         
-        # Enhanced logging - Success
+        # Enhanced logging - Raw response details
         duration = time.time() - start_time
         logger.info(f"✅ TOOL SUCCESS: get_global_news_openai | Duration: {duration:.2f}s")
-        logger.info(f"📥 TOOL RESPONSE STRUCTURE: {type(response)} | Available attrs: {dir(response)}")
         
+        # Log complete raw response
+        logger.info(f"🌐 RAW RESPONSE TYPE: {type(response)}")
+        logger.info(f"🌐 RAW RESPONSE ATTRS: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+        
+        # Try to log different response formats
+        try:
+            if hasattr(response, 'model_dump'):
+                logger.info(f"🌐 RAW RESPONSE (model_dump):\n{json.dumps(response.model_dump(), indent=2, default=str)}")
+            elif hasattr(response, '__dict__'):
+                logger.info(f"🌐 RAW RESPONSE (__dict__):\n{json.dumps(response.__dict__, indent=2, default=str)}")
+        except Exception as e:
+            logger.warning(f"⚠️  Could not serialize full response: {e}")
+        
+        # Log output structure
+        if hasattr(response, 'output'):
+            logger.info(f"📋 OUTPUT TYPE: {type(response.output)}")
+            logger.info(f"📋 OUTPUT LENGTH: {len(response.output) if hasattr(response.output, '__len__') else 'N/A'}")
+            
+            # Log each output item
+            for i, output_item in enumerate(response.output):
+                logger.info(f"📋 OUTPUT[{i}] TYPE: {type(output_item)}")
+                if hasattr(output_item, 'content'):
+                    logger.info(f"📋 OUTPUT[{i}] CONTENT TYPE: {type(output_item.content)}")
+                    logger.info(f"📋 OUTPUT[{i}] CONTENT LENGTH: {len(output_item.content) if hasattr(output_item.content, '__len__') else 'N/A'}")
+        
+        # Extract result
         result = response.output[1].content[0].text
-        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        logger.info(f"📝 EXTRACTED TEXT LENGTH: {len(result)} characters")
+        logger.info(f"📝 EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")
+        
         return result
         
     except Exception as e:
-        # Enhanced logging - Error
+        # Enhanced logging - Error with full details
         duration = time.time() - start_time
         logger.error(f"❌ TOOL ERROR: get_global_news_openai | Duration: {duration:.2f}s")
-        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
+        logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
+        logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
+        
         if hasattr(e, 'response'):
-            logger.error(f"🔍 ERROR RESPONSE: {e.response.text if hasattr(e.response, 'text') else 'No response text'}")
+            logger.error(f"🔍 ERROR RESPONSE STATUS: {getattr(e.response, 'status_code', 'N/A')}")
+            logger.error(f"🔍 ERROR RESPONSE HEADERS: {getattr(e.response, 'headers', 'N/A')}")
+            logger.error(f"🔍 ERROR RESPONSE TEXT: {getattr(e.response, 'text', 'N/A')}")
+        
+        if hasattr(e, 'body'):
+            logger.error(f"🔍 ERROR BODY: {e.body}")
+        
         raise e
 
 
 def get_fundamentals_openai(ticker, curr_date):
     import logging
     import time
+    import json
     logger = logging.getLogger(__name__)
     
     # Import shared client functions from api.py
@@ -939,25 +1059,61 @@ def get_fundamentals_openai(ticker, curr_date):
     }
     
     # Log full request parameters
-    logger.info(f"📤 TOOL REQUEST PARAMS: {request_params}")
+    logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
         response = client.responses.create(**request_params)
         
-        # Enhanced logging - Success
+        # Enhanced logging - Raw response details
         duration = time.time() - start_time
         logger.info(f"✅ TOOL SUCCESS: get_fundamentals_openai | Duration: {duration:.2f}s")
-        logger.info(f"📥 TOOL RESPONSE STRUCTURE: {type(response)} | Available attrs: {dir(response)}")
         
+        # Log complete raw response
+        logger.info(f"🌐 RAW RESPONSE TYPE: {type(response)}")
+        logger.info(f"🌐 RAW RESPONSE ATTRS: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+        
+        # Try to log different response formats
+        try:
+            if hasattr(response, 'model_dump'):
+                logger.info(f"🌐 RAW RESPONSE (model_dump):\n{json.dumps(response.model_dump(), indent=2, default=str)}")
+            elif hasattr(response, '__dict__'):
+                logger.info(f"🌐 RAW RESPONSE (__dict__):\n{json.dumps(response.__dict__, indent=2, default=str)}")
+        except Exception as e:
+            logger.warning(f"⚠️  Could not serialize full response: {e}")
+        
+        # Log output structure
+        if hasattr(response, 'output'):
+            logger.info(f"📋 OUTPUT TYPE: {type(response.output)}")
+            logger.info(f"📋 OUTPUT LENGTH: {len(response.output) if hasattr(response.output, '__len__') else 'N/A'}")
+            
+            # Log each output item
+            for i, output_item in enumerate(response.output):
+                logger.info(f"📋 OUTPUT[{i}] TYPE: {type(output_item)}")
+                if hasattr(output_item, 'content'):
+                    logger.info(f"📋 OUTPUT[{i}] CONTENT TYPE: {type(output_item.content)}")
+                    logger.info(f"📋 OUTPUT[{i}] CONTENT LENGTH: {len(output_item.content) if hasattr(output_item.content, '__len__') else 'N/A'}")
+        
+        # Extract result
         result = response.output[1].content[0].text
-        logger.info(f"📋 TOOL OUTPUT LENGTH: {len(result)} characters")
+        logger.info(f"📝 EXTRACTED TEXT LENGTH: {len(result)} characters")
+        logger.info(f"📝 EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")
+        
         return result
         
     except Exception as e:
-        # Enhanced logging - Error
+        # Enhanced logging - Error with full details
         duration = time.time() - start_time
         logger.error(f"❌ TOOL ERROR: get_fundamentals_openai | Duration: {duration:.2f}s")
-        logger.error(f"🚨 FULL ERROR DETAILS: {type(e).__name__}: {str(e)}")
+        logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
+        logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
+        logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
+        
         if hasattr(e, 'response'):
-            logger.error(f"🔍 ERROR RESPONSE: {e.response.text if hasattr(e.response, 'text') else 'No response text'}")
+            logger.error(f"🔍 ERROR RESPONSE STATUS: {getattr(e.response, 'status_code', 'N/A')}")
+            logger.error(f"🔍 ERROR RESPONSE HEADERS: {getattr(e.response, 'headers', 'N/A')}")
+            logger.error(f"🔍 ERROR RESPONSE TEXT: {getattr(e.response, 'text', 'N/A')}")
+        
+        if hasattr(e, 'body'):
+            logger.error(f"🔍 ERROR BODY: {e.body}")
+        
         raise e
