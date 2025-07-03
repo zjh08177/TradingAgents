@@ -291,25 +291,64 @@ async def stream_analysis(ticker: str):
                         last_message = chunk["messages"][-1]
                         print(f"📨 Last message type: {type(last_message)}")
                         
+                        # Enhanced logging - Print raw message details
+                        print(f"🌐 RAW MESSAGE ATTRS: {[attr for attr in dir(last_message) if not attr.startswith('_')]}")
+                        
+                        # Log different message types
+                        if hasattr(last_message, 'name') and last_message.name:
+                            print(f"🤖 AGENT NAME: {last_message.name}")
+                        
+                        if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+                            print(f"🔧 TOOL CALLS: {len(last_message.tool_calls)} tools invoked")
+                            for i, tool_call in enumerate(last_message.tool_calls):
+                                print(f"🔧 TOOL[{i}]: {tool_call.name if hasattr(tool_call, 'name') else 'Unknown'}")
+                                if hasattr(tool_call, 'args'):
+                                    print(f"🔧 TOOL[{i}] ARGS: {json.dumps(tool_call.args, indent=2) if isinstance(tool_call.args, dict) else tool_call.args}")
+                        
                         if hasattr(last_message, "content"):
                             content = str(last_message.content) if hasattr(last_message.content, '__str__') else str(last_message.content)
                             
+                            # Enhanced logging - Print raw content structure
+                            print(f"📋 RAW CONTENT TYPE: {type(last_message.content)}")
+                            print(f"📋 RAW CONTENT LENGTH: {len(last_message.content) if hasattr(last_message.content, '__len__') else 'N/A'}")
+                            
                             # Extract text content if it's a list
                             if isinstance(last_message.content, list):
+                                print(f"📋 CONTENT LIST LENGTH: {len(last_message.content)}")
                                 text_parts = []
-                                for part in last_message.content:
+                                for j, part in enumerate(last_message.content):
+                                    print(f"📋 CONTENT[{j}] TYPE: {type(part)}")
                                     if hasattr(part, 'text'):
                                         text_parts.append(part.text)
+                                        print(f"📋 CONTENT[{j}] TEXT (first 200 chars): {part.text[:200]}...")
                                     elif isinstance(part, str):
                                         text_parts.append(part)
+                                        print(f"📋 CONTENT[{j}] STRING (first 200 chars): {part[:200]}...")
                                     else:
                                         text_parts.append(str(part))
+                                        print(f"📋 CONTENT[{j}] OTHER: {str(part)[:200]}...")
                                 content = " ".join(text_parts)
+                            else:
+                                # Single content item
+                                print(f"📋 SINGLE CONTENT (first 500 chars): {content[:500]}...")
+                            
+                            # Log full content for debugging (can be toggled)
+                            if os.getenv("LOG_FULL_CONTENT", "false").lower() == "true":
+                                print(f"📝 FULL CONTENT:\n{content}\n")
                             
                             # Send reasoning updates
                             reasoning_event = json.dumps({'type': 'reasoning', 'content': content[:500]})
                             print(f"📤 Sending reasoning: {reasoning_event[:100]}...")
                             yield f"data: {reasoning_event}\n\n"
+                        
+                        # Log tool message responses
+                        if hasattr(last_message, 'type') and str(last_message.type) == 'tool':
+                            print(f"🛠️ TOOL MESSAGE DETECTED")
+                            if hasattr(last_message, 'tool_call_id'):
+                                print(f"🛠️ TOOL CALL ID: {last_message.tool_call_id}")
+                            if hasattr(last_message, 'content'):
+                                print(f"🛠️ TOOL RESPONSE LENGTH: {len(last_message.content)} chars")
+                                print(f"🛠️ TOOL RESPONSE PREVIEW (first 500 chars):\n{last_message.content[:500]}...")
                     
                     # Handle section completions and send progress updates
                     if "market_report" in chunk and chunk["market_report"] and "market_report" not in reports_completed:
