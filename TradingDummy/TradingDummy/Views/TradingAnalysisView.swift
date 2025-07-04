@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct TradingAnalysisView: View {
     @StateObject private var viewModel = TradingAnalysisViewModel()
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         NavigationView {
@@ -26,6 +28,9 @@ struct TradingAnalysisView: View {
             }
             .padding()
             .navigationTitle("Trading Analysis")
+            .onAppear {
+                viewModel.modelContext = modelContext
+            }
             .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
                 Button("OK") {
                     viewModel.errorMessage = nil
