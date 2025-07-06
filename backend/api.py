@@ -230,6 +230,8 @@ async def stream_analysis(ticker: str):
             try:
                 print(f"📡 Starting event stream for {ticker}")
                 
+
+                
                 # Initialize trading graph with all analysts
                 print("🔧 Initializing trading graph...")
                 config = get_config()
@@ -237,7 +239,7 @@ async def stream_analysis(ticker: str):
                 
                 graph = TradingAgentsGraph(
                     selected_analysts=["market", "social", "news", "fundamentals"],
-                    debug=True,  # Enable debug mode for detailed logging
+                    debug=True,  # Enable debug mode
                     config=config
                 )
                 print("✅ Trading graph initialized")
@@ -290,7 +292,7 @@ async def stream_analysis(ticker: str):
                 agent_progress["Fundamentals Analyst"] = "in_progress"
                 
                 for event in initial_events:
-                    print(f"� Sending initial: {event[:100]}...")
+                    print(f"📤 Sending initial: {event[:100]}...")
                     yield f"data: {event}\n\n"
                 
                 # Real-time streaming using graph.stream()
@@ -306,49 +308,80 @@ async def stream_analysis(ticker: str):
                     message_channels = ["market_messages", "social_messages", "news_messages", "fundamentals_messages"]
                     
                     for channel in message_channels:
-                        if channel in chunk and chunk[channel]:
-                            analyst_type = channel.replace("_messages", "")
-                            messages = chunk[channel]
-                            print(f"� {analyst_type.upper()}: {len(messages)} messages")
+                        if channel in chunk and len(chunk[channel]) > 0:
+                            # Extract agent name from channel (e.g., 'market_messages' -> 'market')
+                            agent_name = channel.replace('_messages', '')
                             
-                            if messages:
-                                last_message = messages[-1]
+                            print(f"💬 Processing {len(chunk[channel])} messages from {channel} ({agent_name.upper()} AGENT)")
+                            
+                            # Process messages for agent detection
+                            last_message = chunk[channel][-1]
+                            print(f"📨 Last message type: {type(last_message)}")
+                        
+                            # Enhanced logging - Print raw message details
+                            print(f"🌐 RAW MESSAGE ATTRS: {[attr for attr in dir(last_message) if not attr.startswith('_')]}")
+                            
+                            # Log different message types
+                            if hasattr(last_message, 'name') and last_message.name:
+                                print(f"🤖 AGENT NAME: {last_message.name}")
+                            
+                            if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
+                                print(f"🔧 [{agent_name.upper()}] TOOL CALLS: {len(last_message.tool_calls)} tools invoked")
+                                for i, tool_call in enumerate(last_message.tool_calls):
+                                    tool_name = tool_call.name if hasattr(tool_call, 'name') else 'Unknown'
+                                    print(f"🔧 [{agent_name.upper()}] TOOL[{i}]: {tool_name}")
+                                    if hasattr(tool_call, 'args'):
+                                        print(f"🔧 [{agent_name.upper()}] TOOL[{i}] ARGS: {json.dumps(tool_call.args, indent=2) if isinstance(tool_call.args, dict) else tool_call.args}")
+                            
+                            if hasattr(last_message, "content"):
+                                content = str(last_message.content) if hasattr(last_message.content, '__str__') else str(last_message.content)
                                 
-                                # Send reasoning updates for analyst messages
-                                if hasattr(last_message, 'content') and last_message.content:
-                                    # Map analyst type to agent name
-                                    agent_map = {
-                                        "market": "market",
-                                        "social": "social",
-                                        "news": "news",
-                                        "fundamentals": "fundamentals"
-                                    }
-                                    agent_name = agent_map.get(analyst_type, analyst_type)
-                                    
-                                    # Check if it's a tool call
-                                    if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
-                                        tool_names = [tc.name if hasattr(tc, 'name') else 'Unknown' for tc in last_message.tool_calls]
-                                        reasoning_content = f"� Using {', '.join(tool_names)} to gather data..."
-                                    else:
-                                        # Regular reasoning message
-                                        content = str(last_message.content)
-                                        if len(content) > 300:
-                                            reasoning_content = f"📊 Processing data from tools and analyzing results..."
+                                # Enhanced logging - Print raw content structure
+                                print(f"📋 [{agent_name.upper()}] RAW CONTENT TYPE: {type(last_message.content)}")
+                                print(f"📋 [{agent_name.upper()}] RAW CONTENT LENGTH: {len(last_message.content) if hasattr(last_message.content, '__len__') else 'N/A'}")
+                                
+                                # Extract text content if it's a list
+                                if isinstance(last_message.content, list):
+                                    print(f"📋 [{agent_name.upper()}] CONTENT LIST LENGTH: {len(last_message.content)}")
+                                    text_parts = []
+                                    for j, part in enumerate(last_message.content):
+                                        print(f"📋 [{agent_name.upper()}] CONTENT[{j}] TYPE: {type(part)}")
+                                        if hasattr(part, 'text'):
+                                            text_parts.append(part.text)
+                                            print(f"📋 [{agent_name.upper()}] CONTENT[{j}] TEXT (first 200 chars): {part.text[:200]}...")
+                                        elif isinstance(part, str):
+                                            text_parts.append(part)
+                                            print(f"📋 [{agent_name.upper()}] CONTENT[{j}] STRING (first 200 chars): {part[:200]}...")
                                         else:
-                                            reasoning_content = content[:200] + "..." if len(content) > 200 else content
-                                    
+                                            text_parts.append(str(part))
+                                            print(f"📋 [{agent_name.upper()}] CONTENT[{j}] OTHER: {str(part)[:200]}...")
+                                    content = " ".join(text_parts)
+                                else:
+                                    # Single content item
+                                    print(f"📋 [{agent_name.upper()}] SINGLE CONTENT (first 500 chars): {content[:500]}...")
+                                
+                                # Log full content for debugging (can be toggled)
+                                if os.getenv("LOG_FULL_CONTENT", "false").lower() == "true":
+                                    print(f"📝 [{agent_name.upper()}] FULL CONTENT:\n{content}\n")
+                                
+                                # Send reasoning updates WITH agent information
+                                if isinstance(content, str) and content.strip():
                                     reasoning_event = json.dumps({
                                         'type': 'reasoning', 
                                         'agent': agent_name,
-                                        'content': reasoning_content
+                                        'content': content[:500]
                                     })
-                                    print(f"📤 [{analyst_type.upper()}] Sending reasoning: {reasoning_event[:100]}...")
+                                    print(f"📤 [{agent_name.upper()}] Sending reasoning: {reasoning_event[:100]}...")
                                     yield f"data: {reasoning_event}\n\n"
-                                    await asyncio.sleep(0.3)
-                                
-                                # Check for tool message responses
-                                if hasattr(last_message, 'type') and str(getattr(last_message, 'type', '')) == 'tool':
-                                    print(f"🛠️ TOOL RESPONSE for {analyst_type}")
+                            
+                            # Log tool message responses
+                            if hasattr(last_message, 'type') and str(last_message.type) == 'tool':
+                                print(f"🛠️ TOOL MESSAGE DETECTED")
+                                if hasattr(last_message, 'tool_call_id'):
+                                    print(f"🛠️ TOOL CALL ID: {last_message.tool_call_id}")
+                                if hasattr(last_message, 'content'):
+                                    print(f"🛠️ TOOL RESPONSE LENGTH: {len(last_message.content)} chars")
+                                    print(f"🛠️ TOOL RESPONSE PREVIEW (first 500 chars):\n{last_message.content[:500]}...")
                     
                     # Handle section completions and send progress updates
                     if "market_report" in chunk and chunk["market_report"] and "market_report" not in reports_completed:
@@ -357,7 +390,6 @@ async def stream_analysis(ticker: str):
                         reports_completed.append("market_report")
                         
                         events = [
-                            json.dumps({'type': 'reasoning', 'agent': 'market', 'content': '✅ Completing market analysis and generating final report...'}),
                             json.dumps({'type': 'agent_status', 'agent': 'market', 'status': 'completed'}),
                             json.dumps({'type': 'report', 'section': 'market_report', 'content': chunk['market_report']}),
                             json.dumps({'type': 'progress', 'content': '25'})
@@ -373,7 +405,6 @@ async def stream_analysis(ticker: str):
                         reports_completed.append("sentiment_report")
                         
                         events = [
-                            json.dumps({'type': 'reasoning', 'agent': 'social', 'content': '✅ Completing social analysis and generating final report...'}),
                             json.dumps({'type': 'agent_status', 'agent': 'social', 'status': 'completed'}),
                             json.dumps({'type': 'report', 'section': 'sentiment_report', 'content': chunk['sentiment_report']}),
                             json.dumps({'type': 'progress', 'content': '40'})
@@ -389,7 +420,6 @@ async def stream_analysis(ticker: str):
                         reports_completed.append("news_report")
                         
                         events = [
-                            json.dumps({'type': 'reasoning', 'agent': 'news', 'content': '✅ Completing news analysis and generating final report...'}),
                             json.dumps({'type': 'agent_status', 'agent': 'news', 'status': 'completed'}),
                             json.dumps({'type': 'report', 'section': 'news_report', 'content': chunk['news_report']}),
                             json.dumps({'type': 'progress', 'content': '55'})
@@ -403,11 +433,8 @@ async def stream_analysis(ticker: str):
                         print("✅ Fundamentals report completed!")
                         agent_progress["Fundamentals Analyst"] = "completed"
                         
-                        # All initial analysts done - start research team
-                        all_analysts_done = all(
-                            agent_progress[agent] == "completed" 
-                            for agent in ["Market Analyst", "Social Media Analyst", "News Analyst", "Fundamentals Analyst"]
-                        )
+                        # Start research team only if all analysts are done
+                        all_analysts_done = all(agent_progress[agent] == "completed" for agent in ["Market Analyst", "Social Media Analyst", "News Analyst", "Fundamentals Analyst"])
                         
                         if all_analysts_done:
                             agent_progress["Bull Researcher"] = "in_progress"
@@ -416,12 +443,12 @@ async def stream_analysis(ticker: str):
                         reports_completed.append("fundamentals_report")
                         
                         events = [
-                            json.dumps({'type': 'reasoning', 'agent': 'fundamentals', 'content': '✅ Completing fundamentals analysis and generating final report...'}),
                             json.dumps({'type': 'agent_status', 'agent': 'fundamentals', 'status': 'completed'}),
                             json.dumps({'type': 'report', 'section': 'fundamentals_report', 'content': chunk['fundamentals_report']}),
                             json.dumps({'type': 'progress', 'content': '70'})
                         ]
                         
+                        # Add research team start events if all analysts are done
                         if all_analysts_done:
                             events.extend([
                                 json.dumps({'type': 'agent_status', 'agent': 'bull_researcher', 'status': 'in_progress'}),
@@ -437,33 +464,6 @@ async def stream_analysis(ticker: str):
                         print("🔄 Processing investment debate state...")
                         debate_state = chunk["investment_debate_state"]
                         
-                        # Send real-time updates for Bull/Bear
-                        if debate_state.get("current_response"):
-                            current_response = debate_state["current_response"]
-                            
-                            if "Bull" in current_response and agent_progress["Bull Researcher"] == "in_progress":
-                                # Extract Bull reasoning
-                                bull_content = current_response.split("Bull Analyst:")[-1].strip() if "Bull Analyst:" in current_response else current_response
-                                bull_reasoning = json.dumps({
-                                    'type': 'reasoning',
-                                    'agent': 'bull_researcher',
-                                    'content': f'🐂 {bull_content[:300]}...' if len(bull_content) > 300 else f'🐂 {bull_content}'
-                                })
-                                yield f"data: {bull_reasoning}\n\n"
-                                await asyncio.sleep(0.3)
-                            
-                            elif "Bear" in current_response and agent_progress["Bear Researcher"] == "in_progress":
-                                # Extract Bear reasoning
-                                bear_content = current_response.split("Bear Analyst:")[-1].strip() if "Bear Analyst:" in current_response else current_response
-                                bear_reasoning = json.dumps({
-                                    'type': 'reasoning',
-                                    'agent': 'bear_researcher',
-                                    'content': f'🐻 {bear_content[:300]}...' if len(bear_content) > 300 else f'🐻 {bear_content}'
-                                })
-                                yield f"data: {bear_reasoning}\n\n"
-                                await asyncio.sleep(0.3)
-                        
-                        # Check for investment plan completion
                         if "judge_decision" in debate_state and debate_state["judge_decision"] and "investment_plan" not in reports_completed:
                             print("✅ Investment plan completed!")
                             agent_progress["Bull Researcher"] = "completed"
@@ -489,73 +489,41 @@ async def stream_analysis(ticker: str):
                     if "trader_investment_plan" in chunk and chunk["trader_investment_plan"] and "trader_investment_plan" not in reports_completed:
                         print("✅ Trading plan completed!")
                         agent_progress["Trading Team"] = "completed"
-                        reports_completed.append("trader_investment_plan")
-                        
-                        # Trading team done - start risk analysts in parallel
-                        agent_progress["Risky Analyst"] = "in_progress"
+                        agent_progress["Risky Analyst"] = "in_progress"  # Start risk analysis phase
                         agent_progress["Safe Analyst"] = "in_progress"
                         agent_progress["Neutral Analyst"] = "in_progress"
+                        reports_completed.append("trader_investment_plan")
                         
                         events = [
-                            json.dumps({'type': 'reasoning', 'agent': 'trader', 'content': '💼 Trading strategy finalized...'}),
                             json.dumps({'type': 'agent_status', 'agent': 'trader', 'status': 'completed'}),
+                            json.dumps({'type': 'agent_status', 'agent': 'risky_analyst', 'status': 'in_progress'}),
+                            json.dumps({'type': 'agent_status', 'agent': 'safe_analyst', 'status': 'in_progress'}),
+                            json.dumps({'type': 'agent_status', 'agent': 'neutral_analyst', 'status': 'in_progress'}),
                             json.dumps({'type': 'report', 'section': 'trader_investment_plan', 'content': chunk['trader_investment_plan']}),
-                            json.dumps({'type': 'progress', 'content': '90'}),
-                            # Start risk analysts
-                            json.dumps({'type': 'agent_status', 'agent': 'risk_risky', 'status': 'in_progress'}),
-                            json.dumps({'type': 'agent_status', 'agent': 'risk_safe', 'status': 'in_progress'}),
-                            json.dumps({'type': 'agent_status', 'agent': 'risk_neutral', 'status': 'in_progress'})
+                            json.dumps({'type': 'progress', 'content': '90'})
                         ]
                         
                         for event in events:
                             print(f"📤 Sending: {event[:100]}...")
                             yield f"data: {event}\n\n"
                     
-                    # Handle risk analysts
+                    # Handle risk analysis completion
                     if "risk_debate_state" in chunk and chunk["risk_debate_state"]:
+                        print("🔄 Processing risk debate state...")
                         risk_state = chunk["risk_debate_state"]
                         
-                        # Send real-time updates for risk analysts
-                        if risk_state.get("current_risky_response") and agent_progress["Risky Analyst"] == "in_progress":
-                            risky_reasoning = json.dumps({
-                                'type': 'reasoning',
-                                'agent': 'risk_risky',
-                                'content': f'⚡ {risk_state["current_risky_response"][:300]}...' if len(risk_state["current_risky_response"]) > 300 else f'⚡ {risk_state["current_risky_response"]}'
-                            })
-                            yield f"data: {risky_reasoning}\n\n"
-                            agent_progress["Risky Analyst"] = "completed"
-                            completion_event = json.dumps({'type': 'agent_status', 'agent': 'risk_risky', 'status': 'completed'})
-                            yield f"data: {completion_event}\n\n"
-                        
-                        if risk_state.get("current_safe_response") and agent_progress["Safe Analyst"] == "in_progress":
-                            safe_reasoning = json.dumps({
-                                'type': 'reasoning',
-                                'agent': 'risk_safe',
-                                'content': f'🛡️ {risk_state["current_safe_response"][:300]}...' if len(risk_state["current_safe_response"]) > 300 else f'🛡️ {risk_state["current_safe_response"]}'
-                            })
-                            yield f"data: {safe_reasoning}\n\n"
-                            agent_progress["Safe Analyst"] = "completed"
-                            completion_event = json.dumps({'type': 'agent_status', 'agent': 'risk_safe', 'status': 'completed'})
-                            yield f"data: {completion_event}\n\n"
-                        
-                        if risk_state.get("current_neutral_response") and agent_progress["Neutral Analyst"] == "in_progress":
-                            neutral_reasoning = json.dumps({
-                                'type': 'reasoning',
-                                'agent': 'risk_neutral',
-                                'content': f'⚖️ {risk_state["current_neutral_response"][:300]}...' if len(risk_state["current_neutral_response"]) > 300 else f'⚖️ {risk_state["current_neutral_response"]}'
-                            })
-                            yield f"data: {neutral_reasoning}\n\n"
-                            agent_progress["Neutral Analyst"] = "completed"
-                            completion_event = json.dumps({'type': 'agent_status', 'agent': 'risk_neutral', 'status': 'completed'})
-                            yield f"data: {completion_event}\n\n"
-                        
-                        # Check for risk analysis completion
-                        if risk_state.get("judge_decision") and "risk_analysis" not in reports_completed:
+                        if "judge_decision" in risk_state and risk_state["judge_decision"] and "risk_analysis" not in reports_completed:
                             print("✅ Risk analysis completed!")
+                            agent_progress["Risky Analyst"] = "completed"
+                            agent_progress["Safe Analyst"] = "completed"
+                            agent_progress["Neutral Analyst"] = "completed"
                             agent_progress["Risk Manager"] = "completed"
                             reports_completed.append("risk_analysis")
                             
                             events = [
+                                json.dumps({'type': 'agent_status', 'agent': 'risky_analyst', 'status': 'completed'}),
+                                json.dumps({'type': 'agent_status', 'agent': 'safe_analyst', 'status': 'completed'}),
+                                json.dumps({'type': 'agent_status', 'agent': 'neutral_analyst', 'status': 'completed'}),
                                 json.dumps({'type': 'agent_status', 'agent': 'risk_manager', 'status': 'completed'}),
                                 json.dumps({'type': 'report', 'section': 'risk_analysis', 'content': risk_state['judge_decision']}),
                                 json.dumps({'type': 'progress', 'content': '95'})
@@ -584,6 +552,28 @@ async def stream_analysis(ticker: str):
                 # Get final state and process signal
                 final_state = trace[-1] if trace else {}
                 processed_signal = graph.process_signal(final_state.get("final_trade_decision", ""))
+                
+                # Save results to disk (same as regular analyze endpoint)
+                try:
+                    results = {
+                        "ticker": ticker,
+                        "analysis_date": analysis_date,
+                        "market_report": final_state.get("market_report"),
+                        "sentiment_report": final_state.get("sentiment_report"),
+                        "news_report": final_state.get("news_report"),
+                        "fundamentals_report": final_state.get("fundamentals_report"),
+                        "investment_plan": final_state.get("investment_plan"),
+                        "trader_investment_plan": final_state.get("trader_investment_plan"),
+                        "final_trade_decision": final_state.get("final_trade_decision"),
+                        "processed_signal": processed_signal
+                    }
+                    
+                    config = get_config()
+                    saved_path = save_results_to_disk(ticker, analysis_date, results, config)
+                    print(f"✅ Results saved to: {saved_path}")
+                    
+                except Exception as save_error:
+                    print(f"⚠️ Failed to save results: {save_error}")
                 
                 # Send completion
                 completion_event = json.dumps({'type': 'complete', 'message': 'Analysis completed successfully', 'signal': processed_signal})

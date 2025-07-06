@@ -28,3 +28,4 @@ fastapi
 pydantic
 uvicorn[standard]
 python-dotenv
+google-search-results

@@ -147,6 +147,38 @@ def test_graph_execution():
     final_state = chunk
     execution_time = time.time() - start_time
     
+    # Validate final trade decision
+    final_decision = final_state.get("final_trade_decision", "")
+    decision_valid = True
+    decision_issues = []
+    
+    if not final_decision:
+        decision_issues.append("No final trade decision generated")
+        decision_valid = False
+    elif "I'm sorry, but it looks like there is no paragraph" in final_decision:
+        decision_issues.append("Risk manager received invalid/empty data")
+        decision_valid = False
+    elif "no paragraph or financial report provided" in final_decision:
+        decision_issues.append("Risk manager missing required reports")
+        decision_valid = False
+    elif len(final_decision) < 100:
+        decision_issues.append(f"Final decision too short ({len(final_decision)} chars)")
+        decision_valid = False
+    elif not any(keyword in final_decision.upper() for keyword in ["BUY", "SELL", "HOLD"]):
+        decision_issues.append("Final decision missing BUY/SELL/HOLD recommendation")
+        decision_valid = False
+    
+    # Validate risk debate state
+    risk_debate_state = final_state.get("risk_debate_state", {})
+    judge_decision = risk_debate_state.get("judge_decision", "")
+    
+    if not judge_decision:
+        decision_issues.append("No judge decision in risk debate state")
+        decision_valid = False
+    elif judge_decision != final_decision:
+        decision_issues.append("Mismatch between judge_decision and final_trade_decision")
+        decision_valid = False
+    
     # Generate report
     print("\n" + "="*80)
     print("📊 EXECUTION REPORT")
@@ -154,6 +186,20 @@ def test_graph_execution():
     
     print(f"\n⏱️  Total execution time: {execution_time:.2f} seconds")
     print(f"📦 Chunks processed: {chunks_processed}")
+    
+    # Decision validation
+    print(f"\n🎯 FINAL DECISION VALIDATION:")
+    print("-"*40)
+    if decision_valid:
+        print("✅ Final trade decision is valid")
+        print(f"📝 Decision length: {len(final_decision)} chars")
+        print(f"📝 Decision preview: {final_decision[:200]}...")
+    else:
+        print("❌ Final trade decision has issues:")
+        for issue in decision_issues:
+            print(f"   - {issue}")
+        if final_decision:
+            print(f"📝 Decision content: {final_decision[:500]}...")
     
     # Tool call analysis
     print("\n🔧 TOOL CALL ANALYSIS:")
@@ -238,6 +284,10 @@ def test_graph_execution():
     print("🎯 FINAL VERDICT")
     print("="*80)
     
+    # Add decision issues to overall issues
+    if decision_issues:
+        issues.extend(decision_issues)
+    
     if not issues:
         print("\n✅ ALL TESTS PASSED! 🎉")
         print("\nKey achievements:")
@@ -245,6 +295,7 @@ def test_graph_execution():
         print("- No duplicate completions")
         print("- Bear researcher properly tracked")
         print("- Risk analysts run in parallel")
+        print("- Final trade decision is valid and complete")
         print(f"- Total execution time: {execution_time:.2f}s")
     else:
         print("\n❌ ISSUES FOUND:")

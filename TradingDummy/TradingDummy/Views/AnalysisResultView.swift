@@ -2,52 +2,62 @@ import SwiftUI
 
 // MARK: - Analysis Result View
 struct AnalysisResultView: View {
-    let ticker: String
     let reports: [(title: String, content: String)]
     let finalDecision: String
-    let onDismiss: () -> Void
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // Header
-                    HeaderView(ticker: ticker)
-                        .padding(.horizontal)
+        VStack(alignment: .leading, spacing: 20) {
+            // Header
+            Text("Final Reports")
+                .font(.title2)
+                .fontWeight(.bold)
+                .padding(.horizontal)
+            
+            if reports.isEmpty && finalDecision.isEmpty {
+                // Empty state
+                VStack(spacing: 16) {
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 50))
+                        .foregroundColor(.secondary)
                     
-                    // Reports
-                    VStack(spacing: 16) {
-                        ForEach(reports, id: \.title) { report in
-                            ReportCard(
-                                title: report.title,
-                                icon: iconForReport(report.title),
-                                content: report.content
-                            )
-                        }
-                        
-                        // Final Decision
-                        if !finalDecision.isEmpty {
-                            ReportCard(
-                                title: "Final Decision",
-                                icon: "checkmark.seal.fill",
-                                content: finalDecision,
-                                isHighlighted: true
-                            )
-                        }
-                    }
-                    .padding(.horizontal)
+                    Text("No reports available yet")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Text("Reports will appear here as agents complete their analysis")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
-                .padding(.vertical)
-            }
-            .navigationTitle("Analysis Results")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Done") {
-                        onDismiss()
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                // Reports
+                VStack(spacing: 16) {
+                    ForEach(reports, id: \.title) { report in
+                        ReportCard(
+                            title: report.title,
+                            icon: iconForReport(report.title),
+                            content: report.content
+                        )
+                    }
+                    
+                    // Final Decision
+                    if !finalDecision.isEmpty {
+                        ReportCard(
+                            title: "Final Decision",
+                            icon: "checkmark.seal.fill",
+                            content: finalDecision,
+                            isHighlighted: true
+                        )
                     }
                 }
+                .padding(.horizontal)
             }
+            
+            Spacer()
         }
+        .padding(.vertical)
     }
     
     private func iconForReport(_ title: String) -> String {
@@ -58,30 +68,9 @@ struct AnalysisResultView: View {
         case "Fundamentals Analysis": return "doc.text"
         case "Investment Plan": return "lightbulb"
         case "Trading Plan": return "chart.bar.fill"
+        case "Risk Analysis": return "shield.checkered"
+        case "Final Decision": return "checkmark.seal.fill"
         default: return "doc.text"
-        }
-    }
-}
-
-// MARK: - Header View
-struct HeaderView: View {
-    let ticker: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(ticker)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    
-                    Text("Analysis Date: \(DateFormatter.shortDate.string(from: Date()))")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Spacer()
-            }
         }
     }
 }

@@ -1,8 +1,12 @@
 import os
+from dotenv import load_dotenv
 
 # Get the backend directory (parent of tradingagents package)
-BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-PROJECT_ROOT = os.path.abspath(os.path.join(BACKEND_DIR, ".."))
+BACKEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+# Load environment variables from project root
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 DEFAULT_CONFIG = {
     "project_dir": os.path.abspath(os.path.join(os.path.dirname(__file__), ".")),
@@ -26,4 +30,6 @@ DEFAULT_CONFIG = {
     "max_recur_limit": 100,
     # Tool settings
     "online_tools": True,
+    # SerpAPI settings
+    "serpapi_key": os.getenv("SERPAPI_API_KEY", ""),
 }

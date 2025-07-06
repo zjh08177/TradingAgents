@@ -1,11 +1,18 @@
 from langchain_core.messages import AIMessage
 import time
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 
 def create_bull_researcher(llm, memory):
     def bull_node(state) -> dict:
+        logger.info("🐂 Bull Researcher: Starting execution")
+        
         investment_debate_state = state["investment_debate_state"]
+        logger.info(f"🐂 Bull Researcher: Current debate state count: {investment_debate_state.get('count', 0)}")
+        logger.info(f"🐂 Bull Researcher: Current response starts with: {investment_debate_state.get('current_response', '')[:50]}...")
+        
         history = investment_debate_state.get("history", "")
         bull_history = investment_debate_state.get("bull_history", "")
 
@@ -42,7 +49,9 @@ Reflections from similar situations and lessons learned: {past_memory_str}
 Use this information to deliver a compelling bull argument, refute the bear's concerns, and engage in a dynamic debate that demonstrates the strengths of the bull position. You must also address reflections and learn from lessons and mistakes you made in the past.
 """
 
+        logger.info("🐂 Bull Researcher: Invoking LLM...")
         response = llm.invoke(prompt)
+        logger.info("🐂 Bull Researcher: LLM response received")
 
         argument = f"Bull Analyst: {response.content}"
 
@@ -53,6 +62,10 @@ Use this information to deliver a compelling bull argument, refute the bear's co
             "current_response": argument,
             "count": investment_debate_state["count"] + 1,
         }
+
+        logger.info(f"🐂 Bull Researcher: New debate state count: {new_investment_debate_state['count']}")
+        logger.info(f"🐂 Bull Researcher: New current response starts with: {argument[:50]}...")
+        logger.info("🐂 Bull Researcher: Execution complete")
 
         return {"investment_debate_state": new_investment_debate_state}
 

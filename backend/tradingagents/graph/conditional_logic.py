@@ -1,7 +1,9 @@
 # TradingAgents/graph/conditional_logic.py
 
 from tradingagents.agents.utils.agent_states import AgentState
+import logging
 
+logger = logging.getLogger(__name__)
 
 class ConditionalLogic:
     """Handles conditional logic for determining graph flow."""
@@ -45,13 +47,25 @@ class ConditionalLogic:
 
     def should_continue_debate(self, state: AgentState) -> str:
         """Determine if debate should continue."""
+        logger.info("🔄 DEBATE CONDITIONAL: Starting evaluation")
+        
+        debate_state = state["investment_debate_state"]
+        count = debate_state["count"]
+        current_response = debate_state.get("current_response", "")
+        max_rounds = 2 * self.max_debate_rounds
+        
+        logger.info(f"🔄 DEBATE CONDITIONAL: Count={count}, Max={max_rounds}")
+        logger.info(f"🔄 DEBATE CONDITIONAL: Current response starts with: '{current_response[:50]}...'")
 
-        if (
-            state["investment_debate_state"]["count"] >= 2 * self.max_debate_rounds
-        ):  # 3 rounds of back-and-forth between 2 agents
+        if count >= max_rounds:  # 3 rounds of back-and-forth between 2 agents
+            logger.info("🔄 DEBATE CONDITIONAL: → Research Manager (max rounds reached)")
             return "Research Manager"
-        if state["investment_debate_state"]["current_response"].startswith("Bull"):
+        
+        if current_response.startswith("Bull"):
+            logger.info("🔄 DEBATE CONDITIONAL: → Bear Researcher (Bull just spoke)")
             return "Bear Researcher"
+        
+        logger.info("🔄 DEBATE CONDITIONAL: → Bull Researcher (default/Bear just spoke)")
         return "Bull Researcher"
 
     def should_continue_risk_analysis(self, state: AgentState) -> str:
