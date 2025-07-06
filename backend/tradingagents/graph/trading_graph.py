@@ -27,6 +27,7 @@ from .setup import GraphSetup
 from .propagation import Propagator
 from .reflection import Reflector
 from .signal_processing import SignalProcessor
+from .tool_wrapper import SmartToolNode
 
 
 class TradingAgentsGraph:
@@ -112,7 +113,7 @@ class TradingAgentsGraph:
     def _create_tool_nodes(self) -> Dict[str, ToolNode]:
         """Create tool nodes for different data sources."""
         return {
-            "market": ToolNode(
+            "market": SmartToolNode(
                 [
                     # online tools
                     self.toolkit.get_YFin_data_online,
@@ -120,17 +121,19 @@ class TradingAgentsGraph:
                     # offline tools
                     self.toolkit.get_YFin_data,
                     self.toolkit.get_stockstats_indicators_report,
-                ]
+                ],
+                name="market_tools"
             ),
-            "social": ToolNode(
+            "social": SmartToolNode(
                 [
                     # online tools
                     self.toolkit.get_stock_news_openai,
                     # offline tools
                     self.toolkit.get_reddit_stock_info,
-                ]
+                ],
+                name="social_tools"
             ),
-            "news": ToolNode(
+            "news": SmartToolNode(
                 [
                     # online tools
                     self.toolkit.get_global_news_openai,
@@ -138,9 +141,10 @@ class TradingAgentsGraph:
                     # offline tools
                     self.toolkit.get_finnhub_news,
                     self.toolkit.get_reddit_news,
-                ]
+                ],
+                name="news_tools"
             ),
-            "fundamentals": ToolNode(
+            "fundamentals": SmartToolNode(
                 [
                     # online tools
                     self.toolkit.get_fundamentals_openai,
@@ -150,7 +154,8 @@ class TradingAgentsGraph:
                     self.toolkit.get_simfin_balance_sheet,
                     self.toolkit.get_simfin_cashflow,
                     self.toolkit.get_simfin_income_stmt,
-                ]
+                ],
+                name="fundamentals_tools"
             ),
         }
 
