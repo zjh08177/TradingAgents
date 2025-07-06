@@ -1,161 +1,123 @@
 import SwiftUI
-import SwiftData
 
 struct TradingAnalysisView: View {
     @StateObject private var viewModel = TradingAnalysisViewModel()
-    @Environment(\.modelContext) private var modelContext
+    @State private var selectedTab = 0
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
-                // Header
-                headerSection
-                
-                // Input Section
-                inputSection
-                
-                // Progress Section (shown during analysis)
-                if viewModel.isAnalyzing {
-                    progressSection
-                }
-                
-                // Reports Section (shown as reports come in)
-                if viewModel.hasReports && !viewModel.showingResults {
-                    reportsSection
-                }
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Trading Analysis")
-            .onAppear {
-                viewModel.modelContext = modelContext
-            }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
-                    viewModel.errorMessage = nil
-                }
-            } message: {
-                Text(viewModel.errorMessage ?? "")
-            }
-            .sheet(isPresented: $viewModel.showingResults) {
-                AnalysisResultView(
-                    ticker: viewModel.ticker,
-                    reports: viewModel.formattedReports,
-                    finalDecision: viewModel.finalDecision,
-                    onDismiss: {
-                        viewModel.resetAnalysis()
+            VStack(spacing: 0) {
+                // Header Section
+                VStack(spacing: 16) {
+                    Text("Trading Agents Analysis")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    
+                    // Ticker Input
+                    HStack {
+                        TextField("Enter ticker (e.g., AAPL)", text: $viewModel.ticker)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .autocapitalization(.allCharacters)
+                            .disabled(viewModel.isAnalyzing)
+                        
+                        Button(action: {
+                            if viewModel.isAnalyzing {
+                                viewModel.stopAnalysis()
+                            } else {
+                                viewModel.startAnalysis()
+                            }
+                        }) {
+                            Text(viewModel.isAnalyzing ? "Stop" : "Analyze")
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(viewModel.isAnalyzing ? Color.red : Color.blue)
+                                .cornerRadius(8)
+                        }
+                        .disabled(viewModel.ticker.isEmpty && !viewModel.isAnalyzing)
                     }
-                )
-            }
-        }
-    }
-    
-    // MARK: - View Components
-    
-    private var headerSection: some View {
-        VStack(spacing: 8) {
-            Text("TradingAgents")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
-            
-            Text("AI-Powered Stock Analysis")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-    }
-    
-    private var inputSection: some View {
-        VStack(spacing: 16) {
-            HStack {
-                TextField("Enter ticker symbol (e.g., AAPL)", text: $viewModel.ticker)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocapitalization(.allCharacters)
-                    .autocorrectionDisabled(true)
-                    .disabled(viewModel.isAnalyzing)
-                
-                if viewModel.isAnalyzing {
-                    Button("Stop") {
-                        viewModel.stopAnalysis()
+                    
+                    // Progress Overview
+                    if viewModel.hasActivityToShow() {
+                        ProgressOverview(agentActivities: viewModel.agentActivities)
                     }
-                    .foregroundColor(.red)
-                } else {
-                    Button("Analyze") {
-                        viewModel.startAnalysis()
-                    }
-                    .disabled(viewModel.ticker.isEmpty)
-                }
-            }
-            
-            if !viewModel.ticker.isEmpty && !viewModel.isAnalyzing {
-                Text("Tap 'Analyze' to start real-time analysis")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-            }
-        }
-    }
-    
-    private var progressSection: some View {
-        VStack(spacing: 16) {
-            // Progress Bar
-            VStack(spacing: 8) {
-                HStack {
-                    Text("Analysis Progress")
-                        .font(.headline)
-                    Spacer()
-                    Text("\(viewModel.progressPercentage)%")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                ProgressView(value: viewModel.analysisProgress)
-                    .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-            }
-            
-            // Current Agent Status
-            if !viewModel.currentAgent.isEmpty {
-                HStack {
-                    Image(systemName: "brain.head.profile")
-                        .foregroundColor(.blue)
-                    VStack(alignment: .leading) {
-                        Text(viewModel.currentAgent)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        if !viewModel.statusMessage.isEmpty {
+                    
+                    // Current Status
+                    if viewModel.isAnalyzing && !viewModel.statusMessage.isEmpty {
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
                             Text(viewModel.statusMessage)
-                                .font(.caption)
+                                .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
+                        .padding(.vertical, 8)
                     }
-                    Spacer()
                 }
                 .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
-            }
-        }
-    }
-    
-    private var reportsSection: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text("Live Reports")
-                    .font(.headline)
-                Spacer()
-                Text("\(viewModel.formattedReports.count) sections")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    ForEach(viewModel.formattedReports, id: \.title) { report in
-                        ReportCardView(title: report.title, content: report.content)
+                .background(Color(.systemGray6))
+                
+                // Content Tabs
+                if viewModel.hasActivityToShow() || viewModel.hasReports {
+                    VStack(spacing: 0) {
+                        // Tab Selector
+                        Picker("View", selection: $selectedTab) {
+                            Text("Live Activity").tag(0)
+                            Text("Final Reports").tag(1)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding()
+                        
+                        // Tab Content
+                        TabView(selection: $selectedTab) {
+                            // Live Activity Tab
+                            ScrollView {
+                                LiveActivityDashboard(agentActivities: viewModel.agentActivities)
+                            }
+                            .tag(0)
+                            
+                            // Final Reports Tab
+                            ScrollView {
+                                AnalysisResultView(
+                                    reports: viewModel.formattedReports,
+                                    finalDecision: viewModel.finalDecision
+                                )
+                            }
+                            .tag(1)
+                        }
+                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     }
+                } else if !viewModel.isAnalyzing {
+                    // Placeholder when no activity
+                    Spacer()
+                    VStack(spacing: 16) {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 60))
+                            .foregroundColor(.secondary)
+                        
+                        Text("Enter a ticker symbol and tap Analyze to start")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
+                    Spacer()
                 }
+                
+                Spacer()
             }
-            .frame(maxHeight: 300)
+            .navigationBarHidden(true)
+        }
+        .alert("Analysis Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("OK") {
+                viewModel.errorMessage = nil
+            }
+            Button("Try Again") {
+                viewModel.startAnalysis()
+            }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
         }
     }
 }

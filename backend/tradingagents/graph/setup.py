@@ -26,7 +26,13 @@ class ToolCallTracker:
     def __init__(self):
         self.call_history = {}  # analyst_type -> {tool_name: [(params_hash, params_str)]}
         self.call_counts = {}   # analyst_type -> {tool_name: count}
-        self.max_total_calls = 3  # Maximum total tool calls per analyst
+        # Different limits for different analyst types
+        self.max_total_calls = {
+            "market": 20,  # Market analyst needs more tool calls for comprehensive analysis
+            "social": 3,
+            "news": 3,
+            "fundamentals": 3
+        }
         self.total_calls = {}  # analyst_type -> total_count
     
     def _hash_params(self, params: dict) -> str:
@@ -34,6 +40,10 @@ class ToolCallTracker:
         # Sort keys for consistent hashing
         sorted_params = json.dumps(params, sort_keys=True)
         return hashlib.md5(sorted_params.encode()).hexdigest()
+    
+    def _get_max_calls_for_analyst(self, analyst_type: str) -> int:
+        """Get the maximum number of calls allowed for a specific analyst type."""
+        return self.max_total_calls.get(analyst_type, 3)  # Default to 3 if not specified
     
     def can_call_tool(self, analyst_type: str, tool_name: str, params: dict) -> Tuple[bool, str]:
         """Check if a tool can be called with given parameters."""
@@ -43,21 +53,22 @@ class ToolCallTracker:
             self.total_calls[analyst_type] = 0
         
         # Check total call limit for this analyst
-        if self.total_calls[analyst_type] >= self.max_total_calls:
-            return False, f"Analyst {analyst_type} has reached maximum total tool calls ({self.max_total_calls})"
+        max_calls = self._get_max_calls_for_analyst(analyst_type)
+        if self.total_calls[analyst_type] >= max_calls:
+            return False, f"Analyst {analyst_type} has reached maximum total tool calls ({max_calls})"
         
         # Initialize tool tracking if first time
         if tool_name not in self.call_history[analyst_type]:
             self.call_history[analyst_type][tool_name] = []
             self.call_counts[analyst_type][tool_name] = 0
         
-        # Check for duplicate parameters
+        # Check for duplicate parameters - each request/query must be different
         param_hash = self._hash_params(params)
         param_str = json.dumps(params, sort_keys=True)
         
         for existing_hash, existing_params in self.call_history[analyst_type][tool_name]:
             if param_hash == existing_hash:
-                return False, f"Tool {tool_name} already called with identical parameters: {existing_params}"
+                return False, f"Tool {tool_name} already called with identical parameters. Each request must be different. Previous: {existing_params}"
         
         return True, "OK"
     
@@ -79,7 +90,8 @@ class ToolCallTracker:
         self.call_counts[analyst_type][tool_name] += 1
         self.total_calls[analyst_type] += 1
         
-        logger.info(f"🔧 Recorded tool call: {analyst_type}/{tool_name} (total calls: {self.total_calls[analyst_type]})")
+        max_calls = self._get_max_calls_for_analyst(analyst_type)
+        logger.info(f"🔧 Recorded tool call: {analyst_type}/{tool_name} (total calls: {self.total_calls[analyst_type]}/{max_calls})")
 
 
 class GraphSetup:
@@ -242,25 +254,74 @@ class GraphSetup:
                     messages = state.get(message_key, [])
                     report = state.get(report_key, "")
                     
-                    # If report exists or too many messages, go to aggregator
-                    if report or len(messages) > 6:
+                    # If report exists, go to aggregator
+                    if report:
                         return "aggregator"
                     
+                    # If no messages, go to aggregator
                     if not messages:
                         return "aggregator"
                     
                     last_message = messages[-1]
                     
                     # Check for tool calls
-                    if hasattr(last_message, 'tool_calls') and last_message.tool_calls:
-                        # Check if we've already hit the tool call limit
-                        total_calls = self.tool_tracker.total_calls.get(atype, 0)
-                        if total_calls >= self.tool_tracker.max_total_calls:
-                            logger.warning(f"  - Decision: AGGREGATOR (tool call limit reached: {total_calls})")
-                            return "aggregator"
-                        return "tools"
+                    has_tool_calls = hasattr(last_message, 'tool_calls') and last_message.tool_calls
                     
-                    return "aggregator"
+                    # Count tool messages to see how much data we have
+                    tool_message_count = sum(1 for msg in messages 
+                                           if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
+                    
+                    # Check total tool calls made
+                    total_calls = self.tool_tracker.total_calls.get(atype, 0)
+                    max_calls = self.tool_tracker.max_total_calls.get(atype, 3)
+                    
+                    # Special handling for market analyst
+                    if atype == "market":
+                        # Market analyst needs more cycles to gather comprehensive data
+                        if has_tool_calls and total_calls < max_calls:
+                            return "tools"
+                        elif tool_message_count >= 4 and not has_tool_calls:
+                            # Has enough data and no more tool calls - should generate report
+                            return "aggregator"
+                        elif total_calls >= max_calls:
+                            # Hit max calls - force completion
+                            return "aggregator"
+                        elif has_tool_calls:
+                            return "tools"
+                        else:
+                            return "aggregator"
+                    
+                    # Special handling for social analyst
+                    elif atype == "social":
+                        # Social analyst needs multiple tool calls for comprehensive analysis
+                        if has_tool_calls and total_calls < max_calls:
+                            return "tools"
+                        elif tool_message_count >= 2 and not has_tool_calls:
+                            # Has enough data and no more tool calls - should generate report
+                            return "aggregator"
+                        elif total_calls >= max_calls:
+                            # Hit max calls - force completion
+                            return "aggregator"
+                        elif has_tool_calls:
+                            return "tools"
+                        else:
+                            return "aggregator"
+                    
+                    # For news and fundamentals analysts
+                    else:
+                        if has_tool_calls and total_calls < max_calls:
+                            return "tools"
+                        elif tool_message_count >= 1 and not has_tool_calls:
+                            # Has data and no more tool calls - should generate report
+                            return "aggregator"
+                        elif total_calls >= max_calls:
+                            # Hit max calls - force completion
+                            return "aggregator"
+                        elif has_tool_calls:
+                            return "tools"
+                        else:
+                            return "aggregator"
+                
                 return should_continue_analyst
             
             # Define conditional logic for tools
@@ -271,15 +332,16 @@ class GraphSetup:
                     
                     # Check total tool calls
                     total_calls = self.tool_tracker.total_calls.get(atype, 0)
-                    if total_calls >= self.tool_tracker.max_total_calls:
-                        return "aggregator"
+                    max_calls = self.tool_tracker.max_total_calls.get(atype, 3)
                     
-                    # If we have enough messages, likely complete
-                    if len(messages) >= 6:
-                        return "aggregator"
+                    # Count tool messages
+                    tool_message_count = sum(1 for msg in messages 
+                                           if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
                     
-                    # Otherwise, go back to analyst
+                    # After tools execute, always go back to analyst to generate report
+                    # The analyst will decide whether to make more tool calls or generate final report
                     return "analyst"
+                    
                 return should_continue_after_tools
             
             # Add conditional edges for each analyst
@@ -400,6 +462,10 @@ class GraphSetup:
             messages = state.get(message_key, [])
             logger.info(f"🧠 {analyst_type} analyst: Processing {len(messages)} messages")
             
+            # Debug: Show message types and tool call counts
+            tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
+            logger.info(f"🧠 {analyst_type} analyst: Tool messages in history: {tool_message_count}")
+            
             # Create a temporary state with the analyst's messages
             temp_state = state.copy()
             temp_state["messages"] = messages
@@ -414,24 +480,93 @@ class GraphSetup:
                 updated_messages = result.get("messages", messages)
                 logger.info(f"🧠 {analyst_type} analyst: Updated from {len(messages)} to {len(updated_messages)} messages")
                 
-                # Check if this is a final response
+                # Check if the analyst node directly returned a report
+                direct_report = result.get(report_key, "")
+                if direct_report:
+                    logger.info(f"🧠 {analyst_type} analyst: ✅ DIRECT REPORT GENERATED ({len(direct_report)} chars)")
+                    # Mark this report as completed
+                    self.completed_reports.add(f"{analyst_type}_report_completed")
+                    logger.info(f"🧠 {analyst_type} analyst: ✅ SETTING {report_key}")
+                    
+                    # Return updates with the direct report
+                    update = {
+                        message_key: updated_messages,
+                        report_key: direct_report
+                    }
+                    logger.info(f"✅ {analyst_type.upper()} ANALYST COMPLETE")
+                    return update
+                
+                # If no direct report, check if this is a final response from message content
                 report = ""
                 if updated_messages:
                     last_message = updated_messages[-1]
                     has_tool_calls = hasattr(last_message, 'tool_calls') and last_message.tool_calls
                     has_content = hasattr(last_message, 'content') and last_message.content
                     
-                    # Count tool messages
+                    logger.info(f"🧠 {analyst_type} analyst: Last message has_tool_calls={has_tool_calls}, has_content={has_content}")
+                    
+                    # Initialize content variable
+                    content = str(last_message.content) if has_content else ""
+                    
+                    # Count tool messages in the full conversation
                     tool_result_count = sum(1 for msg in updated_messages 
                                           if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
+                    logger.info(f"🧠 {analyst_type} analyst: Total tool results: {tool_result_count}")
                     
-                    # Generate report if no tool calls and has content
+                    # Also check for ToolMessage instances
+                    if tool_result_count == 0:
+                        tool_result_count = sum(1 for msg in updated_messages if isinstance(msg, ToolMessage))
+                        logger.info(f"🧠 {analyst_type} analyst: ToolMessage instances: {tool_result_count}")
+                    
+                    # Check if we should generate a final report
+                    should_generate_report = False
+                    
                     if has_content and not has_tool_calls:
-                        content = str(last_message.content)
+                        # No more tool calls, has content - likely final response
+                        should_generate_report = True
+                        logger.info(f"🧠 {analyst_type} analyst: Final response detected (no tool calls)")
+                    elif has_content and tool_result_count > 0:
+                        # Has content and tool results - might be ready for final summary
+                        if analyst_type == "market":
+                            # Market analyst needs comprehensive data
+                            if tool_result_count >= 4:
+                                should_generate_report = True
+                                logger.info(f"🧠 {analyst_type} analyst: Market analyst with sufficient tool results ({tool_result_count})")
+                        elif analyst_type == "social":
+                            # Social analyst needs multiple sources
+                            if tool_result_count >= 2:
+                                should_generate_report = True
+                                logger.info(f"🧠 {analyst_type} analyst: Social analyst with sufficient tool results ({tool_result_count})")
+                        elif tool_result_count >= 1:
+                            # Other analysts need fewer tools
+                            should_generate_report = True
+                            logger.info(f"🧠 {analyst_type} analyst: {analyst_type} analyst with tool results ({tool_result_count})")
+                    elif not has_content and tool_result_count > 0:
+                        # Has tool results but no content yet - might need to force completion
+                        total_calls = self.tool_tracker.total_calls.get(analyst_type, 0)
+                        max_calls = self.tool_tracker.max_total_calls.get(analyst_type, 3)
+                        
+                        if total_calls >= max_calls or tool_result_count >= 4:
+                            # Force completion with available data
+                            logger.info(f"🧠 {analyst_type} analyst: Forcing completion with available data ({tool_result_count} tool results)")
+                            should_generate_report = True
+                            # Create a summary from the tool results
+                            content = f"Analysis for {state.get('company_of_interest', 'unknown')} based on {tool_result_count} data sources and technical analysis."
+                    
+                    # Special handling for market analyst - if it has many tool calls but no content yet,
+                    # it might need to go through another cycle
+                    if analyst_type == "market" and has_tool_calls and not has_content:
+                        logger.info(f"🧠 {analyst_type} analyst: Market analyst making more tool calls")
+                    
+                    if should_generate_report and content:
                         # Only consider it a report if it has substantial content
-                        if len(content) > 200 or (tool_result_count > 0 and len(content) > 50):
+                        if len(content) > 100 or (tool_result_count > 0 and len(content) > 20):
                             report = content
-                            logger.info(f"🧠 {analyst_type} analyst: ✅ FINAL REPORT GENERATED ({len(content)} chars)")
+                            logger.info(f"🧠 {analyst_type} analyst: ✅ FINAL REPORT GENERATED FROM MESSAGE ({len(content)} chars)")
+                        else:
+                            logger.info(f"🧠 {analyst_type} analyst: Content too short for report ({len(content)} chars)")
+                    else:
+                        logger.info(f"🧠 {analyst_type} analyst: Not ready for final report yet")
                 
                 # Return updates
                 update = {message_key: updated_messages}
@@ -481,13 +616,21 @@ class GraphSetup:
             
             for i, tool_call in enumerate(last_msg.tool_calls):
                 try:
-                    # Get tool call details
-                    if hasattr(tool_call, 'name'):
+                    # Get tool call details - handle both dict and object formats
+                    if isinstance(tool_call, dict):
+                        tool_name = tool_call.get('name', '')
+                        tool_args = tool_call.get('args', {})
+                        tool_call_id = tool_call.get('id', 'unknown')
+                    elif hasattr(tool_call, 'name'):
                         tool_name = tool_call.name
                         tool_args = tool_call.args if hasattr(tool_call, 'args') else {}
                         tool_call_id = tool_call.id if hasattr(tool_call, 'id') else 'unknown'
                     else:
                         logger.error(f"❌ {analyst_type} tools: Unknown tool call format")
+                        continue
+                    
+                    if not tool_name:
+                        logger.error(f"❌ {analyst_type} tools: Empty tool name")
                         continue
                     
                     # Check if the tool can be called
@@ -564,36 +707,13 @@ class GraphSetup:
             if missing_reports:
                 logger.warning(f"📊 Aggregator: ❌ Missing reports: {missing_reports}")
             
-            # Initialize debate states
-            initial_investment_debate = {
-                "bull_history": "",
-                "bear_history": "",
-                "history": "",
-                "current_response": "",
-                "judge_decision": "",
-                "count": 0
-            }
-            
-            initial_risk_debate = {
-                "risky_history": "",
-                "safe_history": "",
-                "neutral_history": "",
-                "history": "",
-                "latest_speaker": "",
-                "current_risky_response": "",
-                "current_safe_response": "",
-                "current_neutral_response": "",
-                "judge_decision": "",
-                "count": 0
-            }
-            
             logger.info("📊 Aggregator: Marking analysis phase as complete")
             logger.info("✅ AGGREGATOR COMPLETE")
             
+            # Don't initialize debate states here - let the Bull Researcher do it
+            # This prevents concurrent update errors
             return {
-                "analysis_complete": True,
-                "investment_debate_state": initial_investment_debate,
-                "risk_debate_state": initial_risk_debate
+                "analysis_complete": True
             }
         
         return aggregate
@@ -683,20 +803,48 @@ class GraphSetup:
             logger.info(f"  - Safe analysis: {'✅ COMPLETE' if safe_response else '❌ MISSING'} ({len(safe_response)} chars)")
             logger.info(f"  - Neutral analysis: {'✅ COMPLETE' if neutral_response else '❌ MISSING'} ({len(neutral_response)} chars)")
             
-            # Combine all responses for Risk Judge input
-            combined_history = ""
-            if risky_response:
-                combined_history += f"Risky Analyst: {risky_response}\n\n"
-            if safe_response:
-                combined_history += f"Safe Analyst: {safe_response}\n\n"
-            if neutral_response:
-                combined_history += f"Neutral Analyst: {neutral_response}\n\n"
+            # Validate that we have at least some analysis
+            total_responses = len([r for r in [risky_response, safe_response, neutral_response] if r])
+            
+            if total_responses == 0:
+                logger.error("⚡ Risk Aggregator: ❌ NO RISK ANALYSES AVAILABLE")
+                # Create fallback history
+                combined_history = "No risk analysis available from any analyst. Unable to provide risk assessment."
+            elif total_responses < 3:
+                logger.warning(f"⚡ Risk Aggregator: ⚠️ Only {total_responses}/3 risk analyses available")
+                # Combine available responses
+                combined_history = ""
+                if risky_response:
+                    combined_history += f"**Risky Analyst**: {risky_response}\n\n"
+                if safe_response:
+                    combined_history += f"**Safe Analyst**: {safe_response}\n\n"
+                if neutral_response:
+                    combined_history += f"**Neutral Analyst**: {neutral_response}\n\n"
+                
+                # Add note about missing analyses
+                missing_analysts = []
+                if not risky_response:
+                    missing_analysts.append("Risky")
+                if not safe_response:
+                    missing_analysts.append("Safe")
+                if not neutral_response:
+                    missing_analysts.append("Neutral")
+                
+                combined_history += f"**Note**: Missing analysis from {', '.join(missing_analysts)} analyst(s). Decision based on available data only."
+            else:
+                logger.info("⚡ Risk Aggregator: ✅ All risk analyses complete")
+                # Combine all responses for Risk Judge input
+                combined_history = ""
+                combined_history += f"**Risky Analyst**: {risky_response}\n\n"
+                combined_history += f"**Safe Analyst**: {safe_response}\n\n"
+                combined_history += f"**Neutral Analyst**: {neutral_response}\n\n"
             
             # Update risk debate state with combined history
             updated_risk_state = risk_debate_state.copy()
             updated_risk_state["history"] = combined_history
             updated_risk_state["count"] = 1  # Mark as ready for judgment
             
+            logger.info(f"⚡ Risk Aggregator: Combined history length: {len(combined_history)} chars")
             logger.info("⚡ Risk Aggregator: Risk analyses aggregated for final judgment")
             logger.info("✅ RISK AGGREGATOR COMPLETE")
             

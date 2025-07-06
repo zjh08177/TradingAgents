@@ -3,6 +3,7 @@ from .reddit_utils import fetch_top_from_category
 from .yfin_utils import *
 from .stockstats_utils import *
 from .googlenews_utils import *
+from .serpapi_utils import getNewsDataSerpAPI
 from .finnhub_utils import get_data_in_range
 from dateutil.relativedelta import relativedelta
 from concurrent.futures import ThreadPoolExecutor
@@ -14,10 +15,13 @@ from tqdm import tqdm
 import yfinance as yf
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
+from ..default_config import DEFAULT_CONFIG
 from dotenv import load_dotenv
 
 # Load environment variables so OpenAI tools can access API keys
-load_dotenv()
+# Load from project root directory (three levels up from this file)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+load_dotenv(os.path.join(project_root, ".env"))
 
 
 def get_finnhub_news(
@@ -308,9 +312,15 @@ def get_google_news(
         before = start_date - relativedelta(days=look_back_days)
         before = before.strftime("%Y-%m-%d")
 
-        # Log the API call
-        logger.info(f"🌐 Calling getNewsData with query='{query}', start='{before}', end='{curr_date}'")
-        news_results = getNewsData(query, before, curr_date)
+        # Log the API call - try SerpAPI first, fallback to web scraping
+        serpapi_key = DEFAULT_CONFIG.get("serpapi_key", "")
+        if serpapi_key:
+            logger.info(f"🌐 Calling SerpAPI with query='{query}', start='{before}', end='{curr_date}'")
+            news_results = getNewsDataSerpAPI(query, before, curr_date, serpapi_key)
+        else:
+            logger.info(f"🌐 SerpAPI key not found, falling back to web scraping")
+            logger.info(f"🌐 Calling getNewsData with query='{query}', start='{before}', end='{curr_date}'")
+            news_results = getNewsData(query, before, curr_date)
         
         # Enhanced logging - Raw response
         logger.info(f"🌐 RAW RESPONSE TYPE: {type(news_results)}")

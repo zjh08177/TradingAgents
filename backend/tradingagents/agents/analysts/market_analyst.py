@@ -46,8 +46,10 @@ Volatility Indicators:
 Volume-Based Indicators:
 - vwma: VWMA: A moving average weighted by volume. Usage: Confirm trends by integrating price action with volume data. Tips: Watch for skewed results from volume spikes; use in combination with other volume analyses.
 
-- Select indicators that provide diverse and complementary information. Avoid redundancy (e.g., do not select both rsi and stochrsi). Also briefly explain why they are suitable for the given market context. When you tool call, please use the exact name of the indicators provided above as they are defined parameters, otherwise your call will fail. Please make sure to call get_YFin_data first to retrieve the CSV that is needed to generate indicators. Write a very detailed and nuanced report of the trends you observe. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions."""
-            + """ Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."""
+- Select indicators that provide diverse and complementary information. Avoid redundancy (e.g., do not select both rsi and stochrsi). Also briefly explain why they are suitable for the given market context. When you tool call, please use the exact name of the indicators provided above as they are defined parameters, otherwise your call will fail. Please make sure to call get_YFin_data first to retrieve the CSV that is needed to generate indicators. Write a very detailed and nuanced report of the trends you observe. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions.
+
+IMPORTANT: After you have gathered all the necessary data through tool calls, you must provide a comprehensive final analysis report. Do not just make tool calls without providing a final written analysis.
+            """ + """ Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."""
         )
 
         prompt = ChatPromptTemplate.from_messages(
@@ -76,10 +78,33 @@ Volume-Based Indicators:
 
         result = chain.invoke(state["messages"])
 
+        # Check if we have tool results in the conversation history
+        # Count tool messages to determine if we should generate a final report
+        messages = state.get("messages", [])
+        tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
+        
+        # If no tool calls in current response and we have tool results, generate final report
         report = ""
-
         if len(result.tool_calls) == 0:
+            # Always generate a report when there are no more tool calls
             report = result.content
+        elif tool_message_count >= 8:  # If we have many tool results, force a final report
+            # Generate a final summary report even if there are tool calls
+            final_prompt = f"""Based on all the tool results and data you've gathered, provide a comprehensive final market analysis report for {ticker}. 
+            
+            Analyze the trends, patterns, and insights from the data. Include:
+            1. Technical analysis summary
+            2. Key indicators and their signals
+            3. Market trends and momentum
+            4. Risk factors and opportunities
+            5. Trading recommendations
+            
+            Make sure to append a Markdown table at the end organizing key points."""
+            
+            # Create a new prompt for final report generation
+            final_chain = prompt | llm
+            final_result = final_chain.invoke(state["messages"] + [result])
+            report = final_result.content
        
         return {
             "messages": [result],
