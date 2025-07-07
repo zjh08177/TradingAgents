@@ -30,7 +30,7 @@ class DedupToolNode(ToolNode):
         sorted_args = sorted(args.items())
         return f"{tool_name}:{sorted_args}"
     
-    def invoke(self, input: dict) -> dict:
+    def invoke(self, input: dict, config=None) -> dict:
         """Override invoke to handle duplicate tool calls."""
         messages = input.get("messages", [])
         
@@ -116,7 +116,7 @@ class SmartToolNode(ToolNode):
     """
     Enhanced ToolNode with better error handling and logging.
     
-    This version doesn't deduplicate but provides better error messages
+    This version uses the parent's invoke method but adds better logging
     and ensures every tool call gets a response.
     """
     
@@ -125,8 +125,8 @@ class SmartToolNode(ToolNode):
         self.max_retries = max_retries
         self.call_count = {}
         
-    def invoke(self, input: dict) -> dict:
-        """Override invoke to add better error handling."""
+    def invoke(self, input: dict, config=None) -> dict:
+        """Override invoke to add better error handling and logging."""
         messages = input.get("messages", [])
         
         # Find the last AI message with tool calls
@@ -143,9 +143,7 @@ class SmartToolNode(ToolNode):
         
         logger.info(f"🔧 Processing {len(last_ai_message.tool_calls)} tool calls")
         
-        # Process each tool call
-        tool_messages = []
-        
+        # Log tool calls before execution
         for i, tool_call in enumerate(last_ai_message.tool_calls):
             tool_name = tool_call["name"]
             tool_args = tool_call["args"]
@@ -157,52 +155,23 @@ class SmartToolNode(ToolNode):
             
             # Track call count
             self.call_count[tool_name] = self.call_count.get(tool_name, 0) + 1
-            
-            # Execute the tool with retry logic
-            retries = 0
-            while retries <= self.max_retries:
-                try:
-                    # Find the tool
-                    tool_func = None
-                    for tool in self.tools:
-                        if tool.name == tool_name:
-                            tool_func = tool
-                            break
-                    
-                    if not tool_func:
-                        raise ValueError(f"Tool {tool_name} not found in available tools")
-                    
-                    # Execute the tool
-                    result = tool_func.invoke(tool_args)
-                    
-                    # Create tool message
-                    tool_message = ToolMessage(
-                        content=str(result),
-                        tool_call_id=tool_id,
-                        name=tool_name
-                    )
-                    tool_messages.append(tool_message)
-                    
-                    logger.info(f"✅ Tool {tool_name} executed successfully")
-                    break
-                    
-                except Exception as e:
-                    retries += 1
-                    logger.error(f"❌ Error executing tool {tool_name} (attempt {retries}/{self.max_retries + 1}): {e}")
-                    
-                    if retries > self.max_retries:
-                        # Return error message
-                        error_msg = f"Failed to execute tool after {self.max_retries + 1} attempts: {str(e)}"
-                        tool_message = ToolMessage(
-                            content=error_msg,
-                            tool_call_id=tool_id,
-                            name=tool_name
-                        )
-                        tool_messages.append(tool_message)
-                    else:
-                        # Wait before retry
-                        import time
-                        time.sleep(1)
         
-        logger.info(f"🔧 Returning {len(tool_messages)} tool messages")
-        return {"messages": tool_messages}
+        # Use parent's invoke method
+        try:
+            result = super().invoke(input, config)
+            logger.info(f"✅ Successfully executed {len(last_ai_message.tool_calls)} tool calls")
+            return result
+        except Exception as e:
+            logger.error(f"❌ Error in tool execution: {e}")
+            
+            # Return error messages for all tool calls
+            tool_messages = []
+            for tool_call in last_ai_message.tool_calls:
+                tool_message = ToolMessage(
+                    content=f"Error executing tool: {str(e)}",
+                    tool_call_id=tool_call["id"],
+                    name=tool_call["name"]
+                )
+                tool_messages.append(tool_message)
+            
+            return {"messages": tool_messages}
