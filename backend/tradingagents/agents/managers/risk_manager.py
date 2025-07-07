@@ -20,7 +20,8 @@ def create_risk_manager(llm, memory):
         news_report = state.get("news_report", "")
         fundamentals_report = state.get("fundamentals_report", "")  # FIX: was incorrectly assigned to news_report
         sentiment_report = state.get("sentiment_report", "")
-        trader_plan = state.get("investment_plan", "")
+        # Try to get trader plan from either field (for backwards compatibility)
+        trader_plan = state.get("trader_investment_plan", "") or state.get("investment_plan", "")
         
         # Validate required data
         logger.info("🎯 Risk Manager: Validating input data...")
@@ -28,7 +29,7 @@ def create_risk_manager(llm, memory):
         logger.info(f"🎯 Risk Manager: news_report length: {len(news_report)}")
         logger.info(f"🎯 Risk Manager: fundamentals_report length: {len(fundamentals_report)}")
         logger.info(f"🎯 Risk Manager: sentiment_report length: {len(sentiment_report)}")
-        logger.info(f"🎯 Risk Manager: investment_plan length: {len(trader_plan)}")
+        logger.info(f"🎯 Risk Manager: trader_investment_plan length: {len(trader_plan)}")
         logger.info(f"🎯 Risk Manager: risk_debate_history length: {len(history)}")
         
         missing_data = []
@@ -42,7 +43,7 @@ def create_risk_manager(llm, memory):
         if not sentiment_report:
             missing_data.append("sentiment_report")
         if not trader_plan:
-            missing_data.append("investment_plan")
+            missing_data.append("trader_investment_plan")
         if not history:
             missing_data.append("risk_analyst_debate")
             
