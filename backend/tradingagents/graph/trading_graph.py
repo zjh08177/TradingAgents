@@ -5,12 +5,17 @@ from pathlib import Path
 import json
 from datetime import date
 from typing import Dict, Any, Tuple, List, Optional
+import logging
 
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from langgraph.prebuilt import ToolNode
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from tradingagents.agents import *
 from tradingagents.default_config import DEFAULT_CONFIG
@@ -110,8 +115,10 @@ class TradingAgentsGraph:
         self.graph = self.graph_setup.setup_graph(selected_analysts)
 
     def _create_tool_nodes(self) -> Dict[str, ToolNode]:
-        """Create tool nodes for different data sources."""
-        return {
+        """Create tool nodes for different data sources with specific message channels."""
+        logger.info("🔧 Creating tool nodes with message channels")
+        
+        tool_nodes = {
             "market": ToolNode(
                 [
                     # online tools
@@ -120,7 +127,8 @@ class TradingAgentsGraph:
                     # offline tools
                     self.toolkit.get_YFin_data,
                     self.toolkit.get_stockstats_indicators_report,
-                ]
+                ],
+                messages_key="market_messages"
             ),
             "social": ToolNode(
                 [
@@ -128,7 +136,8 @@ class TradingAgentsGraph:
                     self.toolkit.get_stock_news_openai,
                     # offline tools
                     self.toolkit.get_reddit_stock_info,
-                ]
+                ],
+                messages_key="social_messages"
             ),
             "news": ToolNode(
                 [
@@ -138,7 +147,8 @@ class TradingAgentsGraph:
                     # offline tools
                     self.toolkit.get_finnhub_news,
                     self.toolkit.get_reddit_news,
-                ]
+                ],
+                messages_key="news_messages"
             ),
             "fundamentals": ToolNode(
                 [
@@ -150,9 +160,15 @@ class TradingAgentsGraph:
                     self.toolkit.get_simfin_balance_sheet,
                     self.toolkit.get_simfin_cashflow,
                     self.toolkit.get_simfin_income_stmt,
-                ]
+                ],
+                messages_key="fundamentals_messages"
             ),
         }
+        
+        for tool_type, node in tool_nodes.items():
+            logger.info(f"  ✅ {tool_type}: {len(node.tools_by_name)} tools")
+        
+        return tool_nodes
 
     def propagate(self, company_name, trade_date):
         """Run the trading agents graph for a company on a specific date."""
@@ -167,27 +183,66 @@ class TradingAgentsGraph:
 
         if self.debug:
             # Debug mode with tracing
+            logger.info("🐛 Running in debug mode with full tracing")
             trace = []
+            chunk_count = 0
+            
             for chunk in self.graph.stream(init_agent_state, **args):
-                if len(chunk["messages"]) == 0:
-                    pass
-                else:
-                    chunk["messages"][-1].pretty_print()
-                    trace.append(chunk)
+                chunk_count += 1
+                logger.info(f"🔄 Processing chunk {chunk_count}")
+                logger.info(f"📋 Chunk keys: {list(chunk.keys())}")
+                
+                # Check for any message updates in analyst channels
+                message_channels = ["market_messages", "social_messages", "news_messages", "fundamentals_messages"]
+                for channel in message_channels:
+                    if channel in chunk and chunk[channel]:
+                        logger.info(f"💬 Updated {channel}: {len(chunk[channel])} messages")
+                        if chunk[channel]:
+                            last_msg = chunk[channel][-1]
+                            logger.info(f"📝 Last {channel} message type: {type(last_msg).__name__}")
+                            if hasattr(last_msg, 'content'):
+                                logger.info(f"📝 Content preview: {str(last_msg.content)[:200]}...")
+                            if hasattr(last_msg, 'tool_calls') and last_msg.tool_calls:
+                                logger.info(f"🔧 Tool calls: {[tc.name if hasattr(tc, 'name') else str(tc) for tc in last_msg.tool_calls]}")
+                
+                # Check for report updates
+                report_keys = ["market_report", "sentiment_report", "news_report", "fundamentals_report"]
+                for report_key in report_keys:
+                    if report_key in chunk and chunk[report_key]:
+                        logger.info(f"📊 Report generated: {report_key} ({len(chunk[report_key])} chars)")
+                
+                trace.append(chunk)
 
-            final_state = trace[-1]
+            logger.info(f"✅ Debug execution complete. Processed {chunk_count} chunks")
+            final_state = trace[-1] if trace else init_agent_state
         else:
             # Standard mode without tracing
-            final_state = self.graph.invoke(init_agent_state, **args)
+            logger.info("🏃 Running in standard mode")
+            try:
+                final_state = self.graph.invoke(init_agent_state, **args)
+                logger.info("✅ Standard execution complete")
+            except Exception as e:
+                logger.error(f"❌ Error during graph execution: {str(e)}")
+                logger.error(f"❌ Error type: {type(e).__name__}")
+                raise
 
         # Store current state for reflection
         self.curr_state = final_state
 
         # Log state
+        logger.info("💾 Logging final state")
         self._log_state(trade_date, final_state)
 
+        # Process final decision
+        final_decision = final_state.get("final_trade_decision", "No decision made")
+        processed_signal = self.process_signal(final_decision)
+        
+        logger.info(f"🎯 Analysis complete for {company_name}")
+        logger.info(f"📊 Final decision: {final_decision[:100]}...")
+        logger.info(f"🔄 Processed signal: {processed_signal}")
+
         # Return decision and processed signal
-        return final_state, self.process_signal(final_state["final_trade_decision"])
+        return final_state, processed_signal
 
     def _log_state(self, trade_date, final_state):
         """Log the final state to a JSON file."""

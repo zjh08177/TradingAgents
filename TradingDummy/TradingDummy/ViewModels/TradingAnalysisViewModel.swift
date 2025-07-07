@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftUI
 
 // MARK: - View Model
 @MainActor
@@ -7,13 +8,12 @@ class TradingAnalysisViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published var ticker: String = ""
     @Published var isAnalyzing: Bool = false
-    @Published var showingResults: Bool = false
     @Published var errorMessage: String?
     
-    // MARK: - Streaming Properties
+    // MARK: - Live Activity Properties
     @Published var currentAgent: String = ""
     @Published var statusMessage: String = ""
-    @Published var analysisProgress: Double = 0.0
+    @Published var agentActivities: [AgentActivity] = []
     @Published var reports: [String: String] = [:]
     @Published var finalDecision: String = ""
     
@@ -21,54 +21,7 @@ class TradingAnalysisViewModel: ObservableObject {
     private let tradingService = TradingAgentsService()
     private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Constants
-    private let agentSteps = [
-        "Starting", "Market Analyst", "Social Media Analyst", 
-        "News Analyst", "Fundamentals Analyst", "Bull Researcher", 
-        "Bear Researcher", "Trading Team", "Complete"
-    ]
-    
-    init() {
-        setupSubscriptions()
-    }
-    
-    private func setupSubscriptions() {
-        // Subscribe to service progress updates
-        tradingService.$progress
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] progress in
-                self?.updateProgress(progress)
-            }
-            .store(in: &cancellables)
-    }
-    
-    private func updateProgress(_ progress: AnalysisProgress) {
-        currentAgent = progress.currentAgent
-        statusMessage = progress.message
-        reports = progress.reports
-        
-        // Update progress percentage based on current agent
-        if let stepIndex = agentSteps.firstIndex(of: progress.currentAgent) {
-            analysisProgress = Double(stepIndex) / Double(agentSteps.count - 1)
-        }
-        
-        // Handle completion
-        if progress.isComplete {
-            isAnalyzing = false
-            if progress.error == nil {
-                showingResults = true
-                finalDecision = reports["final_trade_decision"] ?? ""
-            } else {
-                errorMessage = progress.error
-            }
-        }
-        
-        // Handle errors
-        if let error = progress.error {
-            errorMessage = error
-            isAnalyzing = false
-        }
-    }
+
     
     func startAnalysis() {
         guard !ticker.isEmpty else {
@@ -77,20 +30,19 @@ class TradingAnalysisViewModel: ObservableObject {
         }
         
         // Reset state
-        isAnalyzing = true
-        showingResults = false
         errorMessage = nil
+        isAnalyzing = true
+        agentActivities = []
+        reports = [:]
         currentAgent = ""
         statusMessage = ""
-        analysisProgress = 0.0
-        reports = [:]
         finalDecision = ""
         
         // Start streaming analysis
         tradingService.streamAnalysis(for: ticker.uppercased())
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] progress in
-                self?.updateProgress(progress)
+            .sink { [weak self] analysisProgress in
+                self?.updateProgress(analysisProgress)
             }
             .store(in: &cancellables)
     }
@@ -102,19 +54,69 @@ class TradingAnalysisViewModel: ObservableObject {
         statusMessage = "Analysis stopped"
     }
     
+    private func updateProgress(_ progress: AnalysisProgress) {
+        currentAgent = progress.currentAgent
+        statusMessage = progress.message
+        reports = progress.reports
+        
+        // Update agent activities with live messages
+        agentActivities = Array(progress.agentActivities.values)
+            .sorted { $0.startTime < $1.startTime }
+        
+        // Update final decision
+        finalDecision = reports["final_trade_decision"] ?? ""
+        
+        // Handle completion
+        if progress.isComplete {
+            isAnalyzing = false
+            if let error = progress.error {
+                errorMessage = error
+            }
+        }
+        
+        // Handle errors
+        if let error = progress.error {
+            errorMessage = error
+            isAnalyzing = false
+        }
+    }
+    
     func resetAnalysis() {
         stopAnalysis()
-        showingResults = false
         errorMessage = nil
         ticker = ""
         currentAgent = ""
         statusMessage = ""
-        analysisProgress = 0.0
+        agentActivities = []
         reports = [:]
         finalDecision = ""
     }
     
-    // MARK: - Computed Properties
+    // MARK: - Helper Methods for UI
+    func getActiveAgents() -> [AgentActivity] {
+        return agentActivities.filter { $0.status == .inProgress }
+    }
+    
+    func getCompletedAgents() -> [AgentActivity] {
+        return agentActivities.filter { $0.status == .completed }
+    }
+    
+    func getPendingAgents() -> [AgentActivity] {
+        return agentActivities.filter { $0.status == .pending }
+    }
+    
+    func getLatestMessagesForAgent(_ agentName: String) -> [AgentMessage] {
+        return agentActivities.first { $0.name == agentName }?.messages ?? []
+    }
+    
+    func hasActivityToShow() -> Bool {
+        return !agentActivities.isEmpty && agentActivities.contains { !$0.messages.isEmpty }
+    }
+    
+    var hasReports: Bool {
+        !reports.isEmpty
+    }
+    
     var formattedReports: [(title: String, content: String)] {
         let reportOrder = [
             ("market_report", "Market Analysis"),
@@ -122,20 +124,14 @@ class TradingAnalysisViewModel: ObservableObject {
             ("news_report", "News Analysis"),
             ("fundamentals_report", "Fundamentals Analysis"),
             ("investment_plan", "Investment Plan"),
-            ("trader_investment_plan", "Trading Plan")
+            ("trader_investment_plan", "Trading Plan"),
+            ("risk_analysis", "Risk Analysis"),
+            ("final_trade_decision", "Final Decision")
         ]
         
         return reportOrder.compactMap { key, title in
             guard let content = reports[key], !content.isEmpty else { return nil }
             return (title: title, content: content)
         }
-    }
-    
-    var hasReports: Bool {
-        !reports.isEmpty
-    }
-    
-    var progressPercentage: Int {
-        Int(analysisProgress * 100)
     }
 } 
