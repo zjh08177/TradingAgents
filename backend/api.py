@@ -16,6 +16,7 @@ load_dotenv()
 # Import trading agents
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
+from tradingagents.utils.timing import timing_tracker
 
 # Create FastAPI app
 app = FastAPI(
@@ -143,6 +144,9 @@ async def analyze_ticker(request: AnalysisRequest):
         # Use current date
         analysis_date = datetime.datetime.now().strftime("%Y-%m-%d")
         
+        # Start timing
+        timing_tracker.start_total()
+        
         # Initialize trading graph with all analysts
         config = get_config()
         graph = TradingAgentsGraph(
@@ -153,6 +157,10 @@ async def analyze_ticker(request: AnalysisRequest):
         
         # Run analysis
         final_state, processed_signal = graph.propagate(ticker, analysis_date)
+        
+        # End timing and get summary
+        timing_tracker.end_total()
+        timing_summary = timing_tracker.get_summary()
         
         # Prepare results
         results = {
@@ -165,15 +173,17 @@ async def analyze_ticker(request: AnalysisRequest):
             "investment_plan": final_state.get("investment_plan"),
             "trader_investment_plan": final_state.get("trader_investment_plan"),
             "final_trade_decision": final_state.get("final_trade_decision"),
-            "processed_signal": processed_signal
+            "processed_signal": processed_signal,
+            "timing_summary": timing_summary  # Include timing info
         }
         
         # Save results to disk
         saved_path = save_results_to_disk(ticker, analysis_date, results, config)
         print(f"✅ Results saved to: {saved_path}")
         
-        # Return API response
-        return AnalysisResponse(**results)
+        # Return API response (without timing_summary as it's not in the model)
+        response_data = {k: v for k, v in results.items() if k != 'timing_summary'}
+        return AnalysisResponse(**response_data)
         
     except Exception as e:
         # Return error in response

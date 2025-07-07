@@ -1,0 +1,13 @@
+{
+  "ticker": "AAPL",
+  "analysis_date": "2025-07-07",
+  "market_report": null,
+  "sentiment_report": null,
+  "news_report": null,
+  "fundamentals_report": null,
+  "investment_plan": null,
+  "trader_investment_plan": null,
+  "final_trade_decision": null,
+  "processed_signal": null,
+  "error": "Error code: 401 - {'error': {'message': 'Incorrect API key provided: sk-test-***********lder. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}"
+}
