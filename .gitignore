@@ -224,3 +224,4 @@ dmypy.json
 
 # Pyre
 .pyre/
+TradingDummy/TradingDummy.xcodeproj/project.xcworkspace/xcuserdata/bytedance.xcuserdatad/UserInterfaceState.xcuserstate
