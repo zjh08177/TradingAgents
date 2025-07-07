@@ -1,11 +1,18 @@
 from langchain_core.messages import AIMessage
 import time
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 
 def create_bear_researcher(llm, memory):
     def bear_node(state) -> dict:
+        logger.info("🐻 Bear Researcher: Starting execution")
+        
         investment_debate_state = state["investment_debate_state"]
+        logger.info(f"🐻 Bear Researcher: Current debate state count: {investment_debate_state.get('count', 0)}")
+        logger.info(f"🐻 Bear Researcher: Current response starts with: {investment_debate_state.get('current_response', '')[:50]}...")
+        
         history = investment_debate_state.get("history", "")
         bear_history = investment_debate_state.get("bear_history", "")
 
@@ -44,7 +51,9 @@ Reflections from similar situations and lessons learned: {past_memory_str}
 Use this information to deliver a compelling bear argument, refute the bull's claims, and engage in a dynamic debate that demonstrates the risks and weaknesses of investing in the stock. You must also address reflections and learn from lessons and mistakes you made in the past.
 """
 
+        logger.info("🐻 Bear Researcher: Invoking LLM...")
         response = llm.invoke(prompt)
+        logger.info("🐻 Bear Researcher: LLM response received")
 
         argument = f"Bear Analyst: {response.content}"
 
@@ -55,6 +64,10 @@ Use this information to deliver a compelling bear argument, refute the bull's cl
             "current_response": argument,
             "count": investment_debate_state["count"] + 1,
         }
+
+        logger.info(f"🐻 Bear Researcher: New debate state count: {new_investment_debate_state['count']}")
+        logger.info(f"🐻 Bear Researcher: New current response starts with: {argument[:50]}...")
+        logger.info("🐻 Bear Researcher: Execution complete")
 
         return {"investment_debate_state": new_investment_debate_state}
 
