@@ -923,10 +923,14 @@ def run_analysis(advanced_mode=False):
         # Stream the analysis
         trace = []
         for chunk in graph.graph.stream(init_agent_state, **args):
-            if len(chunk["messages"]) > 0:
-                # Get the last message from the chunk
+            # Handle the new parallel execution structure
+            messages_found = False
+            
+            # Check for messages in the old format (for backward compatibility)
+            if "messages" in chunk and len(chunk["messages"]) > 0:
+                messages_found = True
                 last_message = chunk["messages"][-1]
-
+                
                 # Extract message content and type
                 if hasattr(last_message, "content"):
                     content = extract_content_string(last_message.content)  # Use the helper function
@@ -948,6 +952,49 @@ def run_analysis(advanced_mode=False):
                             )
                         else:
                             message_buffer.add_tool_call(tool_call.name, tool_call.args)
+            
+            # Check for messages in the new parallel execution format
+            else:
+                # Look for messages in analyst channels
+                message_channels = ["market_messages", "social_messages", "news_messages", "fundamentals_messages"]
+                
+                for node_name, node_data in chunk.items():
+                    if isinstance(node_data, dict):
+                        for channel in message_channels:
+                            if channel in node_data and node_data[channel]:
+                                messages_found = True
+                                # Get the last message from this channel
+                                last_message = node_data[channel][-1]
+                                
+                                # Extract message content and type
+                                if hasattr(last_message, "content"):
+                                    content = extract_content_string(last_message.content)
+                                    msg_type = f"{channel.replace('_messages', '').title()} Analyst"
+                                else:
+                                    content = str(last_message)
+                                    msg_type = f"{channel.replace('_messages', '').title()} System"
+
+                                # Add message to buffer
+                                message_buffer.add_message(msg_type, content)                
+
+                                # If it's a tool call, add it to tool calls
+                                if hasattr(last_message, "tool_calls"):
+                                    for tool_call in last_message.tool_calls:
+                                        # Handle both dictionary and object tool calls
+                                        if isinstance(tool_call, dict):
+                                            message_buffer.add_tool_call(
+                                                tool_call["name"], tool_call["args"]
+                                            )
+                                        else:
+                                            message_buffer.add_tool_call(tool_call.name, tool_call.args)
+                                
+                                # Only process the first message channel found to avoid duplicates
+                                break
+                    if messages_found:
+                        break
+            
+            # Continue with the rest of the processing (reports, etc.)
+            if True:  # Always process chunk for reports regardless of messages
 
                 # Update reports and agent status based on chunk content
                 # Analyst Team Reports
@@ -1154,7 +1201,18 @@ def run_analysis(advanced_mode=False):
 
         # Get final state and decision
         final_state = trace[-1]
-        decision = graph.process_signal(final_state["final_trade_decision"])
+        
+        # Extract the final trade decision from the correct location
+        final_trade_decision = None
+        if "Risk Judge" in final_state and "final_trade_decision" in final_state["Risk Judge"]:
+            final_trade_decision = final_state["Risk Judge"]["final_trade_decision"]
+        elif "final_trade_decision" in final_state:
+            final_trade_decision = final_state["final_trade_decision"]
+        
+        if final_trade_decision:
+            decision = graph.process_signal(final_trade_decision)
+        else:
+            decision = "No trade decision available"
 
         # Update all agent statuses to completed
         for agent in message_buffer.agent_status:
@@ -1171,6 +1229,124 @@ def run_analysis(advanced_mode=False):
 
         # Display the complete final report
         display_complete_report(final_state)
+
+        # Save the final complete report and decision
+        # Save the final trade decision
+        if final_trade_decision:
+            decision_file = results_dir / "final_trade_decision.md"
+            with open(decision_file, "w") as f:
+                f.write(f"# Final Trading Decision\n\n")
+                f.write(f"**Ticker:** {selections['ticker']}\n")
+                f.write(f"**Analysis Date:** {selections['analysis_date']}\n")
+                f.write(f"**Decision:** {decision}\n\n")
+                f.write("## Raw Decision Text\n\n")
+                f.write(final_trade_decision)
+        
+        # Save the complete final report
+        complete_report_file = results_dir / "complete_analysis_report.md"
+        with open(complete_report_file, "w") as f:
+            f.write(f"# Complete Analysis Report\n\n")
+            f.write(f"**Ticker:** {selections['ticker']}\n")
+            f.write(f"**Analysis Date:** {selections['analysis_date']}\n")
+            f.write(f"**Analysis Time:** {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            
+            # Add analyst reports
+            if final_state.get("market_report"):
+                f.write("## Market Analysis\n\n")
+                f.write(final_state["market_report"])
+                f.write("\n\n")
+            
+            if final_state.get("sentiment_report"):
+                f.write("## Social Media Sentiment Analysis\n\n")
+                f.write(final_state["sentiment_report"])
+                f.write("\n\n")
+            
+            if final_state.get("news_report"):
+                f.write("## News Analysis\n\n")
+                f.write(final_state["news_report"])
+                f.write("\n\n")
+            
+            if final_state.get("fundamentals_report"):
+                f.write("## Fundamentals Analysis\n\n")
+                f.write(final_state["fundamentals_report"])
+                f.write("\n\n")
+            
+            # Add research team analysis
+            if final_state.get("investment_debate_state"):
+                debate_state = final_state["investment_debate_state"]
+                f.write("## Investment Research Analysis\n\n")
+                
+                if debate_state.get("bull_history"):
+                    f.write("### Bull Researcher Analysis\n\n")
+                    f.write(debate_state["bull_history"])
+                    f.write("\n\n")
+                
+                if debate_state.get("bear_history"):
+                    f.write("### Bear Researcher Analysis\n\n")
+                    f.write(debate_state["bear_history"])
+                    f.write("\n\n")
+                
+                if debate_state.get("judge_decision"):
+                    f.write("### Research Manager Decision\n\n")
+                    f.write(debate_state["judge_decision"])
+                    f.write("\n\n")
+            
+            # Add trading analysis
+            if final_state.get("trader_investment_plan"):
+                f.write("## Trading Plan\n\n")
+                f.write(final_state["trader_investment_plan"])
+                f.write("\n\n")
+            
+            # Add risk analysis
+            if final_state.get("risk_debate_state"):
+                risk_state = final_state["risk_debate_state"]
+                f.write("## Risk Management Analysis\n\n")
+                
+                if risk_state.get("risky_history"):
+                    f.write("### Aggressive Risk Analysis\n\n")
+                    f.write(risk_state["risky_history"])
+                    f.write("\n\n")
+                
+                if risk_state.get("safe_history"):
+                    f.write("### Conservative Risk Analysis\n\n")
+                    f.write(risk_state["safe_history"])
+                    f.write("\n\n")
+                
+                if risk_state.get("neutral_history"):
+                    f.write("### Neutral Risk Analysis\n\n")
+                    f.write(risk_state["neutral_history"])
+                    f.write("\n\n")
+                
+                if risk_state.get("judge_decision"):
+                    f.write("### Risk Manager Final Decision\n\n")
+                    f.write(risk_state["judge_decision"])
+                    f.write("\n\n")
+            
+            # Add final decision
+            if final_trade_decision:
+                f.write("## Final Trading Decision\n\n")
+                f.write(f"**Decision:** {decision}\n\n")
+                f.write("### Detailed Decision\n\n")
+                f.write(final_trade_decision)
+        
+        # Save final state as JSON for programmatic access
+        final_state_file = results_dir / "final_state.json"
+        with open(final_state_file, "w") as f:
+            import json
+            # Convert final_state to JSON-serializable format
+            json_state = {}
+            for key, value in final_state.items():
+                try:
+                    json.dumps(value)  # Test if it's JSON serializable
+                    json_state[key] = value
+                except:
+                    json_state[key] = str(value)  # Convert to string if not serializable
+            json.dump(json_state, f, indent=2)
+        
+        print(f"\n✅ Analysis complete! Results saved to: {results_dir}")
+        print(f"📄 Complete report: {complete_report_file}")
+        print(f"🎯 Final decision: {decision_file}")
+        print(f"📊 Final state: {final_state_file}")
 
         update_display(layout)
 
@@ -1703,7 +1879,17 @@ def run_analysis_streaming(advanced_mode=False):
 
         # Get final state and decision
         final_state = trace[-1]
-        decision = graph.process_signal(final_state["final_trade_decision"])
+        # Extract the final trade decision from the correct location
+        final_trade_decision = None
+        if "Risk Judge" in final_state and "final_trade_decision" in final_state["Risk Judge"]:
+            final_trade_decision = final_state["Risk Judge"]["final_trade_decision"]
+        elif "final_trade_decision" in final_state:
+            final_trade_decision = final_state["final_trade_decision"]
+        
+        if final_trade_decision:
+            decision = graph.process_signal(final_trade_decision)
+        else:
+            decision = "No trade decision available"
 
         # Update all agent statuses to completed
         for agent in streaming_buffer.agent_status:
@@ -1720,6 +1906,124 @@ def run_analysis_streaming(advanced_mode=False):
 
         # Display the complete final report
         display_complete_report(final_state)
+
+        # Save the final complete report and decision
+        # Save the final trade decision
+        if final_trade_decision:
+            decision_file = results_dir / "final_trade_decision.md"
+            with open(decision_file, "w") as f:
+                f.write(f"# Final Trading Decision\n\n")
+                f.write(f"**Ticker:** {selections['ticker']}\n")
+                f.write(f"**Analysis Date:** {selections['analysis_date']}\n")
+                f.write(f"**Decision:** {decision}\n\n")
+                f.write("## Raw Decision Text\n\n")
+                f.write(final_trade_decision)
+        
+        # Save the complete final report
+        complete_report_file = results_dir / "complete_analysis_report.md"
+        with open(complete_report_file, "w") as f:
+            f.write(f"# Complete Analysis Report\n\n")
+            f.write(f"**Ticker:** {selections['ticker']}\n")
+            f.write(f"**Analysis Date:** {selections['analysis_date']}\n")
+            f.write(f"**Analysis Time:** {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+            
+            # Add analyst reports
+            if final_state.get("market_report"):
+                f.write("## Market Analysis\n\n")
+                f.write(final_state["market_report"])
+                f.write("\n\n")
+            
+            if final_state.get("sentiment_report"):
+                f.write("## Social Media Sentiment Analysis\n\n")
+                f.write(final_state["sentiment_report"])
+                f.write("\n\n")
+            
+            if final_state.get("news_report"):
+                f.write("## News Analysis\n\n")
+                f.write(final_state["news_report"])
+                f.write("\n\n")
+            
+            if final_state.get("fundamentals_report"):
+                f.write("## Fundamentals Analysis\n\n")
+                f.write(final_state["fundamentals_report"])
+                f.write("\n\n")
+            
+            # Add research team analysis
+            if final_state.get("investment_debate_state"):
+                debate_state = final_state["investment_debate_state"]
+                f.write("## Investment Research Analysis\n\n")
+                
+                if debate_state.get("bull_history"):
+                    f.write("### Bull Researcher Analysis\n\n")
+                    f.write(debate_state["bull_history"])
+                    f.write("\n\n")
+                
+                if debate_state.get("bear_history"):
+                    f.write("### Bear Researcher Analysis\n\n")
+                    f.write(debate_state["bear_history"])
+                    f.write("\n\n")
+                
+                if debate_state.get("judge_decision"):
+                    f.write("### Research Manager Decision\n\n")
+                    f.write(debate_state["judge_decision"])
+                    f.write("\n\n")
+            
+            # Add trading analysis
+            if final_state.get("trader_investment_plan"):
+                f.write("## Trading Plan\n\n")
+                f.write(final_state["trader_investment_plan"])
+                f.write("\n\n")
+            
+            # Add risk analysis
+            if final_state.get("risk_debate_state"):
+                risk_state = final_state["risk_debate_state"]
+                f.write("## Risk Management Analysis\n\n")
+                
+                if risk_state.get("risky_history"):
+                    f.write("### Aggressive Risk Analysis\n\n")
+                    f.write(risk_state["risky_history"])
+                    f.write("\n\n")
+                
+                if risk_state.get("safe_history"):
+                    f.write("### Conservative Risk Analysis\n\n")
+                    f.write(risk_state["safe_history"])
+                    f.write("\n\n")
+                
+                if risk_state.get("neutral_history"):
+                    f.write("### Neutral Risk Analysis\n\n")
+                    f.write(risk_state["neutral_history"])
+                    f.write("\n\n")
+                
+                if risk_state.get("judge_decision"):
+                    f.write("### Risk Manager Final Decision\n\n")
+                    f.write(risk_state["judge_decision"])
+                    f.write("\n\n")
+            
+            # Add final decision
+            if final_trade_decision:
+                f.write("## Final Trading Decision\n\n")
+                f.write(f"**Decision:** {decision}\n\n")
+                f.write("### Detailed Decision\n\n")
+                f.write(final_trade_decision)
+        
+        # Save final state as JSON for programmatic access
+        final_state_file = results_dir / "final_state.json"
+        with open(final_state_file, "w") as f:
+            import json
+            # Convert final_state to JSON-serializable format
+            json_state = {}
+            for key, value in final_state.items():
+                try:
+                    json.dumps(value)  # Test if it's JSON serializable
+                    json_state[key] = value
+                except:
+                    json_state[key] = str(value)  # Convert to string if not serializable
+            json.dump(json_state, f, indent=2)
+        
+        print(f"\n✅ Analysis complete! Results saved to: {results_dir}")
+        print(f"📄 Complete report: {complete_report_file}")
+        print(f"🎯 Final decision: {decision_file}")
+        print(f"📊 Final state: {final_state_file}")
 
         update_streaming_display(layout, streaming_buffer)
 
