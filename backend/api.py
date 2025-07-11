@@ -78,7 +78,10 @@ def get_shared_openai_client():
     if _shared_openai_client is None:
         config = get_config()
         from openai import OpenAI
-        _shared_openai_client = OpenAI(base_url=config["backend_url"])
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is not set")
+        _shared_openai_client = OpenAI(api_key=api_key, base_url=config["backend_url"])
     return _shared_openai_client
 
 def get_compatible_model_for_tools():
