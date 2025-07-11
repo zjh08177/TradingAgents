@@ -620,23 +620,48 @@ class GraphSetup:
                     if isinstance(tool_call, dict):
                         tool_name = tool_call.get('name', '')
                         tool_args = tool_call.get('args', {})
-                        tool_call_id = tool_call.get('id', 'unknown')
+                        tool_call_id = tool_call.get('id', f'unknown_{i}')
                     elif hasattr(tool_call, 'name'):
                         tool_name = tool_call.name
                         tool_args = tool_call.args if hasattr(tool_call, 'args') else {}
-                        tool_call_id = tool_call.id if hasattr(tool_call, 'id') else 'unknown'
+                        tool_call_id = tool_call.id if hasattr(tool_call, 'id') else f'unknown_{i}'
                     else:
                         logger.error(f"❌ {analyst_type} tools: Unknown tool call format")
+                        # Create an error ToolMessage even for unknown format
+                        unknown_tool_call_id = f'unknown_format_{i}'
+                        error_message = ToolMessage(
+                            content=f"Error: Unknown tool call format at index {i}",
+                            tool_call_id=unknown_tool_call_id
+                        )
+                        updated_messages.append(error_message)
+                        logger.info(f"🔧 {analyst_type} tools: ✅ Added error ToolMessage for unknown format")
+                        tools_executed += 1
                         continue
                     
                     if not tool_name:
                         logger.error(f"❌ {analyst_type} tools: Empty tool name")
+                        # Create an error ToolMessage for empty tool name
+                        error_message = ToolMessage(
+                            content=f"Error: Empty tool name at index {i}",
+                            tool_call_id=tool_call_id
+                        )
+                        updated_messages.append(error_message)
+                        logger.info(f"🔧 {analyst_type} tools: ✅ Added error ToolMessage for empty tool name")
+                        tools_executed += 1
                         continue
                     
                     # Check if the tool can be called
                     can_call, reason = self.tool_tracker.can_call_tool(analyst_type, tool_name, tool_args)
                     if not can_call:
                         logger.warning(f"🔧 {analyst_type} tools: SKIPPING - {reason}")
+                        # Create a skip ToolMessage to maintain conversation flow
+                        skip_message = ToolMessage(
+                            content=f"Tool call skipped: {reason}",
+                            tool_call_id=tool_call_id
+                        )
+                        updated_messages.append(skip_message)
+                        logger.info(f"🔧 {analyst_type} tools: ✅ Added skip ToolMessage for {tool_name}")
+                        tools_executed += 1
                         continue
                     
                     logger.info(f"🔧 {analyst_type} tools: [{i+1}/{len(last_msg.tool_calls)}] Executing {tool_name}")
@@ -667,6 +692,14 @@ class GraphSetup:
                     
                 except Exception as e:
                     logger.error(f"❌ {analyst_type} tools: Error executing {tool_name}: {str(e)}")
+                    # Create an error ToolMessage to maintain conversation flow
+                    error_message = ToolMessage(
+                        content=f"Error executing {tool_name}: {str(e)}",
+                        tool_call_id=tool_call_id
+                    )
+                    updated_messages.append(error_message)
+                    logger.info(f"🔧 {analyst_type} tools: ✅ Added error ToolMessage for {tool_name}")
+                    tools_executed += 1
             
             logger.info(f"🔧 {analyst_type} tools: Executed {tools_executed} tools")
             logger.info(f"🔧 {analyst_type} tools: Total calls for {analyst_type}: {self.tool_tracker.total_calls.get(analyst_type, 0)}")

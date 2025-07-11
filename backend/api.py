@@ -26,11 +26,14 @@ app = FastAPI(
 )
 
 # Add CORS middleware for Swift app
+# Get allowed origins from environment variable or use defaults
+cors_origins = os.getenv("CORS_ORIGINS", "*").split(",") if os.getenv("CORS_ORIGINS") else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your Swift app's URL
+    allow_origins=cors_origins,  # Production: Use specific domains
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
