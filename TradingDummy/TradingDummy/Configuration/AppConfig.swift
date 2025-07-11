@@ -18,8 +18,9 @@ enum AppConfig {
             return "http://10.73.204.80:8000"
             #endif
         #else
-        // For production, update this to your deployed server URL
-        return "https://api.tradingagents.com"
+        // Production URL - update this with your Railway deployment URL
+        // Example: "https://tradingagents-production.up.railway.app"
+        return "https://your-app.railway.app"  // ⚠️ UPDATE THIS AFTER RAILWAY DEPLOYMENT
         #endif
     }()
     

@@ -27,6 +27,8 @@ Railway provides the quickest path to production with automatic HTTPS - perfect 
 4. **Select your TradingAgents repository**
 5. **Railway will auto-detect** the Python app and start building
 
+> **Note**: The repository includes special configuration files (`nixpacks.toml`, `runtime.txt`) to help Railway detect the Python app in the `backend/` directory.
+
 ### **Step 3: Configure Environment Variables**
 
 In the Railway dashboard:
@@ -64,6 +66,35 @@ curl -X POST https://your-app.railway.app/analyze \
   -H "Content-Type: application/json" \
   -d '{"ticker": "AAPL"}'
 ```
+
+## 🔧 **Troubleshooting Railway Deployment**
+
+### **Build Detection Issues**
+
+If Railway says "Nixpacks was unable to generate a build plan":
+
+1. **Check root directory files**: Ensure these files exist in your root directory:
+   - `nixpacks.toml` ✅ (helps Railway detect Python app)
+   - `runtime.txt` ✅ (specifies Python version)
+   - `requirements.txt` ✅ (copied from backend/)
+
+2. **Force redeploy**: In Railway dashboard, click "Redeploy"
+
+3. **Check logs**: Look at build logs for specific error messages
+
+### **Build Failures**
+
+If the build fails:
+- Check that all dependencies in `requirements.txt` are valid
+- Ensure Python version compatibility (we use Python 3.11)
+- Check Railway build logs for specific error messages
+
+### **Runtime Errors**
+
+If the app builds but doesn't start:
+- Verify environment variables are set correctly
+- Check Railway deployment logs
+- Ensure the start command is correct: `cd backend && uvicorn api:app --host 0.0.0.0 --port $PORT`
 
 ## 📱 Update iOS App for Production
 
@@ -123,6 +154,7 @@ Railway automatically handles:
 1. **Build failures:**
    - Check requirements.txt is valid
    - Ensure Python version compatibility
+   - Look for missing root-level configuration files
 
 2. **Runtime errors:**
    - Verify all environment variables are set
