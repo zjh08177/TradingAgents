@@ -1,24 +1,10 @@
-[options]
-# Tell Nixpacks this is a Python app
-providers = ["python"]
-
 [variables]
-# Set working directory to backend
-NIXPACKS_BUILD_CMD = "cd backend && pip install -r requirements.txt"
-NIXPACKS_START_CMD = "cd backend && uvicorn api:app --host 0.0.0.0 --port $PORT"
-
-[phases.setup]
-dependsOn = []
+PYTHON_VERSION = "3.11"
 
 [phases.install]
-dependsOn = ["setup"]
 cmds = [
-  "cd backend",
   "pip install -r requirements.txt"
 ]
 
-[phases.build]
-dependsOn = ["install"]
-
 [phases.start]
-cmd = "cd backend && uvicorn api:app --host 0.0.0.0 --port $PORT" 
+cmd = "python main.py" 
