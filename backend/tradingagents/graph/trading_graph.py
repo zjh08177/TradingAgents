@@ -64,7 +64,6 @@ class TradingAgentsGraph:
 
         # Initialize LLMs
         if self.config["llm_provider"].lower() == "openai" or self.config["llm_provider"] == "ollama" or self.config["llm_provider"] == "openrouter":
-            import os
             api_key = os.getenv("OPENAI_API_KEY")
             if not api_key:
                 raise ValueError("OPENAI_API_KEY environment variable is not set")
