@@ -7,4 +7,8 @@ cmds = [
 ]
 
 [phases.start]
-cmd = "python main.py" 
+cmd = "python main.py"
+
+[providers]
+# Force nixpacks to not auto-detect
+python = true 
