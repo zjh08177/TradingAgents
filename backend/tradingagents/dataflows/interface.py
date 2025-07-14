@@ -3,7 +3,7 @@ from .reddit_utils import fetch_top_from_category
 from .yfin_utils import *
 from .stockstats_utils import *
 
-from .serpapi_utils import getNewsDataSerpAPI
+from .serper_utils import getNewsDataSerpAPI
 from .finnhub_utils import get_data_in_range
 from dateutil.relativedelta import relativedelta
 from concurrent.futures import ThreadPoolExecutor
@@ -312,13 +312,13 @@ def get_google_news(
         before = start_date - relativedelta(days=look_back_days)
         before = before.strftime("%Y-%m-%d")
 
-        # Use SerpAPI exclusively - no fallback
-        serpapi_key = DEFAULT_CONFIG.get("serpapi_key", "")
-        if not serpapi_key:
-            raise ValueError("SerpAPI key is required. Please set SERPAPI_API_KEY in your environment variables.")
+        # Use Serper API exclusively - no fallback
+        serper_key = DEFAULT_CONFIG.get("serper_key", "")
+        if not serper_key:
+            raise ValueError("Serper API key is required. Please set SERPER_API_KEY in your environment variables.")
         
-        logger.info(f"🌐 Calling SerpAPI with query='{query}', start='{before}', end='{curr_date}'")
-        news_results = getNewsDataSerpAPI(query, before, curr_date, serpapi_key)
+        logger.info(f"🌐 Calling Serper API with query='{query}', start='{before}', end='{curr_date}'")
+        news_results = getNewsDataSerpAPI(query, before, curr_date, serper_key)
         
         # Enhanced logging - Raw response
         logger.info(f"🌐 RAW RESPONSE TYPE: {type(news_results)}")
