@@ -565,9 +565,48 @@ async def stream_analysis(ticker: str):
                 
                 print(f"🔄 Streaming completed. Processed {chunk_count} chunks, {len(reports_completed)} reports completed")
                 
-                # Get final state and process signal
-                final_state = trace[-1] if trace else {}
-                processed_signal = graph.process_signal(final_state.get("final_trade_decision", ""))
+                # Get the final state using graph.invoke() like the regular endpoint does
+                # This ensures we get the complete accumulated state
+                print("🔍 Getting final state using graph.invoke()...")
+                try:
+                    final_state = graph.graph.invoke(init_agent_state, **args)
+                    print(f"✅ Final state retrieved successfully")
+                    print(f"🔍 Final state keys: {list(final_state.keys())}")
+                except Exception as e:
+                    print(f"❌ Error getting final state: {e}")
+                    # Fallback to chunk accumulation
+                    print("🔄 Falling back to chunk accumulation...")
+                    final_state = {}
+                    for chunk in trace:
+                        if chunk:
+                            final_state.update(chunk)
+                
+                # Extract final decision and process signal
+                final_decision = final_state.get("final_trade_decision", "")
+                print(f"🎯 Final decision found: {len(final_decision)} characters")
+                if final_decision:
+                    print(f"🎯 Final decision preview: {final_decision[:200]}...")
+                else:
+                    print("❌ No final decision found in final state!")
+                    # Check if it's in a nested structure
+                    if "risk_debate_state" in final_state:
+                        risk_state = final_state["risk_debate_state"]
+                        if "judge_decision" in risk_state:
+                            final_decision = risk_state["judge_decision"]
+                            print(f"🎯 Found final decision in risk_debate_state: {len(final_decision)} characters")
+                            print(f"🎯 Risk decision preview: {final_decision[:200]}...")
+                
+                processed_signal = graph.process_signal(final_decision)
+                print(f"🔄 Processed signal: {processed_signal}")
+                
+                # Validate that we have the key reports
+                report_keys = ["market_report", "sentiment_report", "news_report", "fundamentals_report", "final_trade_decision"]
+                for key in report_keys:
+                    value = final_state.get(key)
+                    if value:
+                        print(f"✅ {key}: {len(value)} characters")
+                    else:
+                        print(f"❌ {key}: Missing or empty")
                 
                 # Save results to disk (same as regular analyze endpoint)
                 try:
