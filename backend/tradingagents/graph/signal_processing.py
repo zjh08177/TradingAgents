@@ -20,6 +20,13 @@ class SignalProcessor:
         Returns:
             Extracted decision (BUY, SELL, or HOLD)
         """
+        print(f"🔍 Signal processing input: {len(full_signal)} characters")
+        print(f"🔍 Signal preview: {full_signal[:300]}...")
+        
+        if not full_signal or not full_signal.strip():
+            print("❌ Empty signal provided to process_signal")
+            return "HOLD - No signal provided"
+        
         messages = [
             (
                 "system",
@@ -28,4 +35,6 @@ class SignalProcessor:
             ("human", full_signal),
         ]
 
-        return self.quick_thinking_llm.invoke(messages).content
+        result = self.quick_thinking_llm.invoke(messages).content
+        print(f"🔍 Signal processing result: {result}")
+        return result
