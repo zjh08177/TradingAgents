@@ -4,6 +4,7 @@
 import '../models/agent_states.dart';
 import '../services/langchain_service.dart';
 import '../services/market_tools.dart';
+import '../services/logger_service.dart';
 
 class ToolCall {
   final String name;
@@ -33,13 +34,13 @@ class MarketAnalyst {
   final LangChainService _llm;
   final MarketToolkit _toolkit;
   
-  MarketAnalyst(this._llm, {bool useOnlineTools = false}) 
-    : _toolkit = MarketToolkit(useOnlineTools: useOnlineTools);
+  MarketAnalyst(this._llm) : _toolkit = MarketToolkit();
 
   // Main entry point - mirrors create_market_analyst function
   Future<AgentState> analyzeMarket(AgentState state) async {
-    print('📈 Market Analyst: Starting technical analysis...');
+    LoggerService.agentStart('market', 'Technical analysis for ${state.companyOfInterest}');
     
+    final stopwatch = Stopwatch()..start();
     final currentDate = state.tradeDate;
     final ticker = state.companyOfInterest;
     
@@ -65,7 +66,9 @@ class MarketAnalyst {
       finalReport = await _generateSimpleAnalysis(ticker, currentDate);
     }
     
-    print('📈 Market Analyst: Technical analysis complete');
+    stopwatch.stop();
+    LoggerService.agentComplete('market', 'Technical analysis', stopwatch.elapsed);
+    
     return state.copyWith(marketReport: finalReport);
   }
 
@@ -73,13 +76,12 @@ class MarketAnalyst {
   Future<List<MarketAnalystMessage>> _makeInitialToolCalls(String ticker, String currentDate) async {
     List<MarketAnalystMessage> messages = [];
     
-    print('  🔧 Making tool calls to gather market data...');
+    LoggerService.info('market', 'Gathering market data');
     
     // Tool Call 1: Get Yahoo Finance data first (required for indicators)
     try {
-      final yfinTool = _toolkit.getTool('get_YFin_data${_toolkit.useOnlineTools ? '_online' : ''}');
+      final yfinTool = _toolkit.getTool('get_YFin_data_online');
       if (yfinTool != null) {
-        print('    📊 Calling ${yfinTool.name}...');
         final yfinResult = await yfinTool.execute({
           'ticker': ticker,
           'date': currentDate,
@@ -90,19 +92,20 @@ class MarketAnalyst {
           type: 'tool',
           toolCallId: 'yfin_call_1',
         ));
+      } else {
+        LoggerService.warning('market', 'Yahoo Finance tool not found in toolkit');
       }
     } catch (e) {
-      print('    ❌ YFin tool call failed: $e');
+      LoggerService.error('market', 'YFin tool call failed: $e');
     }
     
     // Tool Call 2: Get technical indicators based on market conditions
     try {
-      final indicatorsTool = _toolkit.getTool('get_stockstats_indicators_report${_toolkit.useOnlineTools ? '_online' : ''}');
+      final indicatorsTool = _toolkit.getTool('get_stockstats_indicators_report_online');
       if (indicatorsTool != null) {
         // Select relevant indicators (mirrors Python system message logic)
         final selectedIndicators = _selectRelevantIndicators();
         
-        print('    📊 Calling ${indicatorsTool.name} with indicators: $selectedIndicators...');
         final indicatorsResult = await indicatorsTool.execute({
           'ticker': ticker,
           'indicators': selectedIndicators,
@@ -113,9 +116,11 @@ class MarketAnalyst {
           type: 'tool',
           toolCallId: 'indicators_call_1',
         ));
+      } else {
+        LoggerService.warning('market', 'Technical indicators tool not found in toolkit');
       }
     } catch (e) {
-      print('    ❌ Indicators tool call failed: $e');
+      LoggerService.error('market', 'Indicators tool call failed: $e');
     }
     
     return messages;
@@ -177,11 +182,11 @@ Analysis Type: Comprehensive Technical Analysis
 $analysis
 
 ---
-Data Sources: Yahoo Finance, Technical Indicators (${_toolkit.useOnlineTools ? 'Real-time' : 'Cached'})
+Data Sources: Yahoo Finance, Technical Indicators (Real-time)
 Generated: ${DateTime.now().toLocal()}
 ''';
     } catch (e) {
-      print('    ❌ Failed to generate final report: $e');
+      LoggerService.error('market', 'Failed to generate final report: $e');
       return _generateSimpleAnalysis(ticker, currentDate);
     }
   }
@@ -244,7 +249,7 @@ Market Analyst Status: ✅ Completed
 Ticker: ${state.companyOfInterest}
 Date: ${state.tradeDate}
 Report Length: ${state.marketReport.length} characters
-Tools Used: ${_toolkit.useOnlineTools ? 'Online (Real-time)' : 'Offline (Cached)'}
+Tools Used: Online (Real-time)
 ''';
   }
 } 

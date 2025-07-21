@@ -3,6 +3,7 @@ import 'services/langchain_service.dart';
 import 'services/config_service.dart';
 import 'services/trading_graph.dart';
 import 'pages/settings_page.dart';
+import 'services/logger_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +41,7 @@ class _TradingAnalysisPageState extends State<TradingAnalysisPage> {
   final TextEditingController _tickerController = TextEditingController();
   final LangChainService _langChainService = LangChainService.instance;
   final ConfigService _configService = ConfigService.instance;
-  late final TradingGraph _tradingGraph;
+  late TradingGraph _tradingGraph;
   
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -62,34 +63,42 @@ class _TradingAnalysisPageState extends State<TradingAnalysisPage> {
 
   Future<void> _initializeLangChain() async {
     try {
+      LoggerService.info('app', 'Initializing LangChain service...');
+      
       // Try to get API keys from secure storage or .env
       final openaiKey = await _configService.getOpenAIKey();
       final googleKey = await _configService.getGoogleKey();
       
       if (openaiKey != null && openaiKey.isNotEmpty) {
+        LoggerService.info('app', 'Found OpenAI API key, initializing OpenAI model...');
         await _langChainService.initialize(
           provider: LLMProvider.openai,
           apiKey: openaiKey,
         );
-        _tradingGraph = TradingGraph(_langChainService, useOnlineTools: true);
+        _tradingGraph = TradingGraph(_langChainService);
+        LoggerService.info('app', 'Trading analysis initialized with ${_langChainService.getModelStatus()}');
         setState(() {
           _isInitialized = true;
         });
       } else if (googleKey != null && googleKey.isNotEmpty) {
+        LoggerService.info('app', 'Found Google API key, initializing Google model...');
         await _langChainService.initialize(
           provider: LLMProvider.google,
           apiKey: googleKey,
         );
-        _tradingGraph = TradingGraph(_langChainService, useOnlineTools: true);
+        _tradingGraph = TradingGraph(_langChainService);
+        LoggerService.info('app', 'Trading analysis initialized with ${_langChainService.getModelStatus()}');
         setState(() {
           _isInitialized = true;
         });
       } else {
+        LoggerService.warning('app', 'No API keys found - user needs to configure settings');
         setState(() {
           _error = 'No API key found. Please configure your API keys in Settings.';
         });
       }
     } catch (e) {
+      LoggerService.error('app', 'Failed to initialize LangChain: $e');
       setState(() {
         _error = 'Failed to initialize: $e';
       });
@@ -125,11 +134,17 @@ class _TradingAnalysisPageState extends State<TradingAnalysisPage> {
     try {
       final today = DateTime.now().toIso8601String().split('T')[0];
       
+      // Log which model is being used for this analysis
+      final modelStatus = _langChainService.getModelStatus();
+      LoggerService.info('app', 'Starting trading analysis for $ticker using $modelStatus');
+      
       // Run the full trading graph
       final finalState = await _tradingGraph.execute(ticker, today);
       
       // Get the final recommendation
       final recommendation = _tradingGraph.getFinalRecommendation(finalState);
+      
+      LoggerService.info('app', 'Trading analysis completed for $ticker using $modelStatus');
       
       setState(() {
         _result = recommendation;
@@ -137,6 +152,7 @@ class _TradingAnalysisPageState extends State<TradingAnalysisPage> {
         _isLoading = false;
       });
     } catch (e) {
+      LoggerService.error('app', 'Trading analysis failed for $ticker: $e');
       setState(() {
         _error = 'Failed to analyze: $e';
         _statusMessage = '';

@@ -14,6 +14,7 @@ class ConfigService {
   static const String _openaiKeyStorage = 'openai_api_key';
   static const String _googleKeyStorage = 'google_api_key';
   static const String _anthropicKeyStorage = 'anthropic_api_key';
+  static const String _finnhubKeyStorage = 'finnhub_api_key';
 
   // Initialize the service
   Future<void> initialize() async {
@@ -102,6 +103,42 @@ class ConfigService {
     }
   }
 
+  // Get Finnhub API Key
+  Future<String?> getFinnhubKey() async {
+    try {
+      String? userKey = await _storage.read(key: _finnhubKeyStorage);
+      if (userKey != null && userKey.isNotEmpty) {
+        return userKey;
+      }
+
+      if (kDebugMode) {
+        try {
+          String? envKey = dotenv.env['FINNHUB_API_KEY'];
+          if (envKey != null && envKey != 'your-finnhub-api-key-here') {
+            return envKey;
+          }
+        } catch (e) {
+          // .env not loaded or key not found - this is fine
+        }
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Error getting Finnhub key: $e');
+      return null;
+    }
+  }
+
+  // Save Finnhub API Key
+  Future<void> saveFinnhubKey(String key) async {
+    try {
+      await _storage.write(key: _finnhubKeyStorage, value: key);
+    } catch (e) {
+      debugPrint('Error saving Finnhub key: $e');
+      throw Exception('Failed to save API key securely');
+    }
+  }
+
   // Check if any API key is available
   Future<bool> hasValidApiKey() async {
     final openaiKey = await getOpenAIKey();
@@ -116,6 +153,7 @@ class ConfigService {
       await _storage.delete(key: _openaiKeyStorage);
       await _storage.delete(key: _googleKeyStorage);
       await _storage.delete(key: _anthropicKeyStorage);
+      await _storage.delete(key: _finnhubKeyStorage);
     } catch (e) {
       debugPrint('Error clearing keys: $e');
     }
@@ -127,6 +165,10 @@ class ConfigService {
   }
 
   bool isValidGoogleKey(String key) {
+    return key.length > 10 && !key.contains(' ');
+  }
+
+  bool isValidFinnhubKey(String key) {
     return key.length > 10 && !key.contains(' ');
   }
 } 

@@ -105,6 +105,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  deriv_technical_analysis:
+    dependency: "direct main"
+    description:
+      name: deriv_technical_analysis
+      sha256: "9b4d5872d6239bb4800afa23d43029d2943729aa44b0a804c262e740e8e2c95d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
+  dio:
+    dependency: "direct main"
+    description:
+      name: dio
+      sha256: "253a18bbd4851fecba42f7343a1df3a9a4c1d31a2c1b37e221086b4fa8c8dbc9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.8.0+1"
+  dio_web_adapter:
+    dependency: transitive
+    description:
+      name: dio_web_adapter
+      sha256: "7586e476d70caecaf1686d21eee7247ea43ef5c345eab9e0cc3583ff13378d78"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   fake_async:
     dependency: transitive
     description:
@@ -288,6 +312,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  idb_shim:
+    dependency: transitive
+    description:
+      name: idb_shim
+      sha256: ee391deb010143823d25db15f8b002945e19dcb5f2dd5b696a98cb6db7644012
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.7"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.1"
   iregexp:
     dependency: transitive
     description:
@@ -576,6 +616,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.28.0"
+  sembast:
+    dependency: transitive
+    description:
+      name: sembast
+      sha256: "7119cf6f79bd1d48c8ec7943f4facd96c15ab26823021ed0792a487c7cd34441"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.5+1"
+  sembast_web:
+    dependency: transitive
+    description:
+      name: sembast_web
+      sha256: "0362c7c241ad6546d3e27b4cfffaae505e5a9661e238dbcdd176756cc960fe7a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.2"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -621,6 +677,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: c254ade258ec8282947a0acbbc90b9575b4f19673533ee46f2f6e9b3aeefd7c0
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
   tavily_dart:
     dependency: transitive
     description:
@@ -709,6 +773,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  yahoo_finance_data_reader:
+    dependency: "direct main"
+    description:
+      name: yahoo_finance_data_reader
+      sha256: "1ffab3dc347d65c9d246159aa61dfe9fe9fb9119a8fe4b431be1178101b7e6a7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.12"
 sdks:
   dart: ">=3.8.1 <4.0.0"
   flutter: ">=3.27.0"

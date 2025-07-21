@@ -2,6 +2,7 @@ import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
 import 'package:langchain_google/langchain_google.dart';
 import 'package:langchain_ollama/langchain_ollama.dart';
+import 'logger_service.dart';
 
 enum LLMProvider {
   openai,
@@ -17,6 +18,8 @@ class LangChainService {
 
   BaseChatModel? _chatModel;
   LLMProvider _currentProvider = LLMProvider.openai;
+  String _currentModel = '';
+  String _currentProviderName = '';
 
   // Initialize the service with provider and API key
   Future<void> initialize({
@@ -29,33 +32,45 @@ class LangChainService {
     
     switch (provider) {
       case LLMProvider.openai:
+        final openaiModel = model ?? 'gpt-4o';
         _chatModel = ChatOpenAI(
           apiKey: apiKey ?? '',
           defaultOptions: ChatOpenAIOptions(
-            model: model ?? 'gpt-3.5-turbo',
+            model: openaiModel,
             temperature: 0.7,
           ),
         );
+        _currentModel = openaiModel;
+        _currentProviderName = 'OpenAI';
+        LoggerService.info('llm', 'Initialized OpenAI model: $openaiModel');
         break;
         
       case LLMProvider.google:
+        final googleModel = model ?? 'gemini-pro';
         _chatModel = ChatGoogleGenerativeAI(
           apiKey: apiKey ?? '',
           defaultOptions: ChatGoogleGenerativeAIOptions(
-            model: model ?? 'gemini-pro',
+            model: googleModel,
             temperature: 0.7,
           ),
         );
+        _currentModel = googleModel;
+        _currentProviderName = 'Google';
+        LoggerService.info('llm', 'Initialized Google model: $googleModel');
         break;
         
       case LLMProvider.ollama:
+        final ollamaModel = model ?? 'llama2';
         _chatModel = ChatOllama(
           baseUrl: baseUrl ?? 'http://localhost:11434',
           defaultOptions: ChatOllamaOptions(
-            model: model ?? 'llama2',
+            model: ollamaModel,
             temperature: 0.7,
           ),
         );
+        _currentModel = ollamaModel;
+        _currentProviderName = 'Ollama';
+        LoggerService.info('llm', 'Initialized Ollama model: $ollamaModel');
         break;
     }
   }
@@ -146,6 +161,19 @@ class LangChainService {
     }
   }
 
+  // Get current model information
+  String get currentModel => _currentModel;
+  String get currentProvider => _currentProviderName;
+  LLMProvider get currentProviderEnum => _currentProvider;
+  
+  // Get model status for logging
+  String getModelStatus() {
+    if (_chatModel == null) {
+      return 'No model initialized';
+    }
+    return '$_currentProviderName: $_currentModel';
+  }
+  
   // Dispose resources
   void dispose() {
     _chatModel = null;
