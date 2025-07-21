@@ -1,0 +1,3 @@
+# Let Cursor read .env.example even though *.env* is globally ignored
+!.env.example
+!.env
