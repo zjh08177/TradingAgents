@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/config_service.dart';
 import '../services/langchain_service.dart';
+import '../services/logger_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -15,6 +16,7 @@ class _SettingsPageState extends State<SettingsPage> {
   
   final TextEditingController _openaiController = TextEditingController();
   final TextEditingController _googleController = TextEditingController();
+  final TextEditingController _finnhubController = TextEditingController();
   
   bool _isLoading = false;
   String _message = '';
@@ -30,6 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void dispose() {
     _openaiController.dispose();
     _googleController.dispose();
+    _finnhubController.dispose();
     super.dispose();
   }
 
@@ -37,12 +40,16 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       final openaiKey = await _configService.getOpenAIKey();
       final googleKey = await _configService.getGoogleKey();
+      final finnhubKey = await _configService.getFinnhubKey();
       
       if (openaiKey != null) {
         _openaiController.text = '${openaiKey.substring(0, 7)}...${openaiKey.substring(openaiKey.length - 4)}';
       }
       if (googleKey != null) {
         _googleController.text = '${googleKey.substring(0, 7)}...${googleKey.substring(googleKey.length - 4)}';
+      }
+      if (finnhubKey != null) {
+        _finnhubController.text = '${finnhubKey.substring(0, 7)}...${finnhubKey.substring(finnhubKey.length - 4)}';
       }
     } catch (e) {
       // Error loading keys - this is fine, user can enter new ones
@@ -64,6 +71,7 @@ class _SettingsPageState extends State<SettingsPage> {
           throw Exception('Invalid OpenAI API key format. Should start with "sk-"');
         }
         await _configService.saveOpenAIKey(_openaiController.text);
+        LoggerService.info('settings', 'OpenAI API key saved and configured');
         if (_selectedProvider == LLMProvider.openai) {
           keyToTest = _openaiController.text;
         }
@@ -75,9 +83,20 @@ class _SettingsPageState extends State<SettingsPage> {
           throw Exception('Invalid Google API key format');
         }
         await _configService.saveGoogleKey(_googleController.text);
+        LoggerService.info('settings', 'Google API key saved and configured');
         if (_selectedProvider == LLMProvider.google) {
           keyToTest = _googleController.text;
         }
+      }
+
+      // Save Finnhub key if provided
+      if (_finnhubController.text.isNotEmpty && !_finnhubController.text.contains('...')) {
+        if (!_configService.isValidFinnhubKey(_finnhubController.text)) {
+          throw Exception('Invalid Finnhub API key format');
+        }
+        await _configService.saveFinnhubKey(_finnhubController.text);
+        LoggerService.info('settings', 'Finnhub API key saved and configured');
+        // Note: Finnhub is used by news analyst, not LLM provider
       }
 
       // Test the key with LangChain
@@ -87,6 +106,9 @@ class _SettingsPageState extends State<SettingsPage> {
           apiKey: keyToTest,
         );
         
+        final modelStatus = _langChainService.getModelStatus();
+        LoggerService.info('settings', 'LLM model initialized: $modelStatus');
+        
         // Test with a simple query
         final testResult = await _langChainService.generateTradingInsight(
           'Test data: AAPL, Price: \$150.00'
@@ -94,7 +116,7 @@ class _SettingsPageState extends State<SettingsPage> {
         
         if (testResult.isNotEmpty) {
           setState(() {
-            _message = '✅ API key saved and tested successfully!';
+            _message = '✅ API key saved and tested successfully!\n🤖 Model: $modelStatus';
           });
         }
       } else {
@@ -121,6 +143,7 @@ class _SettingsPageState extends State<SettingsPage> {
     await _configService.clearAllKeys();
     _openaiController.clear();
     _googleController.clear();
+    _finnhubController.clear();
     setState(() {
       _message = '🗑️ All API keys cleared';
     });
@@ -156,7 +179,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           const Icon(Icons.info, color: Colors.blue),
                           const SizedBox(width: 8),
                           Text(
-                            'About API Keys',
+                            'API Key Configuration',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               color: Colors.blue,
                               fontWeight: FontWeight.bold,
@@ -169,6 +192,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         '• API keys are stored securely on your device\n'
                         '• Keys are never shared or transmitted to third parties\n'
                         '• You maintain full control of your API usage and billing\n'
+                        '• OpenAI/Google: Required for AI analysis\n'
+                        '• Finnhub: Optional for real news data (free tier available)\n'
                         '• Keys can be deleted at any time',
                         style: TextStyle(fontSize: 13),
                       ),
@@ -246,6 +271,31 @@ class _SettingsPageState extends State<SettingsPage> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.key),
                   helperText: 'Get your key from aistudio.google.com',
+                ),
+                obscureText: true,
+                textInputAction: TextInputAction.next,
+                onEditingComplete: () {
+                  // Move focus to next field
+                  FocusScope.of(context).nextFocus();
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Finnhub API Key
+              Text(
+                'Finnhub API Key',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _finnhubController,
+                decoration: const InputDecoration(
+                  hintText: 'your-finnhub-api-key-here',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.article),
+                  helperText: 'Get your free key from finnhub.io/dashboard',
                 ),
                 obscureText: true,
                 textInputAction: TextInputAction.done,

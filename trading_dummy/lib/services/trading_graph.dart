@@ -2,6 +2,10 @@ import '../models/agent_states.dart';
 import 'trading_agents.dart';
 import 'langchain_service.dart';
 import '../agents/market_analyst.dart';
+import '../agents/news_analyst.dart';
+import '../agents/fundamentals_analyst.dart';
+import 'config_service.dart';
+import 'logger_service.dart';
 
 // Main Trading Graph Orchestrator
 // Mirrors the Python TradingAgentsGraph structure
@@ -9,20 +13,55 @@ import '../agents/market_analyst.dart';
 class TradingGraph {
   final TradingAgents _agents;
   final MarketAnalyst _marketAnalyst;
+  late FundamentalsAnalyst _fundamentalsAnalyst;
+  final LangChainService _llmService;
+  late NewsAnalyst _newsAnalyst;
   
-  TradingGraph(LangChainService llmService, {bool useOnlineTools = false}) 
+  TradingGraph(LangChainService llmService) 
     : _agents = TradingAgents(llmService),
-      _marketAnalyst = MarketAnalyst(llmService, useOnlineTools: useOnlineTools);
+      _marketAnalyst = MarketAnalyst(llmService),
+      _llmService = llmService {
+    // Initialize with default (no API key initially)
+    _fundamentalsAnalyst = FundamentalsAnalyst(llmService);
+  }
+
+  /// Initialize news analyst with API key from config
+  Future<void> _initializeNewsAnalyst() async {
+    // Only initialize if not already initialized
+    try {
+      // Try to access _newsAnalyst to see if it's initialized
+      _newsAnalyst.toString();
+    } catch (e) {
+      // Not initialized yet, so initialize it
+      final finnhubKey = await ConfigService.instance.getFinnhubKey();
+      _newsAnalyst = NewsAnalyst(_llmService, finnhubApiKey: finnhubKey);
+    }
+  }
+
+  /// Initialize fundamentals analyst with API key from config
+  Future<void> _initializeFundamentalsAnalyst() async {
+    final finnhubKey = await ConfigService.instance.getFinnhubKey();
+    _fundamentalsAnalyst = FundamentalsAnalyst(_llmService, finnhubApiKey: finnhubKey);
+  }
 
   // Main execution method - runs the entire trading workflow
   Future<AgentState> execute(String ticker, String date) async {
+    // Initialize analysts with API keys
+    await _initializeNewsAnalyst();
+    await _initializeFundamentalsAnalyst();
+    
     // Initialize state
     AgentState state = AgentState(
       companyOfInterest: ticker,
       tradeDate: date,
     );
 
+    // Log model information for this analysis
+    final modelStatus = _llmService.getModelStatus();
+    LoggerService.info('trading_graph', 'Starting analysis for $ticker using $modelStatus');
+    
     print('🚀 Starting Trading Analysis for $ticker on $date');
+    print('   🤖 LLM Model: $modelStatus');
 
     // 1. DISPATCHER - Initialize the workflow
     state = await _dispatcher(state);
@@ -64,15 +103,15 @@ class TradingGraph {
     print('🔄 Running 4 Analysts in Parallel...');
     print('   📈 Market Analyst: Enhanced with tool calls');
     print('   📱 Social Media Analyst: Simple analysis');
-    print('   📰 News Analyst: Simple analysis');  
-    print('   💼 Fundamentals Analyst: Simple analysis');
+    print('   📰 News Analyst: Finnhub API enabled');  
+    print('   💼 Fundamentals Analyst: Finnhub API enabled');
     
-    // Run all 4 analysts in parallel (Market Analyst now sophisticated)
+    // Run all 4 analysts in parallel (Market, News & Fundamentals Analysts with real APIs)
     final results = await Future.wait([
-      _marketAnalyst.analyzeMarket(state),  // Real analyst with tools
-      _agents.socialMediaAnalyst(state),    // Simple analysts
-      _agents.newsAnalyst(state),
-      _agents.fundamentalsAnalyst(state),
+      _marketAnalyst.analyzeMarket(state),       // Real analyst with tools
+      _agents.socialMediaAnalyst(state),         // Simple analysts
+      _newsAnalyst.analyzeNews(state),           // Real news analyst with Finnhub
+      _fundamentalsAnalyst.analyzeFundamentals(state), // Real fundamentals analyst
     ]);
 
     // Combine results - each analyst updates a different field
