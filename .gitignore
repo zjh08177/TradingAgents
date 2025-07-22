@@ -227,5 +227,6 @@ dmypy.json
 *.xcuserstate
 TradingDummy/TradingDummy.xcodeproj/project.xcworkspace/xcuserdata/bytedance.xcuserdatad/UserInterfaceState.xcuserstate
 TradingDummy/TradingDummy.xcodeproj/project.xcworkspace/xcuserdata/bytedance.xcuserdatad/UserInterfaceState.xcuserstate
-*.json
 *.pbxproj
+*Contents.json
+*manifest.json
