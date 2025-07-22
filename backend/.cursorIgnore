@@ -1,0 +1,28 @@
+# Backend .cursorIgnore
+# Specific to the Python backend
+
+# Environment files - ALLOW .env files for editing
+# Removed .env exclusions to enable Cursor AI access
+
+# Example files (always accessible)
+
+# Python virtual environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Test results and logs
+results/
+eval_results/
+*.log
+api_logs.txt
+
+# Large dependency files
+uv.lock
+
+# Cache
+.pytest_cache/
+.coverage 
