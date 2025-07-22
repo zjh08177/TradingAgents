@@ -1,0 +1,50 @@
+# TradingAgents Project Cursor Ignore File
+# Exclude sensitive files and large directories
+
+# Environment files - ALLOW .env files for editing
+# Removed .env exclusions to enable Cursor AI access
+
+# Example files (always accessible)
+
+# Virtual environments
+.venv/
+backend/.venv/
+backend/venv/
+trading-graph-server/venv/
+venv/
+__pycache__/
+
+# Build directories
+build/
+dist/
+target/
+.dart_tool/
+trading_dummy/build/
+trading_dummy/.dart_tool/
+iOS/build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+backend/*.log
+api_logs.txt
+
+# Cache directories
+node_modules/
+.cache/
+trading_dummy/.flutter-plugins-dependencies
+
+# Test results
+results/
+backend/results/
+backend/eval_results/
+
+# Large dependency locks
+trading_dummy/pubspec.lock
+backend/uv.lock
+Pods/ 

@@ -21,7 +21,7 @@ DEFAULT_CONFIG = {
     "api_port": int(os.getenv("TRADINGAGENTS_API_PORT", "8000")),
     # LLM settings
     "llm_provider": "openai",
-    "deep_think_llm": "o4-mini",
+    "deep_think_llm": "gpt-4o-mini",
     "quick_think_llm": "gpt-4o-mini",
     "backend_url": "https://api.openai.com/v1",
     # Debate and discussion settings

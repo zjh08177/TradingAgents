@@ -1,32 +1,44 @@
-typing-extensions
+# Core LangGraph and LangChain dependencies
+langgraph>=0.2.74
 langchain-openai
 langchain-experimental
-pandas
-yfinance
-praw
-feedparser
-stockstats
-eodhd
-langgraph
-chromadb
-setuptools
-backtrader
-akshare
-tushare
-finnhub-python
-parsel
-requests
-tqdm
-pytz
-redis
-chainlit
-rich
-questionary
 langchain_anthropic
 langchain-google-genai
-fastapi
-pydantic
-uvicorn[standard]
-python-dotenv
+langchain_community
+
+# Trading and financial data
+pandas
+yfinance
+stockstats
+eodhd
+finnhub-python
+akshare
+tushare
+backtrader
+
+# Web scraping and search
 google-search-results
 serpapi
+requests
+parsel
+praw
+feedparser
+
+# Data storage and processing
+chromadb
+redis
+pytz
+
+# Utilities
+typing-extensions
+setuptools
+tqdm
+python-dotenv
+
+# Optional: Development and testing (commented out for production)
+# chainlit
+# rich
+# questionary
+# fastapi
+# pydantic
+# uvicorn[standard]
