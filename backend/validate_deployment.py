@@ -3,7 +3,7 @@
 Deployment Validation Script for Trading Agents LangGraph Cloud
 
 This script validates that your project is ready for LangGraph Cloud deployment.
-Run this before deploying to catch any issues early.
+Run this from the project root: python backend/validate_deployment.py
 """
 
 import os
@@ -16,16 +16,23 @@ def validate_file_structure():
     """Validate required files exist."""
     print("📋 Validating file structure...")
     
-    required_files = [
+    # Files expected in project root
+    root_files = [
         "langgraph.json",
-        "graph_entry.py", 
-        "requirements.txt",
-        "env.production.example",
-        "tradingagents/__init__.py",
-        "tradingagents/graph/trading_graph.py"
     ]
     
+    # Files expected in backend directory
+    backend_files = [
+        "backend/graph_entry.py", 
+        "backend/requirements.txt",
+        "backend/env.production.example",
+        "backend/tradingagents/__init__.py",
+        "backend/tradingagents/graph/trading_graph.py"
+    ]
+    
+    required_files = root_files + backend_files
     missing_files = []
+    
     for file_path in required_files:
         if not Path(file_path).exists():
             missing_files.append(file_path)
@@ -62,6 +69,17 @@ def validate_langgraph_config():
             print(f"❌ Invalid entry point: {entry_point}")
             return False
         
+        # Validate that referenced files exist
+        env_file = config.get("env", ".env")
+        if not Path(env_file).exists():
+            print(f"❌ Environment file not found: {env_file}")
+            return False
+            
+        graph_file = entry_point.split(":")[0]
+        if not Path(graph_file).exists():
+            print(f"❌ Graph entry file not found: {graph_file}")
+            return False
+        
         print("✅ LangGraph configuration valid")
         return True
         
@@ -75,6 +93,9 @@ def validate_graph_compilation():
     print("📋 Validating graph compilation...")
     
     try:
+        # Add backend to Python path
+        sys.path.insert(0, str(Path("backend").resolve()))
+        
         import graph_entry
         graph = graph_entry.compiled_graph
         
@@ -97,7 +118,7 @@ def validate_dependencies():
     print("📋 Validating dependencies...")
     
     try:
-        with open("requirements.txt", "r") as f:
+        with open("backend/requirements.txt", "r") as f:
             deps = f.read().lower()
         
         required_deps = [
@@ -120,7 +141,7 @@ def validate_dependencies():
         return True
         
     except Exception as e:
-        print(f"❌ Error reading requirements.txt: {e}")
+        print(f"❌ Error reading backend/requirements.txt: {e}")
         return False
 
 
@@ -129,7 +150,7 @@ def validate_environment_template():
     print("📋 Validating environment template...")
     
     try:
-        with open("env.production.example", "r") as f:
+        with open("backend/env.production.example", "r") as f:
             env_content = f.read()
         
         required_vars = [
@@ -151,7 +172,7 @@ def validate_environment_template():
         return True
         
     except Exception as e:
-        print(f"❌ Error reading env.production.example: {e}")
+        print(f"❌ Error reading backend/env.production.example: {e}")
         return False
 
 
@@ -159,6 +180,14 @@ def main():
     """Run all validation checks."""
     print("🚀 Trading Agents - LangGraph Cloud Deployment Validation")
     print("=" * 60)
+    
+    # Check if we're in the right directory
+    if not Path("langgraph.json").exists():
+        print("❌ Error: langgraph.json not found in current directory")
+        print("💡 Please run this script from the project root directory:")
+        print("   cd /path/to/TradingAgents")
+        print("   python backend/validate_deployment.py")
+        sys.exit(1)
     
     checks = [
         validate_file_structure,
@@ -186,9 +215,8 @@ def main():
     if passed == total:
         print("🎉 Your project is ready for LangGraph Cloud deployment!")
         print("\nNext steps:")
-        print("1. Copy env.production.example to .env")
-        print("2. Fill in your API keys")
-        print("3. Run: langgraph deploy --config langgraph.json")
+        print("1. Ensure backend/.env has your API keys")
+        print("2. Run: langgraph deploy --config langgraph.json")
     else:
         print("❌ Please fix the above issues before deploying")
         sys.exit(1)
