@@ -1,6 +1,7 @@
 # TradingAgents/graph/conditional_logic.py
 
-from tradingagents.agents.utils.agent_states import AgentState
+# Import AgentState from local module
+from ..utils.agent_states import AgentState
 import logging
 
 logger = logging.getLogger(__name__)
