@@ -1,0 +1,4 @@
+---
+description: when running "python" command, always run "uv run python3 -m" instead
+alwaysApply: false
+---

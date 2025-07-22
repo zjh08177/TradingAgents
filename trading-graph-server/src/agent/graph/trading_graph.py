@@ -8,17 +8,8 @@ from typing import Dict, Any, Tuple, List, Optional
 import logging
 
 from langchain_openai import ChatOpenAI
-
-# Make these imports optional
-try:
-    from langchain_anthropic import ChatAnthropic
-except ImportError:
-    ChatAnthropic = None
-
-try:
-    from langchain_google_genai import ChatGoogleGenerativeAI
-except ImportError:
-    ChatGoogleGenerativeAI = None
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from langgraph.prebuilt import ToolNode
 
@@ -26,15 +17,30 @@ from langgraph.prebuilt import ToolNode
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-from tradingagents.agents import *
-from tradingagents.default_config import DEFAULT_CONFIG
-from tradingagents.agents.utils.memory import FinancialSituationMemory
-from tradingagents.agents.utils.agent_states import (
-    AgentState,
-    InvestDebateState,
-    RiskDebateState,
-)
-from tradingagents.dataflows.interface import set_config
+# Import from local agent modules
+from ..utils.agent_utils import Toolkit, create_msg_delete
+from ..utils.agent_states import AgentState, InvestDebateState, RiskDebateState
+from ..utils.memory import FinancialSituationMemory
+
+from ..analysts.fundamentals_analyst import create_fundamentals_analyst
+from ..analysts.market_analyst import create_market_analyst
+from ..analysts.news_analyst import create_news_analyst
+from ..analysts.social_media_analyst import create_social_media_analyst
+
+from ..researchers.bear_researcher import create_bear_researcher
+from ..researchers.bull_researcher import create_bull_researcher
+
+from ..risk_mgmt.aggresive_debator import create_risky_debator
+from ..risk_mgmt.conservative_debator import create_safe_debator
+from ..risk_mgmt.neutral_debator import create_neutral_debator
+
+from ..managers.research_manager import create_research_manager
+from ..managers.risk_manager import create_risk_manager
+
+from ..trader.trader import create_trader
+
+from ..default_config import DEFAULT_CONFIG
+from ..dataflows.interface import set_config
 
 from .conditional_logic import ConditionalLogic
 from .setup import GraphSetup
@@ -79,13 +85,9 @@ class TradingAgentsGraph:
             self.deep_thinking_llm = ChatOpenAI(model=self.config["deep_think_llm"], base_url=self.config["backend_url"], api_key=api_key)
             self.quick_thinking_llm = ChatOpenAI(model=self.config["quick_think_llm"], base_url=self.config["backend_url"], api_key=api_key)
         elif self.config["llm_provider"].lower() == "anthropic":
-            if ChatAnthropic is None:
-                raise ValueError("langchain_anthropic is not installed. Install it with: pip install langchain-anthropic")
             self.deep_thinking_llm = ChatAnthropic(model=self.config["deep_think_llm"], base_url=self.config["backend_url"])
             self.quick_thinking_llm = ChatAnthropic(model=self.config["quick_think_llm"], base_url=self.config["backend_url"])
         elif self.config["llm_provider"].lower() == "google":
-            if ChatGoogleGenerativeAI is None:
-                raise ValueError("langchain_google_genai is not installed. Install it with: pip install langchain-google-genai")
             self.deep_thinking_llm = ChatGoogleGenerativeAI(model=self.config["deep_think_llm"])
             self.quick_thinking_llm = ChatGoogleGenerativeAI(model=self.config["quick_think_llm"])
         else:
@@ -263,33 +265,29 @@ class TradingAgentsGraph:
     def _log_state(self, trade_date, final_state):
         """Log the final state to a JSON file."""
         self.log_states_dict[str(trade_date)] = {
-            "company_of_interest": final_state["company_of_interest"],
-            "trade_date": final_state["trade_date"],
-            "market_report": final_state["market_report"],
-            "sentiment_report": final_state["sentiment_report"],
-            "news_report": final_state["news_report"],
-            "fundamentals_report": final_state["fundamentals_report"],
+            "company_of_interest": final_state.get("company_of_interest", self.ticker),
+            "trade_date": final_state.get("trade_date", trade_date),
+            "market_report": final_state.get("market_report", ""),
+            "sentiment_report": final_state.get("sentiment_report", ""),
+            "news_report": final_state.get("news_report", ""),
+            "fundamentals_report": final_state.get("fundamentals_report", ""),
             "investment_debate_state": {
-                "bull_history": final_state["investment_debate_state"]["bull_history"],
-                "bear_history": final_state["investment_debate_state"]["bear_history"],
-                "history": final_state["investment_debate_state"]["history"],
-                "current_response": final_state["investment_debate_state"][
-                    "current_response"
-                ],
-                "judge_decision": final_state["investment_debate_state"][
-                    "judge_decision"
-                ],
+                "bull_history": final_state.get("investment_debate_state", {}).get("bull_history", ""),
+                "bear_history": final_state.get("investment_debate_state", {}).get("bear_history", ""),
+                "history": final_state.get("investment_debate_state", {}).get("history", ""),
+                "current_response": final_state.get("investment_debate_state", {}).get("current_response", ""),
+                "judge_decision": final_state.get("investment_debate_state", {}).get("judge_decision", ""),
             },
-            "trader_investment_decision": final_state["trader_investment_plan"],
+            "trader_investment_decision": final_state.get("trader_investment_plan", ""),
             "risk_debate_state": {
-                "risky_history": final_state["risk_debate_state"]["risky_history"],
-                "safe_history": final_state["risk_debate_state"]["safe_history"],
-                "neutral_history": final_state["risk_debate_state"]["neutral_history"],
-                "history": final_state["risk_debate_state"]["history"],
-                "judge_decision": final_state["risk_debate_state"]["judge_decision"],
+                "risky_history": final_state.get("risk_debate_state", {}).get("risky_history", ""),
+                "safe_history": final_state.get("risk_debate_state", {}).get("safe_history", ""),
+                "neutral_history": final_state.get("risk_debate_state", {}).get("neutral_history", ""),
+                "history": final_state.get("risk_debate_state", {}).get("history", ""),
+                "judge_decision": final_state.get("risk_debate_state", {}).get("judge_decision", ""),
             },
-            "investment_plan": final_state["investment_plan"],
-            "final_trade_decision": final_state["final_trade_decision"],
+            "investment_plan": final_state.get("investment_plan", ""),
+            "final_trade_decision": final_state.get("final_trade_decision", ""),
         }
 
         # Save to file

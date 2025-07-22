@@ -1,4 +1,4 @@
-"""Agent module for LangGraph server integration."""
+"""Unified Agent module for LangGraph server integration."""
 
 import os
 import sys
@@ -13,9 +13,30 @@ src_parent = os.path.dirname(src_dir)
 if src_parent not in sys.path:
     sys.path.insert(0, src_parent)
 
-from tradingagents.graph.trading_graph import TradingAgentsGraph
-from tradingagents.agents.utils.agent_states import AgentState
-from tradingagents.default_config import DEFAULT_CONFIG
+# Import from local agent modules
+from .utils.agent_utils import Toolkit, create_msg_delete
+from .utils.agent_states import AgentState, InvestDebateState, RiskDebateState
+from .utils.memory import FinancialSituationMemory
+
+from .analysts.fundamentals_analyst import create_fundamentals_analyst
+from .analysts.market_analyst import create_market_analyst
+from .analysts.news_analyst import create_news_analyst
+from .analysts.social_media_analyst import create_social_media_analyst
+
+from .researchers.bear_researcher import create_bear_researcher
+from .researchers.bull_researcher import create_bull_researcher
+
+from .risk_mgmt.aggresive_debator import create_risky_debator
+from .risk_mgmt.conservative_debator import create_safe_debator
+from .risk_mgmt.neutral_debator import create_neutral_debator
+
+from .managers.research_manager import create_research_manager
+from .managers.risk_manager import create_risk_manager
+
+from .trader.trader import create_trader
+
+# Import remaining dependencies from local modules
+from .default_config import DEFAULT_CONFIG
 
 
 class LangGraphServerState(TypedDict):
@@ -105,6 +126,11 @@ def convert_from_agent_state(agent_state: Dict[str, Any], original_state: LangGr
 async def run_trading_analysis(state: LangGraphServerState, config: RunnableConfig) -> LangGraphServerState:
     """Main entry point for LangGraph server - runs the complete trading analysis."""
     try:
+        # Import TradingAgentsGraph locally to avoid circular imports
+        import importlib
+        trading_graph_module = importlib.import_module('.graph.trading_graph', package='agent')
+        TradingAgentsGraph = trading_graph_module.TradingAgentsGraph
+        
         # Convert to internal state format
         agent_state = convert_to_agent_state(state)
         
@@ -142,10 +168,48 @@ async def run_trading_analysis(state: LangGraphServerState, config: RunnableConf
         return result
 
 
-# Create the LangGraph server compatible graph
-graph = (
-    StateGraph(LangGraphServerState)
-    .add_node("trading_analysis", run_trading_analysis)
-    .add_edge("__start__", "trading_analysis")
-    .compile(name="Trading Agents Graph")
-)
+# Create the original detailed graph directly for LangGraph Studio
+def create_studio_compatible_graph():
+    """Create the original TradingAgentsGraph for LangGraph Studio with all nodes visible."""
+    # Import TradingAgentsGraph locally to avoid circular imports
+    import importlib
+    trading_graph_module = importlib.import_module('.graph.trading_graph', package='agent')
+    TradingAgentsGraph = trading_graph_module.TradingAgentsGraph
+    
+    # Create the original detailed graph instance
+    trading_graph_instance = TradingAgentsGraph(
+        selected_analysts=["market", "social", "news", "fundamentals"],
+        debug=False,
+        config=DEFAULT_CONFIG
+    )
+    
+    # Return the original graph directly - it has all the detailed nodes
+    return trading_graph_instance.graph
+
+# Create the detailed graph for LangGraph Studio
+graph = create_studio_compatible_graph()
+
+# Export all the trading agent functions for compatibility
+__all__ = [
+    "FinancialSituationMemory",
+    "Toolkit",
+    "AgentState",
+    "create_msg_delete",
+    "InvestDebateState",
+    "RiskDebateState",
+    "create_bear_researcher",
+    "create_bull_researcher",
+    "create_research_manager",
+    "create_fundamentals_analyst",
+    "create_market_analyst",
+    "create_neutral_debator",
+    "create_news_analyst",
+    "create_risky_debator",
+    "create_risk_manager",
+    "create_safe_debator",
+    "create_social_media_analyst",
+    "create_trader",
+    "graph",
+    "LangGraphServerState",
+    "run_trading_analysis"
+]

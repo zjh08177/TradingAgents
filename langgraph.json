@@ -1,7 +1,0 @@
-{
-  "dependencies": ["./backend/tradingagents"],
-  "graphs": {
-    "trading-agent": "./backend/graph_entry.py:compiled_graph"
-  },
-  "env": "./backend/.env"
-} 

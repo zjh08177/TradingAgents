@@ -5,7 +5,7 @@
 Error: LangGraph Server config file langgraph.json not found
 ```
 
-**Root Cause**: The `langgraph.json` file was located in `backend/` directory, but LangGraph Cloud deployment expects it to be in the project root.
+**OUTDATED**: This file describes old deployment structure. Current deployment uses `trading-graph-server/` as the unified source of truth.
 
 ## ✅ **Solution Applied**
 
