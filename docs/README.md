@@ -18,6 +18,12 @@ This directory contains all project documentation.
 ### Setup Guides
 - **`FASTAPI_SETUP.md`** - FastAPI Server Setup
   - API endpoint documentation
+
+### Test Documentation
+- **`tests/`** - Test Documentation and References
+  - Consolidated test knowledge from removed test scripts
+  - Testing approaches and validation procedures
+  - Critical test scenarios and data assets
   - Server configuration
   - Deployment instructions
 

@@ -24,7 +24,8 @@ TradingAgents/
 ├── docs/                # All documentation
 │   ├── PRD.md          # Product requirements
 │   ├── DOCUMENTATION.md # Technical documentation
-│   └── FASTAPI_SETUP.md # API setup guide
+│   ├── FASTAPI_SETUP.md # API setup guide
+│   └── tests/          # Test documentation and references
 ├── assets/              # Images and media assets
 ├── README.md           # This file
 └── LICENSE             # MIT license
