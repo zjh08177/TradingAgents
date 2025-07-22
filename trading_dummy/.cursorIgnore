@@ -1,0 +1,37 @@
+# Flutter App .cursorIgnore
+# Specific to the Flutter application
+
+# Environment files
+!.env
+!*.env
+
+# But include examples
+!.env.example
+
+# Flutter build files
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Platform-specific builds
+android/app/release/
+ios/build/
+macos/build/
+linux/build/
+windows/build/
+web/build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependency locks
+pubspec.lock
+
+# Generated files
+*.g.dart
+*.freezed.dart 
