@@ -1,72 +1,50 @@
 from langchain_core.messages import AIMessage
-import time
+import asyncio
 import json
 import logging
 
 logger = logging.getLogger(__name__)
 
 def create_bull_researcher(llm, memory):
-    def bull_node(state) -> dict:
-        logger.info("🐂 Bull Researcher: Starting execution")
-        
-        investment_debate_state = state["investment_debate_state"]
-        logger.info(f"🐂 Bull Researcher: Current debate state count: {investment_debate_state.get('count', 0)}")
-        logger.info(f"🐂 Bull Researcher: Current response starts with: {investment_debate_state.get('current_response', '')[:50]}...")
-        
-        history = investment_debate_state.get("history", "")
-        bull_history = investment_debate_state.get("bull_history", "")
+    async def bull_node(state) -> dict:
+        # Get state data
+        investment_debate_state = state.get("investment_debate_state", {"count": 0, "history": ""})
+        market_research_report = state.get("market_report", "")
+        sentiment_report = state.get("sentiment_report", "")
+        news_report = state.get("news_report", "")
+        fundamentals_report = state.get("fundamentals_report", "")
 
-        current_response = investment_debate_state.get("current_response", "")
-        market_research_report = state["market_report"]
-        sentiment_report = state["sentiment_report"]
-        news_report = state["news_report"]
-        fundamentals_report = state["fundamentals_report"]
-
+        # Get past memories
         curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}"
         past_memories = memory.get_memories(curr_situation, n_matches=2)
+        past_memory_str = "\n\n".join([rec["recommendation"] for rec in past_memories])
 
-        past_memory_str = ""
-        for i, rec in enumerate(past_memories, 1):
-            past_memory_str += rec["recommendation"] + "\n\n"
+        prompt = f"""As the Bull Researcher, provide a strong bullish case highlighting:
+- Growth opportunities and potential catalysts
+- Positive market trends and momentum
+- Favorable fundamentals and competitive advantages
+- Optimistic sentiment and market positioning
 
-        prompt = f"""You are a Bull Analyst advocating for investing in the stock. Your task is to build a strong, evidence-based case emphasizing growth potential, competitive advantages, and positive market indicators. Leverage the provided research and data to address concerns and counter bearish arguments effectively.
+Research Data:
+- Market Report: {market_research_report}
+- Sentiment Report: {sentiment_report}
+- News Report: {news_report}
+- Fundamentals Report: {fundamentals_report}
+- Past Lessons: {past_memory_str}
 
-Key points to focus on:
-- Growth Potential: Highlight the company's market opportunities, revenue projections, and scalability.
-- Competitive Advantages: Emphasize factors like unique products, strong branding, or dominant market positioning.
-- Positive Indicators: Use financial health, industry trends, and recent positive news as evidence.
-- Bear Counterpoints: Critically analyze the bear argument with specific data and sound reasoning, addressing concerns thoroughly and showing why the bull perspective holds stronger merit.
-- Engagement: Present your argument in a conversational style, engaging directly with the bear analyst's points and debating effectively rather than just listing data.
+Present your bullish perspective with conviction and data-driven reasoning."""
 
-Resources available:
-Market research report: {market_research_report}
-Social media sentiment report: {sentiment_report}
-Latest world affairs news: {news_report}
-Company fundamentals report: {fundamentals_report}
-Conversation history of the debate: {history}
-Last bear argument: {current_response}
-Reflections from similar situations and lessons learned: {past_memory_str}
-Use this information to deliver a compelling bull argument, refute the bear's concerns, and engage in a dynamic debate that demonstrates the strengths of the bull position. You must also address reflections and learn from lessons and mistakes you made in the past.
-"""
-
-        logger.info("🐂 Bull Researcher: Invoking LLM...")
-        response = llm.invoke(prompt)
-        logger.info("🐂 Bull Researcher: LLM response received")
-
-        argument = f"Bull Analyst: {response.content}"
-
-        new_investment_debate_state = {
-            "history": history + "\n" + argument,
-            "bull_history": bull_history + "\n" + argument,
-            "bear_history": investment_debate_state.get("bear_history", ""),
-            "current_response": argument,
-            "count": investment_debate_state["count"] + 1,
-        }
-
-        logger.info(f"🐂 Bull Researcher: New debate state count: {new_investment_debate_state['count']}")
-        logger.info(f"🐂 Bull Researcher: New current response starts with: {argument[:50]}...")
-        logger.info("🐂 Bull Researcher: Execution complete")
-
-        return {"investment_debate_state": new_investment_debate_state}
+        messages = [{"role": "user", "content": prompt}]
+        result = await llm.ainvoke(messages)
+        
+        # Update state
+        new_state = investment_debate_state.copy()
+        new_state.update({
+            "bull_history": result.content,
+            "current_response": f"Bull: {result.content}",
+            "count": investment_debate_state.get("count", 0) + 1
+        })
+        
+        return {"investment_debate_state": new_state}
 
     return bull_node

@@ -1,10 +1,13 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-import time
+import asyncio
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def create_fundamentals_analyst(llm, toolkit):
-    def fundamentals_analyst_node(state):
+    async def fundamentals_analyst_node(state):
         current_date = state["trade_date"]
         ticker = state["company_of_interest"]
         company_name = state["company_of_interest"]
@@ -49,16 +52,45 @@ def create_fundamentals_analyst(llm, toolkit):
 
         chain = prompt | llm.bind_tools(tools)
 
-        result = chain.invoke(state["messages"])
+        # Use the correct message channel for fundamentals analyst
+        messages = state.get("fundamentals_messages", [])
+        result = await chain.ainvoke(messages)
 
+        # Generate report when no tool calls are present OR when we have enough tool data
+        tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
+        
         report = ""
-
         if len(result.tool_calls) == 0:
+            # Direct response from LLM - use as report
             report = result.content
+        else:
+            # LLM wants to make tool calls - wait for tool execution
+            report = ""  # Will be generated after tool execution
+            
+        # ALWAYS generate a summary report if we have tool results available
+        if tool_message_count >= 1 and not result.tool_calls:
+            # Create a summary prompt to generate final report
+            summary_prompt = f"""Based on the tool results and data gathered, provide a comprehensive fundamentals analysis report for {company_name} on {current_date}.
+            
+Include:
+- Financial statement analysis
+- Company fundamentals assessment
+- Valuation analysis
+- Growth prospects evaluation
+- Fundamental-based trading recommendations
 
+Make this a detailed, actionable report for traders."""
+
+            # Generate summary
+            summary_result = await llm.ainvoke([{"role": "user", "content": summary_prompt}])
+            report = summary_result.content
+
+        # Return the state update
+        updated_messages = messages + [result]
         return {
-            "messages": [result],
+            "fundamentals_messages": updated_messages,
             "fundamentals_report": report,
+            "sender": "Fundamentals Analyst"
         }
 
     return fundamentals_analyst_node

@@ -1,295 +1,155 @@
 #!/usr/bin/env python3
 """
-Advanced debugging script for Trading Graph Server
-Provides detailed error analysis and step-by-step debugging
+Debug test script to identify and fix async issues in the trading graph
 """
 
-import requests
-import json
-import time
-import sys
+import asyncio
 import logging
+import sys
+import traceback
 from datetime import datetime
 
-# Configure logging
+# Set up comprehensive logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('debug_test.log'),
-        logging.StreamHandler()
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('debug.log')
     ]
 )
+
 logger = logging.getLogger(__name__)
 
-# Server configuration
-BASE_URL = "http://127.0.0.1:8123"
-HEADERS = {"Content-Type": "application/json"}
-
-def test_server_health():
-    """Test if the LangGraph server is running with detailed diagnostics"""
-    logger.info("🔍 Testing server health...")
-    
-    endpoints_to_test = [
-        "/docs",
-        "/openapi.json", 
-        "/health"
-    ]
-    
-    for endpoint in endpoints_to_test:
-        try:
-            response = requests.get(f"{BASE_URL}{endpoint}", timeout=5)
-            logger.info(f"✅ {endpoint}: {response.status_code}")
-            if endpoint == "/openapi.json" and response.status_code == 200:
-                api_info = response.json()
-                logger.info(f"📋 API Title: {api_info.get('info', {}).get('title', 'Unknown')}")
-                logger.info(f"📋 API Version: {api_info.get('info', {}).get('version', 'Unknown')}")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"❌ {endpoint}: {str(e)}")
-            return False
-    
-    return True
-
-def create_assistant_with_debug():
-    """Create an assistant with detailed error handling"""
-    logger.info("🤖 Creating assistant...")
-    
-    data = {"graph_id": "trading_agents"}
-    
+async def test_graph_execution():
+    """Test the graph execution with detailed debugging"""
     try:
-        response = requests.post(f"{BASE_URL}/assistants", json=data, headers=HEADERS)
-        logger.info(f"📡 Response status: {response.status_code}")
-        logger.info(f"📡 Response headers: {dict(response.headers)}")
+        logger.info("🚀 Starting debug test of trading graph")
         
-        if response.status_code == 200:
-            assistant_data = response.json()
-            assistant_id = assistant_data["assistant_id"]
-            logger.info(f"✅ Assistant created: {assistant_id}")
-            logger.info(f"📋 Assistant details: {json.dumps(assistant_data, indent=2)}")
-            return assistant_id
-        else:
-            logger.error(f"❌ Failed to create assistant: {response.status_code}")
-            logger.error(f"❌ Error response: {response.text}")
-            return None
-            
-    except Exception as e:
-        logger.error(f"❌ Exception creating assistant: {str(e)}")
-        return None
-
-def create_thread_with_debug():
-    """Create a thread with detailed error handling"""
-    logger.info("🧵 Creating thread...")
-    
-    try:
-        response = requests.post(f"{BASE_URL}/threads", json={}, headers=HEADERS)
-        logger.info(f"📡 Response status: {response.status_code}")
+        # Import the graph components
+        logger.debug("📦 Importing trading graph components...")
+        from agent.graph.trading_graph import TradingAgentsGraph
+        from agent.default_config import DEFAULT_CONFIG
         
-        if response.status_code == 200:
-            thread_data = response.json()
-            thread_id = thread_data["thread_id"]
-            logger.info(f"✅ Thread created: {thread_id}")
-            logger.info(f"📋 Thread details: {json.dumps(thread_data, indent=2)}")
-            return thread_id
-        else:
-            logger.error(f"❌ Failed to create thread: {response.status_code}")
-            logger.error(f"❌ Error response: {response.text}")
-            return None
-            
-    except Exception as e:
-        logger.error(f"❌ Exception creating thread: {str(e)}")
-        return None
-
-def run_trading_analysis_with_debug(assistant_id, thread_id, ticker="AAPL"):
-    """Run trading analysis with comprehensive debugging"""
-    logger.info(f"📈 Starting trading analysis for {ticker}...")
-    
-    # Create comprehensive input data
-    input_data = {
-        "ticker": ticker,
-        "analysis_date": datetime.now().strftime("%Y-%m-%d"),
-        "company_of_interest": ticker,
-        "trade_date": datetime.now().strftime("%Y-%m-%d"),
-        "fundamentals_report": "",
-        "market_analysis_report": "",
-        "news_sentiment_report": "",
-        "social_media_report": "",
-        "research_report": "",
-        "risk_assessment": "",
-        "trading_recommendation": "",
-        "confidence_score": 0.0
-    }
-    
-    data = {
-        "assistant_id": assistant_id,
-        "input": input_data
-    }
-    
-    logger.info(f"📋 Input data: {json.dumps(data, indent=2)}")
-    
-    try:
-        response = requests.post(
-            f"{BASE_URL}/threads/{thread_id}/runs", 
-            json=data, 
-            headers=HEADERS,
-            timeout=30
+        logger.debug("✅ Successfully imported graph components")
+        
+        # Create trading graph instance
+        trading_graph = TradingAgentsGraph(
+            selected_analysts=["market", "social", "news", "fundamentals"],
+            config=DEFAULT_CONFIG
         )
+        logger.debug("✅ Trading graph instance created")
         
-        logger.info(f"📡 Response status: {response.status_code}")
-        logger.info(f"📡 Response headers: {dict(response.headers)}")
+        # Test data
+        test_input = {
+            "ticker": "AAPL",
+            "analysis_date": "2025-07-22",
+            "company_of_interest": "Apple Inc.",
+            "trade_date": "2025-07-22"
+        }
         
-        if response.status_code == 200:
-            run_data = response.json()
-            run_id = run_data["run_id"]
-            logger.info(f"✅ Analysis started: {run_id}")
-            logger.info(f"📋 Run details: {json.dumps(run_data, indent=2)}")
-            return run_id
-        else:
-            logger.error(f"❌ Failed to start run: {response.status_code}")
-            logger.error(f"❌ Error response: {response.text}")
-            return None
-            
-    except Exception as e:
-        logger.error(f"❌ Exception starting run: {str(e)}")
-        return None
-
-def monitor_run_with_debug(thread_id, run_id, timeout=300):
-    """Monitor run progress with detailed logging"""
-    logger.info(f"⏱️ Monitoring run {run_id} (timeout: {timeout}s)")
-    
-    start_time = time.time()
-    last_status = None
-    status_count = {}
-    
-    while time.time() - start_time < timeout:
+        logger.info(f"🎯 Testing with input: {test_input}")
+        
+        # Try to run the graph
+        logger.info("🏃 Starting graph execution...")
         try:
-            response = requests.get(f"{BASE_URL}/threads/{thread_id}/runs/{run_id}")
+            final_state, processed_signal = await trading_graph.propagate(
+                test_input["company_of_interest"], 
+                test_input["trade_date"]
+            )
             
-            if response.status_code == 200:
-                run_data = response.json()
-                current_status = run_data["status"]
-                
-                # Count status occurrences
-                status_count[current_status] = status_count.get(current_status, 0) + 1
-                
-                # Log status changes
-                if current_status != last_status:
-                    logger.info(f"🔄 Status changed: {last_status} → {current_status}")
-                    last_status = current_status
-                
-                # Log periodic updates
-                if status_count[current_status] % 10 == 1:
-                    elapsed = time.time() - start_time
-                    logger.info(f"⏰ Status: {current_status} (elapsed: {elapsed:.1f}s)")
-                
-                # Check for completion
-                if current_status == "success":
-                    logger.info("✅ Run completed successfully!")
-                    logger.info(f"📊 Final run data: {json.dumps(run_data, indent=2)}")
-                    return True, run_data
-                elif current_status in ["failed", "cancelled", "error"]:
-                    logger.error(f"❌ Run failed with status: {current_status}")
-                    logger.error(f"📊 Failed run data: {json.dumps(run_data, indent=2)}")
-                    
-                    # Try to get error details
-                    if "error" in run_data:
-                        logger.error(f"🔍 Error details: {run_data['error']}")
-                    
-                    return False, run_data
-            else:
-                logger.error(f"❌ Failed to get run status: {response.status_code}")
-                logger.error(f"❌ Error response: {response.text}")
-        
-        except Exception as e:
-            logger.error(f"❌ Exception monitoring run: {str(e)}")
-        
-        time.sleep(2)
-    
-    logger.error("⏰ Timeout waiting for completion")
-    return False, None
+            logger.info("✅ Graph execution completed successfully!")
+            logger.info(f"📊 Final state keys: {list(final_state.keys()) if final_state else 'None'}")
+            logger.info(f"🎯 Processed signal: {processed_signal}")
+            
+            return True
+            
+        except Exception as graph_error:
+            logger.error(f"❌ Graph execution failed: {graph_error}")
+            logger.error(f"❌ Error type: {type(graph_error).__name__}")
+            logger.error(f"❌ Traceback:\n{traceback.format_exc()}")
+            return False
+            
+    except ImportError as import_error:
+        logger.error(f"❌ Import error: {import_error}")
+        logger.error(f"❌ Traceback:\n{traceback.format_exc()}")
+        return False
+    except Exception as e:
+        logger.error(f"❌ Unexpected error: {e}")
+        logger.error(f"❌ Error type: {type(e).__name__}")
+        logger.error(f"❌ Traceback:\n{traceback.format_exc()}")
+        return False
 
-def get_thread_state_with_debug(thread_id):
-    """Get thread state with detailed analysis"""
-    logger.info(f"📊 Getting thread state for {thread_id}")
+async def test_individual_components():
+    """Test individual components to isolate issues"""
+    logger.info("🔍 Testing individual components...")
     
     try:
-        response = requests.get(f"{BASE_URL}/threads/{thread_id}/state")
+        # Test LLM creation
+        logger.debug("🧠 Testing LLM creation...")
+        from langchain_openai import ChatOpenAI
         
-        if response.status_code == 200:
-            state_data = response.json()
-            logger.info("✅ Thread state retrieved successfully")
-            logger.info(f"📋 State keys: {list(state_data.keys())}")
-            
-            if "values" in state_data:
-                values = state_data["values"]
-                logger.info(f"📊 Values keys: {list(values.keys()) if values else 'No values'}")
-                
-                # Log report lengths
-                reports = [
-                    "fundamentals_report", "market_analysis_report", 
-                    "news_sentiment_report", "social_media_report",
-                    "research_report", "risk_assessment", "trading_recommendation"
-                ]
-                
-                for report in reports:
-                    if report in values and values[report]:
-                        logger.info(f"📄 {report}: {len(values[report])} characters")
-                    else:
-                        logger.info(f"📄 {report}: Empty or missing")
-            
-            return state_data
-        else:
-            logger.error(f"❌ Failed to get state: {response.status_code}")
-            logger.error(f"❌ Error response: {response.text}")
-            return None
-            
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1)
+        logger.debug("✅ LLM created successfully")
+        
+        # Test simple LLM call
+        logger.debug("💬 Testing simple LLM call...")
+        messages = [{"role": "user", "content": "Say 'Hello, World!'"}]
+        response = await llm.ainvoke(messages)
+        logger.debug(f"✅ LLM response: {response.content}")
+        
+        # Test analyst creation
+        logger.debug("🔬 Testing analyst creation...")
+        from agent.analysts.market_analyst import create_market_analyst
+        
+        market_analyst = create_market_analyst(llm, [])
+        logger.debug("✅ Market analyst created successfully")
+        
+        # Test memory system
+        logger.debug("💾 Testing memory system...")
+        from agent.utils.memory import FinancialSituationMemory
+        from agent.default_config import DEFAULT_CONFIG
+        
+        memory = FinancialSituationMemory("test_memory", DEFAULT_CONFIG)
+        logger.debug("✅ Memory system created successfully")
+        
+        return True
+        
     except Exception as e:
-        logger.error(f"❌ Exception getting state: {str(e)}")
-        return None
+        logger.error(f"❌ Component test failed: {e}")
+        logger.error(f"❌ Traceback:\n{traceback.format_exc()}")
+        return False
 
-def main():
-    """Main debugging function with comprehensive error handling"""
-    logger.info("🚀 Starting comprehensive debugging session")
+async def main():
+    """Main debug function"""
+    logger.info("=" * 80)
+    logger.info("🐛 COMPREHENSIVE DEBUG TEST STARTED")
     logger.info("=" * 80)
     
-    # Test server health
-    if not test_server_health():
-        logger.error("❌ Server health check failed")
-        sys.exit(1)
+    # Test individual components first
+    logger.info("Phase 1: Testing individual components...")
+    component_success = await test_individual_components()
     
-    # Create assistant
-    assistant_id = create_assistant_with_debug()
-    if not assistant_id:
-        logger.error("❌ Failed to create assistant")
-        sys.exit(1)
+    if not component_success:
+        logger.error("❌ Component tests failed, skipping graph test")
+        return False
     
-    # Create thread
-    thread_id = create_thread_with_debug()
-    if not thread_id:
-        logger.error("❌ Failed to create thread")
-        sys.exit(1)
+    logger.info("✅ All components tested successfully")
     
-    # Run analysis
-    ticker = sys.argv[1] if len(sys.argv) > 1 else "AAPL"
-    run_id = run_trading_analysis_with_debug(assistant_id, thread_id, ticker)
-    if not run_id:
-        logger.error("❌ Failed to start analysis")
-        sys.exit(1)
+    # Test full graph execution
+    logger.info("Phase 2: Testing full graph execution...")
+    graph_success = await test_graph_execution()
     
-    # Monitor progress
-    success, run_data = monitor_run_with_debug(thread_id, run_id)
-    
-    # Get final state regardless of success/failure
-    final_state = get_thread_state_with_debug(thread_id)
-    
-    if success:
-        logger.info("🎉 Debugging session completed successfully!")
-        logger.info(f"🎨 View in Studio: https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:8123")
-        logger.info(f"📚 API Docs: http://127.0.0.1:8123/docs")
+    logger.info("=" * 80)
+    if graph_success:
+        logger.info("🎉 ALL DEBUG TESTS PASSED!")
+        logger.info("✅ Graph is working correctly")
     else:
-        logger.error("❌ Debugging session completed with errors")
-        logger.error("🔍 Check debug_test.log for detailed error information")
+        logger.error("❌ DEBUG TESTS FAILED!")
+        logger.error("   Check debug.log for detailed error information")
     
     logger.info("=" * 80)
+    return graph_success
 
 if __name__ == "__main__":
-    main() 
+    asyncio.run(main()) 
