@@ -5,6 +5,10 @@
 
 set -e  # Exit on any error
 
+# Global timeout configuration (720 seconds = 12 minutes)
+GLOBAL_TIMEOUT=720
+export SCRIPT_START_TIME=$(date +%s)
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -258,10 +262,26 @@ log() {
     echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$DEBUG_LOG"
 }
 
+# Function to check global timeout
+check_timeout() {
+    local current_time=$(date +%s)
+    local elapsed=$((current_time - SCRIPT_START_TIME))
+    
+    if [ $elapsed -ge $GLOBAL_TIMEOUT ]; then
+        echo -e "${RED}❌ GLOBAL TIMEOUT: Script exceeded ${GLOBAL_TIMEOUT}s limit${NC}"
+        echo -e "${RED}   Elapsed time: ${elapsed}s${NC}"
+        log "GLOBAL TIMEOUT: Script terminated after ${elapsed}s (limit: ${GLOBAL_TIMEOUT}s)"
+        exit 124  # Standard timeout exit code
+    fi
+}
+
 # Function to run command with logging
 run_cmd() {
     local cmd="$1"
     local description="$2"
+    
+    # Check timeout before running command
+    check_timeout
     
     echo -e "${CYAN}🔄 $description${NC}"
     log "COMMAND: $cmd"
@@ -285,6 +305,7 @@ command_exists() {
 # Phase 1: Environment Setup
 echo -e "${PURPLE}📋 Phase 1: Environment Verification${NC}"
 echo "========================================"
+check_timeout
 
 # Check if we're in the right directory
 if [[ ! -f "src/agent/__init__.py" ]]; then
@@ -358,13 +379,20 @@ export PYTHONPATH="$SCRIPT_DIR/src:$PYTHONPATH"
 export LANGCHAIN_TRACING_V2=false
 export LANGGRAPH_DEBUG=true
 export PYTHON_LOG_LEVEL=DEBUG
+
+# Enable minimalist logging
+export USE_MINIMALIST_LOGGING=true
+export MINIMALIST_LOG_FILE="$LOG_DIR/minimalist_debug_$TIMESTAMP.log"
+
 log "Debug environment variables set"
+log "Minimalist logging enabled: $MINIMALIST_LOG_FILE"
 
 echo ""
 
 # Phase 2: Code Verification
 echo -e "${PURPLE}📋 Phase 2: Code Verification${NC}"
 echo "================================"
+check_timeout
 
 # Check imports
 run_cmd "python3 -c 'from agent.graph.trading_graph import TradingAgentsGraph; print(\"✅ Core imports working\")'" "Testing core imports"
@@ -376,6 +404,7 @@ echo ""
 # Phase 3: Debug Test Execution
 echo -e "${PURPLE}📋 Phase 3: Debug Test Execution${NC}"
 echo "=================================="
+check_timeout
 
 # Configure logging to reduce false warnings from OpenAI client
 export PYTHONPATH="/Users/bytedance/Documents/TradingAgents/trading-graph-server/src:$PYTHONPATH"
@@ -511,6 +540,7 @@ echo ""
 # Phase 4: Server Testing
 echo -e "${PURPLE}📋 Phase 4: Server Testing${NC}"
 echo "=========================="
+check_timeout
 
 # Check if LangGraph CLI is installed
 if command_exists langgraph; then
@@ -548,6 +578,7 @@ echo ""
 # Phase 5: Graph Analysis
 echo -e "${PURPLE}📋 Phase 5: Graph Analysis${NC}"
 echo "=========================="
+check_timeout
 
 # Analyze graph structure
 echo -e "${CYAN}🔄 Analyzing graph structure...${NC}"
@@ -560,7 +591,6 @@ async def analyze_graph():
     try:
         trading_graph = TradingAgentsGraph(
             selected_analysts=["market", "social", "news", "fundamentals"],
-            debug=True,
             config=DEFAULT_CONFIG
         )
         
@@ -598,6 +628,7 @@ echo ""
 # Phase 6: Generate Debug Report
 echo -e "${PURPLE}📋 Phase 6: Debug Report Generation${NC}"
 echo "===================================="
+check_timeout
 
 REPORT_FILE="$LOG_DIR/debug_report_$TIMESTAMP.md"
 
@@ -683,6 +714,7 @@ echo ""
 # Phase 7: Final Validation & Summary
 echo -e "${PURPLE}📋 Phase 7: Final Validation${NC}"
 echo "============================="
+check_timeout
 
 # Post-run validation checks
 if validate_critical_components; then
@@ -721,12 +753,14 @@ echo ""
 # Phase 8: Summary
 echo -e "${PURPLE}📋 Debug Session Complete${NC}"
 echo "=========================="
+check_timeout
 echo -e "${STATUS_COLOR}${STATUS_ICON} Debug session completed: ${FINAL_STATUS}${NC}"
 echo ""
 echo -e "${CYAN}📂 Generated Files:${NC}"
 echo -e "   📝 Debug Log: $DEBUG_LOG"
 echo -e "   📊 Graph Log: $GRAPH_LOG"  
 echo -e "   📋 Report: $REPORT_FILE"
+echo -e "   📉 Minimalist Log: $MINIMALIST_LOG_FILE"
 echo ""
 echo -e "${CYAN}🚀 Next Steps:${NC}"
 echo -e "   1. Review the debug report: ${YELLOW}cat $REPORT_FILE${NC}"
@@ -734,6 +768,13 @@ echo -e "   2. Start the server: ${YELLOW}langgraph dev --port 8123${NC}"
 echo -e "   3. Monitor logs: ${YELLOW}tail -f $GRAPH_LOG${NC}"
 echo ""
 echo -e "${BLUE}🎯 Happy Debugging!${NC}"
+
+# Calculate and display total execution time
+SCRIPT_END_TIME=$(date +%s)
+TOTAL_TIME=$((SCRIPT_END_TIME - SCRIPT_START_TIME))
+echo ""
+echo -e "${CYAN}⏱️  Total Execution Time: ${TOTAL_TIME}s (Timeout: ${GLOBAL_TIMEOUT}s)${NC}"
+log "Script completed in ${TOTAL_TIME}s (under ${GLOBAL_TIMEOUT}s timeout)"
 
 if [[ "$FINAL_STATUS" == "SUCCESS" ]]; then
     log "Debug session completed successfully - no errors detected"
