@@ -1,14 +1,17 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-import time
+import asyncio
 import json
+import functools
+import time
+from agent.utils.debug_logging import debug_node, log_llm_interaction
 
 
 def create_market_analyst(llm, toolkit):
-
-    def market_analyst_node(state):
-        current_date = state["trade_date"]
-        ticker = state["company_of_interest"]
-        company_name = state["company_of_interest"]
+    @debug_node("Market_Analyst") 
+    async def market_analyst_node(state):
+        current_date = state.get("trade_date", "")
+        ticker = state.get("company_of_interest", "")
+        company_name = state.get("company_of_interest", "")
 
         if toolkit.config["online_tools"]:
             tools = [
@@ -46,7 +49,7 @@ Volatility Indicators:
 Volume-Based Indicators:
 - vwma: VWMA: A moving average weighted by volume. Usage: Confirm trends by integrating price action with volume data. Tips: Watch for skewed results from volume spikes; use in combination with other volume analyses.
 
-- Select indicators that provide diverse and complementary information. Avoid redundancy (e.g., do not select both rsi and stochrsi). Also briefly explain why they are suitable for the given market context. When you tool call, please use the exact name of the indicators provided above as they are defined parameters, otherwise your call will fail. Please make sure to call get_YFin_data first to retrieve the CSV that is needed to generate indicators. Write a very detailed and nuanced report of the trends you observe. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions.
+- Select indicators, gather market data, and provide comprehensive analysis.
 
 IMPORTANT: After you have gathered all the necessary data through tool calls, you must provide a comprehensive final analysis report. Do not just make tool calls without providing a final written analysis.
             """ + """ Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."""
@@ -76,39 +79,70 @@ IMPORTANT: After you have gathered all the necessary data through tool calls, yo
 
         chain = prompt | llm.bind_tools(tools)
 
-        result = chain.invoke(state["messages"])
+        # Use the correct message channel for market analyst
+        messages = state.get("market_messages", [])
 
-        # Check if we have tool results in the conversation history
-        # Count tool messages to determine if we should generate a final report
-        messages = state.get("messages", [])
+        # Log LLM interaction
+        prompt_text = f"System: {system_message}\nUser: Current date: {current_date}, Company: {ticker}"
+        llm_start = time.time()
+        result = await chain.ainvoke(messages)
+        llm_time = time.time() - llm_start
+        
+        log_llm_interaction(
+            model="market_analyst_llm",
+            prompt_length=len(prompt_text),
+            response_length=len(result.content) if hasattr(result, 'content') else 0,
+            execution_time=llm_time
+        )
+
+        # Generate report when no tool calls are present OR when we have enough tool data
         tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
         
-        # If no tool calls in current response and we have tool results, generate final report
         report = ""
         if len(result.tool_calls) == 0:
-            # Always generate a report when there are no more tool calls
+            # Direct response from LLM - use as report
             report = result.content
-        elif tool_message_count >= 8:  # If we have many tool results, force a final report
-            # Generate a final summary report even if there are tool calls
-            final_prompt = f"""Based on all the tool results and data you've gathered, provide a comprehensive final market analysis report for {ticker}. 
+        else:
+            # LLM wants to make tool calls - wait for tool execution
+            report = ""  # Will be generated after tool execution
+        
+        # ALWAYS generate a summary report if we have tool results available
+        if tool_message_count >= 1 and not result.tool_calls:
+            # Create a summary prompt to generate final report
+            summary_prompt = f"""Based on the tool results and data gathered, provide a comprehensive market analysis report for {company_name} on {current_date}. 
             
-            Analyze the trends, patterns, and insights from the data. Include:
-            1. Technical analysis summary
-            2. Key indicators and their signals
-            3. Market trends and momentum
-            4. Risk factors and opportunities
-            5. Trading recommendations
+Include:
+- Technical analysis findings
+- Key indicators and their implications
+- Market trends and patterns
+- Trading recommendations
+- Risk assessment
+
+Make this a detailed, actionable report for traders."""
+
+            # Create a separate LLM call for summary
+            summary_chain = llm
             
-            Make sure to append a Markdown table at the end organizing key points."""
+            # Log the summary generation
+            start_time = time.time()
+            summary_result = await summary_chain.ainvoke([{"role": "user", "content": summary_prompt}])
+            summary_time = time.time() - start_time
             
-            # Create a new prompt for final report generation
-            final_chain = prompt | llm
-            final_result = final_chain.invoke(state["messages"] + [result])
-            report = final_result.content
-       
+            log_llm_interaction(
+                model="market_summary_llm",
+                prompt_length=len(summary_prompt),
+                response_length=len(summary_result.content) if hasattr(summary_result, 'content') else 0,
+                execution_time=summary_time
+            )
+            
+            report = summary_result.content
+
+        # Return updated messages and report
+        updated_messages = messages + [result]
         return {
-            "messages": [result],
+            "market_messages": updated_messages,
             "market_report": report,
+            "sender": "Market Analyst"
         }
 
     return market_analyst_node

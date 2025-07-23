@@ -1,237 +1,197 @@
-import os
-import time
-import requests
-from datetime import datetime
-from typing import List, Dict, Any
+import httpx
+import asyncio
+import json
 import logging
+from typing import List, Dict, Any
+from agent.utils.debug_logging import log_data_fetch
+import time
 
 logger = logging.getLogger(__name__)
 
-def getNewsDataSerperAPI(query: str, start_date: str, end_date: str, serper_key: str = None) -> List[Dict[str, Any]]:
+
+async def getNewsDataSerperAPI(query_or_company: str, start_date: str = None, end_date: str = None, serper_key: str = None, config: dict = None) -> List[Dict[str, Any]]:
     """
-    Get news data using Serper API (replacement for SerpAPI).
+    Fetch news data from Serper API - backward compatible interface
     
     Args:
-        query: Search query string
-        start_date: Start date in YYYY-MM-DD format
-        end_date: End date in YYYY-MM-DD format
-        serper_key: Serper API key (if not provided, will use environment variable)
-    
+        query_or_company: Company name or search query
+        start_date: Start date for news search (optional, for backward compatibility)
+        end_date: End date for news search (optional, for backward compatibility)  
+        serper_key: API key (optional, for backward compatibility)
+        config: Configuration dictionary containing API keys (new interface)
+        
     Returns:
-        List of dictionaries with news data
+        List of news articles
     """
-    if not serper_key:
-        serper_key = os.getenv("SERPER_API_KEY")
-    
-    if not serper_key:
-        logger.error("❌ Serper API key not found. Please set SERPER_API_KEY environment variable.")
-        raise ValueError("Serper API key not found. Please set SERPER_API_KEY environment variable.")
-    
-    news_results = []
     start_time = time.time()
     
     try:
-        # Serper API endpoint
+        # Handle both old and new interface styles
+        if config is not None:
+            # New interface: getNewsDataSerperAPI(company, config)
+            api_key = config.get("serper_api_key") or config.get("serper_key")
+            company = query_or_company
+            search_query = f"{company} stock news"
+        else:
+            # Old interface: getNewsDataSerperAPI(query, start_date, end_date, serper_key)
+            api_key = serper_key
+            search_query = query_or_company
+            if start_date and end_date:
+                search_query = f"{query_or_company} after:{start_date} before:{end_date}"
+                
+        if not api_key:
+            logger.warning("No Serper API key provided")
+            return []
+
         url = "https://google.serper.dev/news"
         
-        # Headers
+        payload = json.dumps({
+            "q": search_query,
+            "gl": "us",
+            "hl": "en",
+            "num": 10
+        })
+        
         headers = {
-            'X-API-KEY': serper_key,
+            'X-API-KEY': api_key,
             'Content-Type': 'application/json'
         }
-        
-        # Construct time-based query for date filtering
-        # Serper uses different date format, we'll include dates in the query
-        date_query = f"{query} after:{start_date} before:{end_date}"
-        
-        # Request payload
-        payload = {
-            "q": date_query,
-            "gl": "us",  # Country
-            "hl": "en",  # Language
-            "num": 100   # Number of results
-        }
-        
-        logger.info(f"🔍 Serper API: Searching for '{query}' from {start_date} to {end_date}")
-        
-        response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()
-        
-        results = response.json()
-        
-        # Check for errors
-        if "error" in results:
-            logger.error(f"❌ Serper API Error: {results['error']}")
-            raise Exception(f"Serper API Error: {results['error']}")
-        
-        # Extract news results - Serper API uses 'news' key
-        news_items = results.get("news", [])
-        
-        for item in news_items:
-            try:
-                news_result = {
-                    "link": item.get("link", ""),
-                    "title": item.get("title", "No title"),
-                    "snippet": item.get("snippet", "No snippet"),
-                    "date": item.get("date", "No date"),
-                    "source": item.get("source", "Unknown source"),
-                }
-                news_results.append(news_result)
-                
-            except Exception as e:
-                logger.warning(f"⚠️ Error processing news item: {e}")
-                continue
-        
-        duration = time.time() - start_time
-        logger.info(f"✅ Serper API: Retrieved {len(news_results)} news items in {duration:.2f}s")
-        
-        return news_results
-        
-    except requests.exceptions.RequestException as e:
-        duration = time.time() - start_time
-        logger.error(f"❌ Serper API Request Error after {duration:.2f}s: {str(e)}")
-        
-        # Fallback to empty results rather than crashing
-        logger.info("🔄 Returning empty results as fallback")
-        return []
-        
-    except Exception as e:
-        duration = time.time() - start_time
-        logger.error(f"❌ Serper API Error after {duration:.2f}s: {str(e)}")
-        
-        # Fallback to empty results rather than crashing
-        logger.info("🔄 Returning empty results as fallback")
-        return []
 
-
-def getNewsDataSerperAPIWithPagination(query: str, start_date: str, end_date: str, 
-                                       max_results: int = 300, serper_key: str = None) -> List[Dict[str, Any]]:
-    """
-    Get news data using Serper API with pagination support for more results.
-    
-    Args:
-        query: Search query string
-        start_date: Start date in YYYY-MM-DD format
-        end_date: End date in YYYY-MM-DD format
-        max_results: Maximum number of results to fetch
-        serper_key: Serper API key (if not provided, will use environment variable)
-    
-    Returns:
-        List of dictionaries with news data
-    """
-    if not serper_key:
-        serper_key = os.getenv("SERPER_API_KEY")
-    
-    if not serper_key:
-        logger.error("❌ Serper API key not found. Please set SERPER_API_KEY environment variable.")
-        raise ValueError("Serper API key not found. Please set SERPER_API_KEY environment variable.")
-    
-    all_news_results = []
-    start_time = time.time()
-    page = 1
-    
-    try:
-        while len(all_news_results) < max_results:
-            # Serper API endpoint
-            url = "https://google.serper.dev/news"
-            
-            # Headers
-            headers = {
-                'X-API-KEY': serper_key,
-                'Content-Type': 'application/json'
-            }
-            
-            # Construct time-based query for date filtering
-            date_query = f"{query} after:{start_date} before:{end_date}"
-            
-            # Request payload with pagination
-            payload = {
-                "q": date_query,
-                "gl": "us",  # Country
-                "hl": "en",  # Language
-                "num": min(100, max_results - len(all_news_results)),  # Results per page
-                "page": page  # Page number for pagination
-            }
-            
-            logger.info(f"🔍 Serper API: Page {page} - Searching for '{query}' from {start_date} to {end_date}")
-            
-            response = requests.post(url, json=payload, headers=headers)
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, headers=headers, data=payload, timeout=30.0)
             response.raise_for_status()
             
-            results = response.json()
+            data = response.json()
+            news_articles = data.get("news", [])
             
-            # Check for errors
-            if "error" in results:
-                logger.error(f"❌ Serper API Error: {results['error']}")
-                break
+            # Log the data fetch operation
+            execution_time = time.time() - start_time
+            log_data_fetch(
+                source="serper_api",
+                query=search_query, 
+                results_count=len(news_articles),
+                execution_time=execution_time
+            )
             
-            # Extract news results
-            news_items = results.get("news", [])
+            return news_articles
             
-            if not news_items:
-                logger.info(f"📭 No more results found on page {page}")
-                break
-            
-            for item in news_items:
-                try:
-                    news_result = {
-                        "link": item.get("link", ""),
-                        "title": item.get("title", "No title"),
-                        "snippet": item.get("snippet", "No snippet"),
-                        "date": item.get("date", "No date"),
-                        "source": item.get("source", "Unknown source"),
-                    }
-                    all_news_results.append(news_result)
-                    
-                    if len(all_news_results) >= max_results:
-                        break
-                        
-                except Exception as e:
-                    logger.warning(f"⚠️ Error processing news item: {e}")
-                    continue
-            
-            page += 1
-            
-            # Add small delay between requests to be respectful
-            time.sleep(0.5)
-        
-        duration = time.time() - start_time
-        logger.info(f"✅ Serper API: Retrieved {len(all_news_results)} news items in {duration:.2f}s across {page - 1} pages")
-        
-        return all_news_results[:max_results]  # Ensure we don't exceed max_results
-        
-    except requests.exceptions.RequestException as e:
-        duration = time.time() - start_time
-        logger.error(f"❌ Serper API Request Error after {duration:.2f}s: {str(e)}")
-        
-        # Return whatever we managed to collect
-        logger.info(f"🔄 Returning {len(all_news_results)} partial results as fallback")
-        return all_news_results
-        
+    except httpx.HTTPError as e:
+        execution_time = time.time() - start_time
+        log_data_fetch(
+            source="serper_api",
+            query=f"{query_or_company} (HTTP ERROR)",
+            results_count=0, 
+            execution_time=execution_time
+        )
+        logger.error(f"HTTP error occurred: {e}")
+        return []
     except Exception as e:
-        duration = time.time() - start_time
-        logger.error(f"❌ Serper API Error after {duration:.2f}s: {str(e)}")
+        execution_time = time.time() - start_time
+        log_data_fetch(
+            source="serper_api", 
+            query=f"{query_or_company} (ERROR)",
+            results_count=0,
+            execution_time=execution_time
+        )
+        logger.error(f"An error occurred: {e}")
+        return []
+
+
+async def getNewsDataSerperAPIWithPagination(query_or_company: str, start_date: str = None, end_date: str = None, max_pages: int = 3, serper_key: str = None, config: dict = None) -> List[Dict[str, Any]]:
+    """
+    Fetch news data from Serper API with pagination - backward compatible interface
+    
+    Args:
+        query_or_company: Company name or search query
+        start_date: Start date for news search (optional, for backward compatibility)
+        end_date: End date for news search (optional, for backward compatibility)
+        max_pages: Maximum number of pages to fetch
+        serper_key: API key (optional, for backward compatibility)
+        config: Configuration dictionary containing API keys (new interface)
         
-        # Return whatever we managed to collect
-        logger.info(f"🔄 Returning {len(all_news_results)} partial results as fallback")
-        return all_news_results
-
-
-# Legacy function names for backward compatibility
-def getNewsDataSerpAPI(query: str, start_date: str, end_date: str, serpapi_key: str = None) -> List[Dict[str, Any]]:
+    Returns:
+        List of news articles from all pages
     """
-    Legacy function name - redirects to Serper API implementation.
-    """
-    # Map the old parameter name to new one
-    serper_key = serpapi_key if serpapi_key else os.getenv("SERPER_API_KEY")
-    return getNewsDataSerperAPI(query, start_date, end_date, serper_key)
+    start_time = time.time()
+    all_articles = []
+    
+    try:
+        # Handle both old and new interface styles
+        if config is not None:
+            # New interface
+            api_key = config.get("serper_api_key") or config.get("serper_key")
+            company = query_or_company
+            search_query = f"{company} stock news"
+        else:
+            # Old interface
+            api_key = serper_key
+            search_query = query_or_company
+            if start_date and end_date:
+                search_query = f"{query_or_company} after:{start_date} before:{end_date}"
+                
+        if not api_key:
+            logger.warning("No Serper API key provided")
+            return []
 
+        url = "https://google.serper.dev/news"
+        headers = {
+            'X-API-KEY': api_key,
+            'Content-Type': 'application/json'
+        }
 
-def getNewsDataSerpAPIWithPagination(query: str, start_date: str, end_date: str, 
-                                     max_results: int = 300, serpapi_key: str = None) -> List[Dict[str, Any]]:
-    """
-    Legacy function name - redirects to Serper API implementation.
-    """
-    # Map the old parameter name to new one
-    serper_key = serpapi_key if serpapi_key else os.getenv("SERPER_API_KEY")
-    return getNewsDataSerperAPIWithPagination(query, start_date, end_date, max_results, serper_key) 
+        async with httpx.AsyncClient() as client:
+            for page in range(max_pages):
+                payload = json.dumps({
+                    "q": search_query,
+                    "gl": "us", 
+                    "hl": "en",
+                    "num": 10,
+                    "start": page * 10
+                })
+                
+                response = await client.post(url, headers=headers, data=payload, timeout=30.0)
+                response.raise_for_status()
+                
+                data = response.json()
+                news_articles = data.get("news", [])
+                
+                if not news_articles:
+                    break
+                    
+                all_articles.extend(news_articles)
+                
+                # Add delay between requests
+                if page < max_pages - 1:
+                    await asyncio.sleep(1)
+            
+            # Log the paginated data fetch operation
+            execution_time = time.time() - start_time
+            log_data_fetch(
+                source="serper_api_paginated",
+                query=f"{search_query} ({max_pages} pages)",
+                results_count=len(all_articles),
+                execution_time=execution_time
+            )
+            
+            return all_articles
+            
+    except httpx.HTTPError as e:
+        execution_time = time.time() - start_time
+        log_data_fetch(
+            source="serper_api_paginated",
+            query=f"{query_or_company} (HTTP ERROR)",
+            results_count=len(all_articles),
+            execution_time=execution_time
+        )
+        logger.error(f"HTTP error occurred: {e}")
+        return all_articles
+    except Exception as e:
+        execution_time = time.time() - start_time
+        log_data_fetch(
+            source="serper_api_paginated",
+            query=f"{query_or_company} (ERROR)", 
+            results_count=len(all_articles),
+            execution_time=execution_time
+        )
+        logger.error(f"An error occurred: {e}")
+        return all_articles 

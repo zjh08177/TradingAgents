@@ -3,7 +3,9 @@ from .reddit_utils import fetch_top_from_category
 from .yfin_utils import *
 from .stockstats_utils import *
 
-from .serper_utils import getNewsDataSerpAPI
+from .googlenews_utils import getNewsDataGoogleNews
+from .serpapi_utils import getNewsDataSerpAPI
+from .serper_utils import getNewsDataSerperAPI
 from .finnhub_utils import get_data_in_range
 from dateutil.relativedelta import relativedelta
 from concurrent.futures import ThreadPoolExecutor
@@ -17,6 +19,8 @@ from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
 from ..default_config import DEFAULT_CONFIG
 from dotenv import load_dotenv
+import asyncio
+import logging
 
 # Load environment variables so OpenAI tools can access API keys
 # Load from project root directory (three levels up from this file)
@@ -290,18 +294,14 @@ def get_simfin_income_statements(
     )
 
 
-def get_google_news(
+async def get_google_news(
     query: Annotated[str, "Query to search with"],
     curr_date: Annotated[str, "Curr date in yyyy-mm-dd format"],
     look_back_days: Annotated[int, "how many days to look back"],
 ) -> str:
-    import logging
-    import time
-    import json
     logger = logging.getLogger(__name__)
     
     # Enhanced logging - Tool entry (for comparison with failing tools)
-    start_time = time.time()
     logger.info(f"🔧 TOOL START: get_google_news | Agent: News Analyst | Query: {query} | Date: {curr_date}")
     logger.info(f"📤 TOOL PARAMS: query={query}, curr_date={curr_date}, look_back_days={look_back_days}")
     
@@ -318,11 +318,11 @@ def get_google_news(
             raise ValueError("Serper API key is required. Please set SERPER_API_KEY in your environment variables.")
         
         logger.info(f"🌐 Calling Serper API with query='{query}', start='{before}', end='{curr_date}'")
-        news_results = getNewsDataSerpAPI(query, before, curr_date, serper_key)
+        news_results = await getNewsDataSerperAPI(query, before, curr_date, serper_key)
         
         # Enhanced logging - Raw response
         logger.info(f"🌐 RAW RESPONSE TYPE: {type(news_results)}")
-        logger.info(f"🌐 RAW RESPONSE LENGTH: {len(news_results)} items")
+        logger.debug(f"🌐 RAW RESPONSE LENGTH: {len(news_results)} items")  # Changed to DEBUG to avoid false warnings
         
         if news_results and len(news_results) > 0:
             # Log first few results in detail
@@ -346,19 +346,16 @@ def get_google_news(
             result = f"## {query} Google News, from {before} to {curr_date}:\n\n{news_str}"
         
         # Enhanced logging - Success
-        duration = time.time() - start_time
-        logger.info(f"✅ TOOL SUCCESS: get_google_news | Duration: {duration:.2f}s | Results count: {len(news_results)}")
+        logger.info(f"✅ TOOL SUCCESS: get_google_news | Results count: {len(news_results)}")
         logger.info(f"📝 TOOL OUTPUT LENGTH: {len(result)} characters")
-        logger.info(f"📝 TOOL OUTPUT PREVIEW (first 500 chars):\n{result[:500]}...")
+        logger.debug(f"📝 TOOL OUTPUT PREVIEW (first 500 chars):\n{result[:500]}...")  # Downgraded to DEBUG
         return result
         
     except Exception as e:
         # Enhanced logging - Error (for comparison)
-        duration = time.time() - start_time
-        logger.error(f"❌ TOOL ERROR: get_google_news | Duration: {duration:.2f}s")
+        logger.error(f"❌ TOOL ERROR: get_google_news")
         logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
         logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
-        logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
         import traceback
         logger.error(f"🚨 TRACEBACK:\n{traceback.format_exc()}")
         raise e
@@ -750,7 +747,7 @@ def get_YFin_data_online(
         duration = time.time() - start_time
         logger.info(f"✅ TOOL SUCCESS: get_YFin_data_online | Duration: {duration:.2f}s | Records: {len(data) if not data.empty else 0}")
         logger.info(f"📝 TOOL OUTPUT LENGTH: {len(result)} characters")
-        logger.info(f"📝 TOOL OUTPUT PREVIEW (first 500 chars):\n{result[:500]}...")
+        logger.debug(f"📝 TOOL OUTPUT PREVIEW (first 500 chars):\n{result[:500]}...")  # Downgraded to DEBUG
         return result
         
     except Exception as e:
@@ -800,24 +797,20 @@ def get_YFin_data(
     return filtered_data
 
 
-def get_stock_news_openai(ticker, curr_date):
+async def get_stock_news_openai(ticker, curr_date):
     import logging
-    import time
-    import json
+    import os
+    from openai import OpenAI
     logger = logging.getLogger(__name__)
     
-    # Import shared client functions from api.py
-    import sys
-    import os
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from api import get_shared_openai_client, get_compatible_model_for_tools
-    
-    # Use shared client and compatible model
-    client = get_shared_openai_client()
-    model = get_compatible_model_for_tools()
+    # Create OpenAI client locally instead of importing from api
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable is not set")
+    client = OpenAI(api_key=api_key)
+    model = "gpt-4o-mini"  # Use compatible model for tools
     
     # Enhanced logging - Tool entry
-    start_time = time.time()
     logger.info(f"🔧 TOOL START: get_stock_news_openai | Agent: Social Media Analyst | Ticker: {ticker} | Date: {curr_date} | Model: {model}")
     
     request_params = {
@@ -852,24 +845,39 @@ def get_stock_news_openai(ticker, curr_date):
     logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
+        # OpenAI client call (responses.create is sync)
         response = client.responses.create(**request_params)
         
         # Enhanced logging - Raw response details
-        duration = time.time() - start_time
-        logger.info(f"✅ TOOL SUCCESS: get_stock_news_openai | Duration: {duration:.2f}s")
+        logger.info(f"✅ TOOL SUCCESS: get_stock_news_openai")
         
-        # Log complete raw response
-        logger.info(f"🌐 RAW RESPONSE TYPE: {type(response)}")
-        logger.info(f"🌐 RAW RESPONSE ATTRS: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+        # Configure OpenAI client logging to reduce noise
+        openai_logger = logging.getLogger('openai._base_client')
+        openai_logger.setLevel(logging.WARNING)  # Only show warnings and errors, not debug
         
-        # Try to log different response formats
+        # Log complete raw response attributes but filter problematic metadata
+        response_attrs = [attr for attr in dir(response) if not attr.startswith('_')]
+        # Filter out metadata that causes false warnings
+        filtered_attrs = [attr for attr in response_attrs 
+                         if attr not in ['service_tier', 'error', 'status', 'object']]
+        logger.debug(f"🌐 RAW RESPONSE ATTRS: {filtered_attrs}")
+        
+        # Log response but filter out routine metadata that creates false warnings
         try:
             if hasattr(response, 'model_dump'):
-                logger.info(f"🌐 RAW RESPONSE (model_dump):\n{json.dumps(response.model_dump(), indent=2, default=str)}")
+                response_data = response.model_dump()
+                # Filter out routine API metadata that shows up as false warnings
+                filtered_data = {k: v for k, v in response_data.items() 
+                               if k not in ['service_tier', 'error', 'status', 'object', 'parallel_tool_calls']}
+                if filtered_data:  # Only log if there's meaningful data
+                    logger.debug(f"🌐 RAW RESPONSE (filtered): {str(filtered_data)[:200]}...")
             elif hasattr(response, '__dict__'):
-                logger.info(f"🌐 RAW RESPONSE (__dict__):\n{json.dumps(response.__dict__, indent=2, default=str)}")
+                response_data = response.__dict__
+                filtered_data = {k: v for k, v in response_data.items() 
+                               if k not in ['service_tier', 'error', 'status', 'object', 'parallel_tool_calls']}
+                logger.debug(f"🌐 RAW RESPONSE (filtered): {str(filtered_data)[:200]}...")
         except Exception as e:
-            logger.warning(f"⚠️  Could not serialize full response: {e}")
+            logger.debug(f"🌐 RAW RESPONSE LOG ERROR: {e}")
         
         # Log output structure
         if hasattr(response, 'output'):
@@ -886,14 +894,13 @@ def get_stock_news_openai(ticker, curr_date):
         # Extract result
         result = response.output[1].content[0].text
         logger.info(f"📝 EXTRACTED TEXT LENGTH: {len(result)} characters")
-        logger.info(f"📝 EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")
+        logger.debug(f"�� EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")  # Downgraded to DEBUG
         
         return result
         
     except Exception as e:
         # Enhanced logging - Error with full details
-        duration = time.time() - start_time
-        logger.error(f"❌ TOOL ERROR: get_stock_news_openai | Duration: {duration:.2f}s")
+        logger.error(f"❌ TOOL ERROR: get_stock_news_openai")
         logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
         logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
         logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
@@ -909,24 +916,20 @@ def get_stock_news_openai(ticker, curr_date):
         raise e
 
 
-def get_global_news_openai(curr_date):
+async def get_global_news_openai(curr_date):
     import logging
-    import time
-    import json
+    import os
+    from openai import OpenAI
     logger = logging.getLogger(__name__)
     
-    # Import shared client functions from api.py
-    import sys
-    import os
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from api import get_shared_openai_client, get_compatible_model_for_tools
-    
-    # Use shared client and compatible model
-    client = get_shared_openai_client()
-    model = get_compatible_model_for_tools()
+    # Create OpenAI client locally instead of importing from api
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable is not set")
+    client = OpenAI(api_key=api_key)
+    model = "gpt-4o-mini"  # Use compatible model for tools
     
     # Enhanced logging - Tool entry
-    start_time = time.time()
     logger.info(f"🔧 TOOL START: get_global_news_openai | Agent: News Analyst | Date: {curr_date} | Model: {model}")
     
     request_params = {
@@ -961,24 +964,40 @@ def get_global_news_openai(curr_date):
     logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
+        # OpenAI client call (responses.create is sync)
         response = client.responses.create(**request_params)
         
         # Enhanced logging - Raw response details
-        duration = time.time() - start_time
-        logger.info(f"✅ TOOL SUCCESS: get_global_news_openai | Duration: {duration:.2f}s")
+        logger.info(f"✅ TOOL SUCCESS: get_global_news_openai")
         
-        # Log complete raw response
-        logger.info(f"🌐 RAW RESPONSE TYPE: {type(response)}")
-        logger.info(f"🌐 RAW RESPONSE ATTRS: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+        # Configure OpenAI client logging to reduce noise
+        openai_logger = logging.getLogger('openai._base_client')
+        openai_logger.setLevel(logging.WARNING)  # Only show warnings and errors, not debug
         
-        # Try to log different response formats
+        # Log complete raw response attributes but filter problematic metadata
+        response_attrs = [attr for attr in dir(response) if not attr.startswith('_')]
+        # Filter out metadata that causes false warnings
+        filtered_attrs = [attr for attr in response_attrs 
+                         if attr not in ['service_tier', 'error', 'status', 'object']]
+        logger.debug(f"🌐 RAW RESPONSE ATTRS: {filtered_attrs}")
+        
+        # Log response but filter out routine metadata that creates false warnings
         try:
             if hasattr(response, 'model_dump'):
-                logger.info(f"🌐 RAW RESPONSE (model_dump):\n{json.dumps(response.model_dump(), indent=2, default=str)}")
+                response_data = response.model_dump()
+                # Filter out routine API metadata that shows up as false warnings
+                filtered_data = {k: v for k, v in response_data.items() 
+                               if k not in ['service_tier', 'error', 'status', 'object', 'parallel_tool_calls']}
+                if filtered_data:  # Only log if there's meaningful data
+                    logger.debug(f"🌐 RAW RESPONSE (filtered): {str(filtered_data)[:200]}...")
             elif hasattr(response, '__dict__'):
-                logger.info(f"🌐 RAW RESPONSE (__dict__):\n{json.dumps(response.__dict__, indent=2, default=str)}")
+                response_data = response.__dict__
+                filtered_data = {k: v for k, v in response_data.items() 
+                               if k not in ['service_tier', 'error', 'status', 'object', 'parallel_tool_calls']}
+                if filtered_data:  # Only log if there's meaningful data
+                    logger.debug(f"🌐 RAW RESPONSE (filtered): {str(filtered_data)[:200]}...")
         except Exception as e:
-            logger.warning(f"⚠️  Could not serialize full response: {e}")
+            logger.debug(f"🌐 RAW RESPONSE LOG ERROR: {e}")
         
         # Log output structure
         if hasattr(response, 'output'):
@@ -995,14 +1014,13 @@ def get_global_news_openai(curr_date):
         # Extract result
         result = response.output[1].content[0].text
         logger.info(f"📝 EXTRACTED TEXT LENGTH: {len(result)} characters")
-        logger.info(f"📝 EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")
+        logger.debug(f"�� EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")  # Downgraded to DEBUG
         
         return result
         
     except Exception as e:
         # Enhanced logging - Error with full details
-        duration = time.time() - start_time
-        logger.error(f"❌ TOOL ERROR: get_global_news_openai | Duration: {duration:.2f}s")
+        logger.error(f"❌ TOOL ERROR: get_global_news_openai")
         logger.error(f"🚨 ERROR TYPE: {type(e).__name__}")
         logger.error(f"🚨 ERROR MESSAGE: {str(e)}")
         logger.error(f"🚨 ERROR ATTRS: {[attr for attr in dir(e) if not attr.startswith('_')]}")
@@ -1018,21 +1036,20 @@ def get_global_news_openai(curr_date):
         raise e
 
 
-def get_fundamentals_openai(ticker, curr_date):
+async def get_fundamentals_openai(ticker, curr_date):
     import logging
     import time
     import json
+    import os
+    from openai import OpenAI
     logger = logging.getLogger(__name__)
     
-    # Import shared client functions from api.py
-    import sys
-    import os
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-    from api import get_shared_openai_client, get_compatible_model_for_tools
-    
-    # Use shared client and compatible model
-    client = get_shared_openai_client()
-    model = get_compatible_model_for_tools()
+    # Create OpenAI client locally instead of importing from api
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable is not set")
+    client = OpenAI(api_key=api_key)
+    model = "gpt-4o-mini"  # Use compatible model for tools
     
     # Enhanced logging - Tool entry
     start_time = time.time()
@@ -1076,18 +1093,34 @@ def get_fundamentals_openai(ticker, curr_date):
         duration = time.time() - start_time
         logger.info(f"✅ TOOL SUCCESS: get_fundamentals_openai | Duration: {duration:.2f}s")
         
-        # Log complete raw response
-        logger.info(f"🌐 RAW RESPONSE TYPE: {type(response)}")
-        logger.info(f"🌐 RAW RESPONSE ATTRS: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+        # Configure OpenAI client logging to reduce noise
+        openai_logger = logging.getLogger('openai._base_client')
+        openai_logger.setLevel(logging.WARNING)  # Only show warnings and errors, not debug
         
-        # Try to log different response formats
+        # Log complete raw response attributes but filter problematic metadata
+        response_attrs = [attr for attr in dir(response) if not attr.startswith('_')]
+        # Filter out metadata that causes false warnings
+        filtered_attrs = [attr for attr in response_attrs 
+                         if attr not in ['service_tier', 'error', 'status', 'object']]
+        logger.debug(f"🌐 RAW RESPONSE ATTRS: {filtered_attrs}")
+        
+        # Log response but filter out routine metadata that creates false warnings
         try:
             if hasattr(response, 'model_dump'):
-                logger.info(f"🌐 RAW RESPONSE (model_dump):\n{json.dumps(response.model_dump(), indent=2, default=str)}")
+                response_data = response.model_dump()
+                # Filter out routine API metadata that shows up as false warnings
+                filtered_data = {k: v for k, v in response_data.items() 
+                               if k not in ['service_tier', 'error', 'status', 'object', 'parallel_tool_calls']}
+                if filtered_data:  # Only log if there's meaningful data
+                    logger.debug(f"🌐 RAW RESPONSE (filtered): {str(filtered_data)[:200]}...")
             elif hasattr(response, '__dict__'):
-                logger.info(f"🌐 RAW RESPONSE (__dict__):\n{json.dumps(response.__dict__, indent=2, default=str)}")
+                response_data = response.__dict__
+                filtered_data = {k: v for k, v in response_data.items() 
+                               if k not in ['service_tier', 'error', 'status', 'object', 'parallel_tool_calls']}
+                if filtered_data:  # Only log if there's meaningful data
+                    logger.debug(f"🌐 RAW RESPONSE (filtered): {str(filtered_data)[:200]}...")
         except Exception as e:
-            logger.warning(f"⚠️  Could not serialize full response: {e}")
+            logger.debug(f"🌐 RAW RESPONSE LOG ERROR: {e}")
         
         # Log output structure
         if hasattr(response, 'output'):
@@ -1104,7 +1137,7 @@ def get_fundamentals_openai(ticker, curr_date):
         # Extract result
         result = response.output[1].content[0].text
         logger.info(f"📝 EXTRACTED TEXT LENGTH: {len(result)} characters")
-        logger.info(f"📝 EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")
+        logger.debug(f"�� EXTRACTED TEXT PREVIEW (first 500 chars):\n{result[:500]}...")  # Downgraded to DEBUG
         
         return result
         
