@@ -64,10 +64,34 @@ def create_studio_compatible_graph():
         raise
 
 # For LangGraph Studio compatibility
-graph = create_studio_compatible_graph()
+# Create a lazy graph wrapper to defer creation until needed
+class LazyGraph:
+    """Lazy-loading graph wrapper to avoid import-time errors."""
+    def __init__(self):
+        self._graph = None
+    
+    def __getattr__(self, name):
+        if self._graph is None:
+            self._graph = create_studio_compatible_graph()
+        return getattr(self._graph, name)
+    
+    def __call__(self, *args, **kwargs):
+        if self._graph is None:
+            self._graph = create_studio_compatible_graph()
+        return self._graph(*args, **kwargs)
+
+# Create the lazy graph instance
+graph = LazyGraph()
+
+def get_graph():
+    """Get the actual graph instance (forces creation if needed)."""
+    if isinstance(graph, LazyGraph) and graph._graph is None:
+        graph._graph = create_studio_compatible_graph()
+    return graph._graph if isinstance(graph, LazyGraph) else graph
 
 __all__ = [
     "run_trading_analysis",
-    "create_studio_compatible_graph", 
-    "graph"
+    "create_studio_compatible_graph",
+    "graph",
+    "get_graph"
 ]
