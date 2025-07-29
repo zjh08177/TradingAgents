@@ -69,7 +69,7 @@ Create a `.env` file in the project root with:
 ### Optional
 - `REDDIT_CLIENT_ID` - For Reddit sentiment analysis
 - `REDDIT_CLIENT_SECRET` - For Reddit sentiment analysis
-- `TRADINGAGENTS_RESULTS_DIR` - Custom results directory (default: `backend/results`)
+- `TRADINGAGENTS_RESULTS_DIR` - Custom results directory (default: `results`)
 - `TRADINGAGENTS_DATA_DIR` - Custom data directory (default: `backend/data`)
 - `TRADINGAGENTS_API_HOST` - API host (default: `localhost`)
 - `TRADINGAGENTS_API_PORT` - API port (default: `8000`)

@@ -22,7 +22,7 @@ def create_cloud_config() -> Dict[str, Any]:
     # Cloud-optimized settings
     config.update({
         # Use environment variables for cloud deployment
-        "results_dir": os.getenv("TRADINGAGENTS_RESULTS_DIR", "/tmp/results"),
+        "results_dir": os.getenv("TRADINGAGENTS_RESULTS_DIR", "/Users/bytedance/Documents/TradingAgents/results"),
         "data_dir": os.getenv("TRADINGAGENTS_DATA_DIR", "/tmp/data"),
         "data_cache_dir": "/tmp/cache",
         

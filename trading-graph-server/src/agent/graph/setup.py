@@ -371,9 +371,9 @@ class GraphBuilder(IGraphBuilder):
             # Initialize debate states if needed
             if "investment_debate_state" not in updated_state:
                 updated_state["investment_debate_state"] = {
-                    "bull_history": [],
-                    "bear_history": [],
-                    "history": [],
+                    "bull_history": "",
+                    "bear_history": "",
+                    "history": "",
                     "current_response": "",
                     "judge_decision": "",
                     "count": 0
@@ -381,10 +381,10 @@ class GraphBuilder(IGraphBuilder):
             
             if "risk_debate_state" not in updated_state:
                 updated_state["risk_debate_state"] = {
-                    "risky_history": [],
-                    "safe_history": [],
-                    "neutral_history": [],
-                    "history": [],
+                    "risky_history": "",
+                    "safe_history": "",
+                    "neutral_history": "",
+                    "history": "",
                     "latest_speaker": "",
                     "current_risky_response": "",
                     "current_safe_response": "",

@@ -1,14 +1,31 @@
 import os
 import json
-import pandas as pd
+# FIXED: Lazy import for pandas to prevent circular import issues in Studio
+# import pandas as pd  # <- REMOVED module-level import
 from datetime import date, timedelta, datetime
 from typing import Annotated
 
+# LAZY LOADER for pandas - prevents pandas circular import in Studio
+def _get_pandas():
+    """Lazy loader for pandas to prevent circular import issues"""
+    try:
+        import pandas as pd
+        return pd
+    except ImportError as e:
+        raise ImportError(f"Pandas is required but not available: {e}")
+
 SavePathType = Annotated[str, "File path to save data. If None, data is not saved."]
 
-def save_output(data: pd.DataFrame, tag: str, save_path: SavePathType = None) -> None:
+def save_output(data, tag: str, save_path: SavePathType = None) -> None:
+    """Save data to CSV file using lazy pandas import"""
     if save_path:
-        data.to_csv(save_path)
+        # Use lazy pandas import to get DataFrame class for type checking
+        pd = _get_pandas()
+        if hasattr(data, 'to_csv'):  # Check if it's a DataFrame-like object
+            data.to_csv(save_path)
+        else:
+            # Convert to DataFrame if it's not already
+            pd.DataFrame(data).to_csv(save_path)
         print(f"{tag} saved to {save_path}")
 
 

@@ -12,20 +12,57 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 import json
 import os
-import pandas as pd
 from tqdm import tqdm
-import yfinance as yf
+# FIXED: Lazy import for yfinance to prevent pandas circular import
+# import yfinance as yf  # <- REMOVED module-level import
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
 from ..default_config import DEFAULT_CONFIG
 from dotenv import load_dotenv
 import asyncio
 import logging
+import numpy as np
+from datetime import date, timedelta, datetime
+import json
+# PANDAS LAZY LOADING: Moved pandas import to prevent circular imports
+# import pandas as pd  # <- REMOVED
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+import typing
+import logging
+import requests
+from langchain_openai import ChatOpenAI
+from dateutil.relativedelta import relativedelta
 
-# Load environment variables so OpenAI tools can access API keys
-# Load from project root directory (three levels up from this file)
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-load_dotenv(os.path.join(project_root, ".env"))
+# PANDAS LAZY LOADER - prevents circular import issues with Studio
+def _get_pandas():
+    """Lazy loader for pandas to prevent circular import issues"""
+    try:
+        import pandas as pd
+        return pd
+    except ImportError as e:
+        raise ImportError(f"Pandas is required but not available: {e}")
+
+# YFINANCE LAZY LOADER - prevents circular import issues with Studio  
+def _get_yfinance():
+    """Lazy loader for yfinance to prevent circular import issues"""
+    try:
+        import yfinance as yf
+        return yf
+    except ImportError as e:
+        raise ImportError(f"yfinance is required but not available: {e}")
+
+# FIXED: Lazy loading of environment variables to prevent blocking I/O at module import time
+# This prevents LangGraph Studio blocking errors by deferring file I/O until runtime
+_dotenv_loaded = False
+
+def _ensure_dotenv_loaded():
+    """Lazy loader for .env file to prevent blocking I/O during module import"""
+    global _dotenv_loaded
+    if not _dotenv_loaded:
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        load_dotenv(os.path.join(project_root, ".env"))
+        _dotenv_loaded = True
 
 
 def get_finnhub_news(
@@ -170,14 +207,14 @@ def get_simfin_balance_sheet(
         "us",
         f"us-balance-{freq}.csv",
     )
-    df = pd.read_csv(data_path, sep=";")
+    df = _get_pandas().read_csv(data_path, sep=";")
 
     # Convert date strings to datetime objects and remove any time components
-    df["Report Date"] = pd.to_datetime(df["Report Date"], utc=True).dt.normalize()
-    df["Publish Date"] = pd.to_datetime(df["Publish Date"], utc=True).dt.normalize()
+    df["Report Date"] = _get_pandas().to_datetime(df["Report Date"], utc=True).dt.normalize()
+    df["Publish Date"] = _get_pandas().to_datetime(df["Publish Date"], utc=True).dt.normalize()
 
     # Convert the current date to datetime and normalize
-    curr_date_dt = pd.to_datetime(curr_date, utc=True).normalize()
+    curr_date_dt = _get_pandas().to_datetime(curr_date, utc=True).normalize()
 
     # Filter the DataFrame for the given ticker and for reports that were published on or before the current date
     filtered_df = df[(df["Ticker"] == ticker) & (df["Publish Date"] <= curr_date_dt)]
@@ -217,14 +254,14 @@ def get_simfin_cashflow(
         "us",
         f"us-cashflow-{freq}.csv",
     )
-    df = pd.read_csv(data_path, sep=";")
+    df = _get_pandas().read_csv(data_path, sep=";")
 
     # Convert date strings to datetime objects and remove any time components
-    df["Report Date"] = pd.to_datetime(df["Report Date"], utc=True).dt.normalize()
-    df["Publish Date"] = pd.to_datetime(df["Publish Date"], utc=True).dt.normalize()
+    df["Report Date"] = _get_pandas().to_datetime(df["Report Date"], utc=True).dt.normalize()
+    df["Publish Date"] = _get_pandas().to_datetime(df["Publish Date"], utc=True).dt.normalize()
 
     # Convert the current date to datetime and normalize
-    curr_date_dt = pd.to_datetime(curr_date, utc=True).normalize()
+    curr_date_dt = _get_pandas().to_datetime(curr_date, utc=True).normalize()
 
     # Filter the DataFrame for the given ticker and for reports that were published on or before the current date
     filtered_df = df[(df["Ticker"] == ticker) & (df["Publish Date"] <= curr_date_dt)]
@@ -264,14 +301,14 @@ def get_simfin_income_statements(
         "us",
         f"us-income-{freq}.csv",
     )
-    df = pd.read_csv(data_path, sep=";")
+    df = _get_pandas().read_csv(data_path, sep=";")
 
     # Convert date strings to datetime objects and remove any time components
-    df["Report Date"] = pd.to_datetime(df["Report Date"], utc=True).dt.normalize()
-    df["Publish Date"] = pd.to_datetime(df["Publish Date"], utc=True).dt.normalize()
+    df["Report Date"] = _get_pandas().to_datetime(df["Report Date"], utc=True).dt.normalize()
+    df["Publish Date"] = _get_pandas().to_datetime(df["Publish Date"], utc=True).dt.normalize()
 
     # Convert the current date to datetime and normalize
-    curr_date_dt = pd.to_datetime(curr_date, utc=True).normalize()
+    curr_date_dt = _get_pandas().to_datetime(curr_date, utc=True).normalize()
 
     # Filter the DataFrame for the given ticker and for reports that were published on or before the current date
     filtered_df = df[(df["Ticker"] == ticker) & (df["Publish Date"] <= curr_date_dt)]
@@ -566,13 +603,13 @@ def get_stock_stats_indicators_window(
 
     if not online:
         # read from YFin data
-        data = pd.read_csv(
+        data = _get_pandas().read_csv(
             os.path.join(
                 DATA_DIR,
                 f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
             )
         )
-        data["Date"] = pd.to_datetime(data["Date"], utc=True)
+        data["Date"] = _get_pandas().to_datetime(data["Date"], utc=True)
         dates_in_df = data["Date"].astype(str).str[:10]
 
         ind_string = ""
@@ -648,7 +685,7 @@ def get_YFin_data_window(
     start_date = before.strftime("%Y-%m-%d")
 
     # read in data
-    data = pd.read_csv(
+    data = _get_pandas().read_csv(
         os.path.join(
             DATA_DIR,
             f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
@@ -667,7 +704,7 @@ def get_YFin_data_window(
     filtered_data = filtered_data.drop("DateOnly", axis=1)
 
     # Set pandas display options to show the full DataFrame
-    with pd.option_context(
+    with _get_pandas().option_context(
         "display.max_rows", None, "display.max_columns", None, "display.width", None
     ):
         df_string = filtered_data.to_string()
@@ -699,7 +736,7 @@ def get_YFin_data_online(
 
         # Create ticker object
         logger.info(f"🌐 Creating yfinance Ticker object for {symbol.upper()}")
-        ticker = yf.Ticker(symbol.upper())
+        ticker = _get_yfinance().Ticker(symbol.upper())
 
         # Fetch historical data for the specified date range
         logger.info(f"🌐 Fetching historical data from yfinance...")
@@ -768,7 +805,7 @@ def get_YFin_data(
     end_date: Annotated[str, "End date in yyyy-mm-dd format"],
 ) -> str:
     # read in data
-    data = pd.read_csv(
+    data = _get_pandas().read_csv(
         os.path.join(
             DATA_DIR,
             f"market_data/price_data/{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
@@ -802,6 +839,9 @@ async def get_stock_news_openai(ticker, curr_date):
     import os
     from openai import OpenAI
     logger = logging.getLogger(__name__)
+    
+    # Ensure environment variables are loaded (lazy loading to prevent blocking I/O)
+    _ensure_dotenv_loaded()
     
     # Create OpenAI client locally instead of importing from api
     api_key = os.getenv("OPENAI_API_KEY")
@@ -921,6 +961,9 @@ async def get_global_news_openai(curr_date):
     import os
     from openai import OpenAI
     logger = logging.getLogger(__name__)
+    
+    # Ensure environment variables are loaded (lazy loading to prevent blocking I/O)
+    _ensure_dotenv_loaded()
     
     # Create OpenAI client locally instead of importing from api
     api_key = os.getenv("OPENAI_API_KEY")
@@ -1043,6 +1086,9 @@ async def get_fundamentals_openai(ticker, curr_date):
     import os
     from openai import OpenAI
     logger = logging.getLogger(__name__)
+    
+    # Ensure environment variables are loaded (lazy loading to prevent blocking I/O)
+    _ensure_dotenv_loaded()
     
     # Create OpenAI client locally instead of importing from api
     api_key = os.getenv("OPENAI_API_KEY")
