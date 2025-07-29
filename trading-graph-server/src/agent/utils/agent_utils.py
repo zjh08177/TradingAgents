@@ -6,13 +6,23 @@ from langchain_core.messages import RemoveMessage
 from langchain_core.tools import tool
 from datetime import date, timedelta, datetime
 import functools
-import pandas as pd
 import os
 from dateutil.relativedelta import relativedelta
 from langchain_openai import ChatOpenAI
 from ..dataflows import interface
 from ..default_config import DEFAULT_CONFIG
 from langchain_core.messages import HumanMessage
+
+# IMPORTANT: Pandas import moved to lazy loading to prevent circular imports
+# This fixes the Studio compilation error where pandas circular import occurs
+
+def _get_pandas():
+    """Lazy loader for pandas to prevent circular import issues"""
+    try:
+        import pandas as pd
+        return pd
+    except ImportError as e:
+        raise ImportError(f"Pandas is required but not available: {e}")
 
 
 def create_msg_delete():

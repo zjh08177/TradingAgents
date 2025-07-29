@@ -490,7 +490,7 @@ async def test_graph_execution():
         async def test_node(state):
             return {"test": "success", "debug_working": True}
         
-        test_state = {"company_of_interest": "TEST", "trade_date": "2024-01-01"}
+        test_state = {"company_of_interest": "GOOG", "trade_date": "2025-07-28"}
         debug_result = await test_node(test_state)
         logger.debug(f"✅ Debug logging test: {debug_result}")
         
@@ -499,7 +499,7 @@ async def test_graph_execution():
         start_time = datetime.now()
         
         # Test with minimal state
-        minimal_result = await trading_graph.propagate("AAPL", "2024-01-15")
+        minimal_result = await trading_graph.propagate("GOOG", "2025-07-28")
         
         execution_time = (datetime.now() - start_time).total_seconds()
         logger.info(f"✅ Quick graph execution completed in {execution_time:.2f} seconds")

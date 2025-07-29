@@ -1,10 +1,27 @@
-import pandas as pd
-import yfinance as yf
-from stockstats import wrap
+# FIXED: Lazy imports for pandas, yfinance AND stockstats to prevent circular import issues in Studio
+# import pandas as pd  # <- REMOVED module-level import
+# import yfinance as yf  # <- REMOVED module-level import  
+# from stockstats import wrap  # <- REMOVED module-level import - THIS WAS THE ROOT CAUSE!
 from typing import Annotated
 import os
 import re
 from .config import get_config
+
+# LAZY LOADER for pandas - prevents pandas circular import in Studio
+def _get_pandas():
+    """Lazy import for pandas to prevent circular imports"""
+    import pandas as pd
+    return pd
+
+def _get_yfinance():
+    """Lazy import for yfinance to prevent circular imports"""
+    import yfinance as yf
+    return yf
+
+def _get_stockstats_wrap():
+    """Lazy import for stockstats wrap to prevent circular imports"""
+    from stockstats import wrap
+    return wrap
 
 
 class StockstatsUtils:
@@ -26,14 +43,14 @@ class StockstatsUtils:
             
             # Now convert to proper datetime format
             try:
-                data['Date'] = pd.to_datetime(data['Date'], errors='coerce')
+                data['Date'] = _get_pandas().to_datetime(data['Date'], errors='coerce')
                 # Drop any rows where date conversion failed (NaT values)
                 data = data.dropna(subset=['Date'])
                 
                 # Ensure we have a proper datetime column
-                if not pd.api.types.is_datetime64_any_dtype(data['Date']):
+                if not _get_pandas().api.types.is_datetime64_any_dtype(data['Date']):
                     # If still not datetime, try alternative parsing
-                    data['Date'] = pd.to_datetime(data['Date'], format='%Y-%m-%d', errors='coerce')
+                    data['Date'] = _get_pandas().to_datetime(data['Date'], format='%Y-%m-%d', errors='coerce')
                     data = data.dropna(subset=['Date'])
                     
             except Exception as e:
@@ -61,9 +78,9 @@ class StockstatsUtils:
         data = StockstatsUtils.clean_date_data(data)
         
         # If Date is still not datetime, convert it
-        if 'Date' in data.columns and not pd.api.types.is_datetime64_any_dtype(data['Date']):
+        if 'Date' in data.columns and not _get_pandas().api.types.is_datetime64_any_dtype(data['Date']):
             try:
-                data['Date'] = pd.to_datetime(data['Date'], errors='coerce')
+                data['Date'] = _get_pandas().to_datetime(data['Date'], errors='coerce')
                 data = data.dropna(subset=['Date'])
             except Exception as e:
                 print(f"Final datetime conversion failed: {e}")
@@ -97,7 +114,7 @@ class StockstatsUtils:
 
         if not online:
             try:
-                data = pd.read_csv(
+                data = _get_pandas().read_csv(
                     os.path.join(
                         data_dir,
                         f"{symbol}-YFin-data-2015-01-01-2025-03-25.csv",
@@ -109,7 +126,7 @@ class StockstatsUtils:
                 if data.empty:
                     return "Error: No valid data after cleaning"
                 
-                df = wrap(data)
+                df = _get_stockstats_wrap()(data)
             except FileNotFoundError:
                 raise Exception("Stockstats fail: Yahoo Finance data not fetched yet!")
             except Exception as e:
@@ -117,11 +134,11 @@ class StockstatsUtils:
                 return f"Error: {str(e)}"
         else:
             # Get today's date as YYYY-mm-dd to add to cache
-            today_date = pd.Timestamp.today()
-            curr_date_dt = pd.to_datetime(curr_date)
+            today_date = _get_pandas().Timestamp.today()
+            curr_date_dt = _get_pandas().to_datetime(curr_date)
 
             end_date = today_date
-            start_date = today_date - pd.DateOffset(years=15)
+            start_date = today_date - _get_pandas().DateOffset(years=15)
             start_date = start_date.strftime("%Y-%m-%d")
             end_date = end_date.strftime("%Y-%m-%d")
 
@@ -136,7 +153,7 @@ class StockstatsUtils:
 
             if os.path.exists(data_file):
                 try:
-                    data = pd.read_csv(data_file)
+                    data = _get_pandas().read_csv(data_file)
                     # Prepare data for stockstats processing
                     data = StockstatsUtils.prepare_data_for_stockstats(data)
                     
@@ -154,7 +171,7 @@ class StockstatsUtils:
                     return StockstatsUtils.get_stock_stats(symbol, indicator, curr_date, data_dir, online=True)
             else:
                 try:
-                    data = yf.download(
+                    data = _get_yfinance().download(
                         symbol,
                         start=start_date,
                         end=end_date,
@@ -179,7 +196,7 @@ class StockstatsUtils:
                 return "Error: No valid data after cleaning"
             
             try:
-                df = wrap(data)
+                df = _get_stockstats_wrap()(data)
                 # Convert curr_date back to string format for comparison
                 curr_date = curr_date_dt.strftime("%Y-%m-%d")
             except Exception as e:
@@ -191,7 +208,7 @@ class StockstatsUtils:
             df[indicator]
             
             # Convert Date column to string for comparison if it's datetime
-            if 'Date' in df.columns and pd.api.types.is_datetime64_any_dtype(df['Date']):
+            if 'Date' in df.columns and _get_pandas().api.types.is_datetime64_any_dtype(df['Date']):
                 date_strings = df['Date'].dt.strftime('%Y-%m-%d')
                 matching_rows = df[date_strings == curr_date]
             else:
