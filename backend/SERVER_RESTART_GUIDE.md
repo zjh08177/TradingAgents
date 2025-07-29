@@ -257,5 +257,5 @@ curl -X POST http://localhost:8000/analyze \
 - The scripts automatically handle virtual environment activation
 - Server runs with `--reload` flag for development (auto-restart on code changes)
 - Default configuration uses OpenAI models (o3 for deep thinking, gpt-4o for quick thinking)
-- All analysis results are saved to `backend/results/` directory
+- All analysis results are saved to `results/` directory
 - For production, remove `--reload` flag and use proper process management 

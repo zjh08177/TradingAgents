@@ -1,23 +1,62 @@
 # gets data/stats
 
-import yfinance as yf
 from typing import Annotated, Callable, Any, Optional
-from pandas import DataFrame
-import pandas as pd
+# FIXED: ALL pandas imports made lazy to prevent circular import in Studio
+# from pandas import _get_dataframe()  # <- REMOVED
+# import pandas as pd  # <- REMOVED
 from functools import wraps
 
-from .utils import save_output, SavePathType, decorate_all_methods
+# FIXED: Lazy import for yfinance to prevent pandas circular import in Studio
+# import yfinance as yf  # <- REMOVED module-level import
 
+from .utils import save_output, SavePathType
+
+# LAZY LOADER for yfinance - prevents pandas circular import via yfinance
+def _get_yfinance():
+    """Lazy loader for yfinance to prevent circular import issues"""
+    try:
+        import yfinance as yf
+        return yf
+    except ImportError as e:
+        raise ImportError(f"yfinance is required but not available: {e}")
+
+# LAZY LOADER for pandas - prevents pandas circular import in Studio
+def _get_pandas():
+    """Lazy loader for pandas to prevent circular import issues"""
+    try:
+        import pandas as pd
+        return pd
+    except ImportError as e:
+        raise ImportError(f"Pandas is required but not available: {e}")
+
+def _get_dataframe():
+    """Lazy loader for DataFrame to prevent circular import issues"""
+    try:
+        from pandas import DataFrame
+        return DataFrame
+    except ImportError as e:
+        raise ImportError(f"Pandas DataFrame is required but not available: {e}")
 
 def init_ticker(func: Callable) -> Callable:
     """Decorator to initialize yf.Ticker and pass it to the function."""
 
     @wraps(func)
     def wrapper(symbol: Annotated[str, "ticker symbol"], *args, **kwargs) -> Any:
+        yf = _get_yfinance()  # Lazy load yfinance here
         ticker = yf.Ticker(symbol)
         return func(ticker, *args, **kwargs)
 
     return wrapper
+
+def decorate_all_methods(decorator):
+    """Class decorator to apply a decorator to all methods"""
+    def class_decorator(cls):
+        for attr_name in dir(cls):
+            attr = getattr(cls, attr_name)
+            if callable(attr) and not attr_name.startswith('_'):
+                setattr(cls, attr_name, decorator(attr))
+        return cls
+    return class_decorator
 
 
 @decorate_all_methods(init_ticker)
@@ -32,11 +71,11 @@ class YFinanceUtils:
             str, "end date for retrieving stock price data, YYYY-mm-dd"
         ],
         save_path: SavePathType = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":  # FIXED: Use string literal to prevent NameError
         """retrieve stock price data for designated ticker symbol"""
         ticker = symbol
         # add one day to the end_date so that the data range is inclusive
-        end_date = pd.to_datetime(end_date) + pd.DateOffset(days=1)
+        end_date = _get_pandas().to_datetime(end_date) + _get_pandas().DateOffset(days=1)
         end_date = end_date.strftime("%Y-%m-%d")
         stock_data = ticker.history(start=start_date, end=end_date)
         # save_output(stock_data, f"Stock data for {ticker.ticker}", save_path)
@@ -53,7 +92,7 @@ class YFinanceUtils:
     def get_company_info(
         symbol: Annotated[str, "ticker symbol"],
         save_path: Optional[str] = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":  # FIXED: Use string literal to prevent NameError
         """Fetches and returns company information as a DataFrame."""
         ticker = symbol
         info = ticker.info
@@ -64,7 +103,7 @@ class YFinanceUtils:
             "Country": info.get("country", "N/A"),
             "Website": info.get("website", "N/A"),
         }
-        company_info_df = DataFrame([company_info])
+        company_info_df = _get_dataframe()([company_info])  # FIXED: Use lazy loader
         if save_path:
             company_info_df.to_csv(save_path)
             print(f"Company info for {ticker.ticker} saved to {save_path}")
@@ -73,7 +112,7 @@ class YFinanceUtils:
     def get_stock_dividends(
         symbol: Annotated[str, "ticker symbol"],
         save_path: Optional[str] = None,
-    ) -> DataFrame:
+    ) -> "DataFrame":  # FIXED: Use string literal to prevent NameError
         """Fetches and returns the latest dividends data as a DataFrame."""
         ticker = symbol
         dividends = ticker.dividends
@@ -82,19 +121,19 @@ class YFinanceUtils:
             print(f"Dividends for {ticker.ticker} saved to {save_path}")
         return dividends
 
-    def get_income_stmt(symbol: Annotated[str, "ticker symbol"]) -> DataFrame:
+    def get_income_stmt(symbol: Annotated[str, "ticker symbol"]) -> "DataFrame":  # FIXED: Use string literal
         """Fetches and returns the latest income statement of the company as a DataFrame."""
         ticker = symbol
         income_stmt = ticker.financials
         return income_stmt
 
-    def get_balance_sheet(symbol: Annotated[str, "ticker symbol"]) -> DataFrame:
+    def get_balance_sheet(symbol: Annotated[str, "ticker symbol"]) -> "DataFrame":  # FIXED: Use string literal
         """Fetches and returns the latest balance sheet of the company as a DataFrame."""
         ticker = symbol
         balance_sheet = ticker.balance_sheet
         return balance_sheet
 
-    def get_cash_flow(symbol: Annotated[str, "ticker symbol"]) -> DataFrame:
+    def get_cash_flow(symbol: Annotated[str, "ticker symbol"]) -> "DataFrame":  # FIXED: Use string literal
         """Fetches and returns the latest cash flow statement of the company as a DataFrame."""
         ticker = symbol
         cash_flow = ticker.cashflow

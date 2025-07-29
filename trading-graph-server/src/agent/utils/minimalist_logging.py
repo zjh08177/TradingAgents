@@ -3,6 +3,7 @@
 Minimalist logging utility for LangGraph nodes and tools.
 Stores only the first 200 words of model responses.
 Logs: node ID, request, truncated response, duration, start & finish timestamps.
+FIXED: Lazy initialization to prevent blocking calls in Studio async environment.
 """
 
 import functools
@@ -14,23 +15,39 @@ from datetime import datetime
 import os
 
 
-# Configure minimalist logger
+# Configure minimalist logger - NOTE: No file handler at module level
 min_logger = logging.getLogger('minimalist_debug')
 min_logger.setLevel(logging.INFO)
 
-# Create file handler for minimalist logs
-log_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-log_file = os.path.join(log_dir, 'minimalist_debug.log')
-file_handler = logging.FileHandler(log_file)
-file_handler.setLevel(logging.INFO)
+# LAZY FILE HANDLER: Prevents blocking calls during module import
+_file_handler = None
 
-# Create simple formatter  
-formatter = logging.Formatter('%(asctime)s - %(message)s')
-file_handler.setFormatter(formatter)
+def get_minimalist_file_handler():
+    """Lazy initialization of file handler to prevent blocking in Studio"""
+    global _file_handler
+    if _file_handler is None:
+        try:
+            # Use environment variable or safe default
+            log_file = os.getenv('TRADINGAGENTS_MINIMALIST_LOG', 'minimalist_debug.log')
+            _file_handler = logging.FileHandler(log_file)
+            _file_handler.setLevel(logging.INFO)
+            
+            # Create simple formatter  
+            formatter = logging.Formatter('%(asctime)s - %(message)s')
+            _file_handler.setFormatter(formatter)
+            
+        except Exception as e:
+            # Fallback to NullHandler if file operations fail
+            _file_handler = logging.NullHandler()
+    
+    return _file_handler
 
-# Add handler to logger
-if not min_logger.handlers:
-    min_logger.addHandler(file_handler)
+def ensure_minimalist_logging():
+    """Ensure file logging is set up when needed"""
+    if not any(isinstance(h, logging.FileHandler) for h in min_logger.handlers):
+        file_handler = get_minimalist_file_handler()
+        if not isinstance(file_handler, logging.NullHandler):
+            min_logger.addHandler(file_handler)
 
 
 def truncate_to_words(text: str, max_words: int = 200) -> str:

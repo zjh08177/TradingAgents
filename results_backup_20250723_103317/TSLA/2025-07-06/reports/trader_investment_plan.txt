@@ -1,0 +1,13 @@
+Given the detailed analysis and the lessons from past experiences, it is crucial to focus on the pragmatism of current market dynamics rather than being swayed by potential long-term narratives that may not yet materialize. Here's a concise action plan based on the provided insights:
+
+1. **Position Adjustment**: With Tesla experiencing a decline in deliveries and facing imminent external risks such as potential U.S. tariff hikes and a securities-fraud investigation, it is important to scale down the long-term position by trimming 70% immediately. This move reflects a strategic shift to mitigate risk exposure and capitalize on any stock value that is still backed by elevated market sentiment.
+
+2. **Risk Mitigation**: Holding a reduced position of 30% with protection through strategically structured options (3- to 6-month 0.90-delta puts) is a prudent way to retain potential upside from unforeseen positive announcements while capping potential losses. The net debit for hedging should be kept low, adhering to the target of ≤2% of the notional to efficiently manage potential drawdowns.
+
+3. **Monitoring and Re-entry**: The plan includes set metrics for a potential re-entry, particularly focusing on Q3 delivery performance and valuations. Monitoring the outcome of critical dates such as August 1 for tariff decisions and July 10 for product events will be crucial to adjusting the strategy dynamically. Documenting these events will provide essential data for evaluating future re-entry points.
+
+4. **Aggressive Short Stance Caution**: If engaging in shorts, maintain a small portfolio exposure to mitigate inherent directional risks, and utilize a firm stop-loss criterion to protect against volatile market responses, particularly those spurred by announcements.
+
+Past experiences underline the necessity to act decisively rather than passively holding positions in rapidly evolving financial landscapes. This disciplined, proactive approach aims to avoid past mistakes where holding onto overvalued stocks through downturns led to significant losses.
+
+FINAL TRANSACTION PROPOSAL: **SELL**

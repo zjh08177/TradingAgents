@@ -3,7 +3,7 @@ import asyncio
 import json
 import logging
 from typing import List, Dict, Any
-from agent.utils.debug_logging import log_data_fetch
+from ..utils.debug_logging import log_data_fetch
 import time
 
 logger = logging.getLogger(__name__)
@@ -66,33 +66,18 @@ async def getNewsDataSerperAPI(query_or_company: str, start_date: str = None, en
             
             # Log the data fetch operation
             execution_time = time.time() - start_time
-            log_data_fetch(
-                source="serper_api",
-                query=search_query, 
-                results_count=len(news_articles),
-                execution_time=execution_time
-            )
+            log_data_fetch("serper_api", news_articles, logger)
             
             return news_articles
             
     except httpx.HTTPError as e:
         execution_time = time.time() - start_time
-        log_data_fetch(
-            source="serper_api",
-            query=f"{query_or_company} (HTTP ERROR)",
-            results_count=0, 
-            execution_time=execution_time
-        )
+        log_data_fetch("serper_api", [], logger)
         logger.error(f"HTTP error occurred: {e}")
         return []
     except Exception as e:
         execution_time = time.time() - start_time
-        log_data_fetch(
-            source="serper_api", 
-            query=f"{query_or_company} (ERROR)",
-            results_count=0,
-            execution_time=execution_time
-        )
+        log_data_fetch("serper_api", [], logger)
         logger.error(f"An error occurred: {e}")
         return []
 

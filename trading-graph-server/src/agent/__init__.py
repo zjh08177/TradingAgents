@@ -5,6 +5,7 @@ import logging
 from datetime import date
 from typing import Dict, Any
 
+from langchain_core.runnables import RunnableConfig
 from .default_config import DEFAULT_CONFIG
 
 # Set up logging
@@ -63,31 +64,22 @@ def create_studio_compatible_graph():
         logger.error(f"Failed to create graph: {e}")
         raise
 
-# For LangGraph Studio compatibility
-# Create a lazy graph wrapper to defer creation until needed
-class LazyGraph:
-    """Lazy-loading graph wrapper to avoid import-time errors."""
-    def __init__(self):
-        self._graph = None
+def graph(config: RunnableConfig):
+    """
+    LangGraph Studio compatible graph factory function.
     
-    def __getattr__(self, name):
-        if self._graph is None:
-            self._graph = create_studio_compatible_graph()
-        return getattr(self._graph, name)
-    
-    def __call__(self, *args, **kwargs):
-        if self._graph is None:
-            self._graph = create_studio_compatible_graph()
-        return self._graph(*args, **kwargs)
-
-# Create the lazy graph instance
-graph = LazyGraph()
+    Args:
+        config: RunnableConfig instance (required by LangGraph API)
+        
+    Returns:
+        The configured trading graph instance
+    """
+    logger.info(f"Creating graph with config: {config}")
+    return create_studio_compatible_graph()
 
 def get_graph():
-    """Get the actual graph instance (forces creation if needed)."""
-    if isinstance(graph, LazyGraph) and graph._graph is None:
-        graph._graph = create_studio_compatible_graph()
-    return graph._graph if isinstance(graph, LazyGraph) else graph
+    """Get a graph instance for direct use."""
+    return create_studio_compatible_graph()
 
 __all__ = [
     "run_trading_analysis",
