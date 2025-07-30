@@ -1,111 +1,147 @@
 import 'package:flutter/material.dart';
-import 'core/config/app_config.dart';
-import 'data/datasources/langgraph_datasource.dart';
-import 'data/repositories/trading_repository_impl.dart';
-import 'domain/repositories/trading_repository.dart';
-import 'presentation/pages/trading_analysis_page.dart';
-import 'core/utils/logger.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'services/langgraph_service.dart';
+import 'pages/clean_trading_analysis_page.dart';
+import 'core/logging/app_logger.dart';
 
 void main() async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
   
-  Logger.log('🚀 Starting Trading Dummy App initialization...');
+  AppLogger.info('main', '🚀 Starting Trading Dummy App with LangGraph Cloud integration...');
   
   try {
-    // Initialize configuration with error handling
-    Logger.log('📝 Loading configuration...');
-    await AppConfig.initialize();
-    Logger.success('Configuration loaded successfully');
+    // Load environment variables
+    AppLogger.info('main', '📝 Loading environment configuration...');
+    await dotenv.load(fileName: '.env');
+    AppLogger.info('main', '✅ Environment configuration loaded');
     
-    // Set up dependencies
-    Logger.log('🔧 Setting up dependencies...');
-    final dataSource = LangGraphDataSource(
-      baseUrl: AppConfig.langGraphUrl,
-      apiKey: AppConfig.langSmithApiKey,
-      assistantId: AppConfig.assistantId,
+    // Get LangGraph Cloud configuration from environment
+    final langGraphUrl = dotenv.env['LANGGRAPH_URL'];
+    final langSmithApiKey = dotenv.env['LANGSMITH_API_KEY'];
+    final assistantId = dotenv.env['LANGGRAPH_ASSISTANT_ID'];
+    
+    // Validate required configuration
+    if (langGraphUrl == null || langGraphUrl.isEmpty) {
+      throw Exception('LANGGRAPH_URL is required in .env file');
+    }
+    if (langSmithApiKey == null || langSmithApiKey.isEmpty) {
+      throw Exception('LANGSMITH_API_KEY is required in .env file');
+    }
+    if (assistantId == null || assistantId.isEmpty) {
+      throw Exception('LANGGRAPH_ASSISTANT_ID is required in .env file');
+    }
+    
+    // Initialize LangGraph service
+    AppLogger.info('main', '🔧 Setting up LangGraph service...');
+    final langGraphService = LangGraphServiceFactory.create(
+      url: langGraphUrl,
+      apiKey: langSmithApiKey,
+      assistantId: assistantId,
     );
     
-    final repository = TradingRepositoryImpl(
-      dataSource: dataSource,
-    );
+    AppLogger.info('main', '✅ LangGraph service initialized successfully');
+    AppLogger.info('main', '🌐 Endpoint: $langGraphUrl');
+    AppLogger.info('main', '🤖 Assistant: $assistantId');
     
-    Logger.success('Dependencies initialized successfully');
+    // Perform health check
+    AppLogger.info('main', '=== STARTING HEALTH CHECK ===');
+    try {
+      final isHealthy = await langGraphService.checkHealth();
+      AppLogger.info('main', '🏥 Health check result: ${isHealthy ? "PASSED" : "FAILED"}');
+    } catch (e) {
+      AppLogger.error('main', 'Health check threw exception', e);
+    }
+    AppLogger.info('main', '=== HEALTH CHECK COMPLETE ===');
     
-    // Start the app
-    Logger.log('🎯 Starting Flutter app...');
-    runApp(MyApp(repository: repository));
+    // Start the app with LangGraph Cloud integration
+    AppLogger.info('main', '🎯 Starting Flutter app...');
+    runApp(MyApp(langGraphService: langGraphService));
     
   } catch (e, stackTrace) {
-    Logger.error('💥 Failed to initialize app', {
-      'error': e.toString(),
-      'stackTrace': stackTrace.toString(),
-    });
+    AppLogger.error('main', '💥 Failed to initialize app', e, stackTrace);
     
     // Still try to run the app with a fallback error screen
-    runApp(const ErrorApp());
+    runApp(ErrorApp(error: e.toString()));
   }
 }
 
 class MyApp extends StatelessWidget {
-  final TradingRepository repository;
+  final ILangGraphService langGraphService;
   
   const MyApp({
     super.key,
-    required this.repository,
+    required this.langGraphService,
   });
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Trading Analysis',
+      title: 'Trading Analysis - LangGraph Cloud',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         useMaterial3: true,
       ),
-      home: TradingAnalysisPage(repository: repository),
+      home: CleanTradingAnalysisPage(
+        langGraphService: langGraphService,
+      ),
     );
   }
 }
 
 /// Error app to display when initialization fails
 class ErrorApp extends StatelessWidget {
-  const ErrorApp({super.key});
+  final String error;
+  
+  const ErrorApp({super.key, required this.error});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Trading Analysis - Error',
+      title: 'Trading Analysis - Configuration Error',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 64,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Failed to Initialize App',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.cloud_off,
                   color: Colors.red,
+                  size: 64,
                 ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Please check the configuration and try again.',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 16),
+                const Text(
+                  'LangGraph Cloud Configuration Error',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  error,
+                  style: const TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Please check your .env file configuration:\n'
+                  '• LANGGRAPH_URL\n'
+                  '• LANGSMITH_API_KEY\n'
+                  '• LANGGRAPH_ASSISTANT_ID',
+                  style: TextStyle(fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),
