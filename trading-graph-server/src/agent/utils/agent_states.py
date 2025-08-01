@@ -6,66 +6,31 @@ from langgraph.graph import END, StateGraph, START
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 
+# TASK 5.2: Import optimized state management
+from .state_optimizer import (
+    create_optimized_message_reducer,
+    create_optimized_report_reducer, 
+    create_optimized_debate_reducer,
+    get_state_manager
+)
+
+# TASK 5.2: Memory-optimized reducers (40% memory reduction target)
+optimized_message_reducer = create_optimized_message_reducer()
+optimized_report_reducer = create_optimized_report_reducer()
+optimized_debate_reducer = create_optimized_debate_reducer()
+
 # Simple reducer that always takes the latest value
 def update_value(left, right):
     return right if right is not None else left
 
-
-# Debate state reducer that can handle concurrent updates
+# TASK 5.2: Legacy reducers kept for backward compatibility but optimized
 def merge_debate_state(left, right):
-    """Merge debate states from multiple agents safely."""
-    if left is None:
-        return right
-    if right is None:
-        return left
-    
-    # Create a merged state
-    merged = left.copy() if isinstance(left, dict) else {}
-    
-    # Update with right values, preserving existing data
-    for key, value in right.items():
-        if key == "count":
-            # For count, take the maximum to ensure proper sequencing
-            merged[key] = max(merged.get(key, 0), value)
-        elif key in ["bull_history", "bear_history", "history"]:
-            # For history fields, merge intelligently
-            existing = merged.get(key, "")
-            if value and value not in existing:
-                merged[key] = existing + "\n" + value if existing else value
-            elif value:
-                merged[key] = value
-        else:
-            # For other fields, take the latest non-empty value
-            if value:
-                merged[key] = value
-            elif key not in merged:
-                merged[key] = ""
-    
-    return merged
+    """TASK 5.2: Optimized debate state merger with memory efficiency."""
+    return optimized_debate_reducer(left, right)
 
-
-# Risk debate state reducer
 def merge_risk_debate_state(left, right):
-    """Merge risk debate states from multiple agents safely."""
-    if left is None:
-        return right
-    if right is None:
-        return left
-    
-    # Create a merged state
-    merged = left.copy() if isinstance(left, dict) else {}
-    
-    # Update with right values
-    for key, value in right.items():
-        if key == "count":
-            # For count, take the maximum
-            merged[key] = max(merged.get(key, 0), value)
-        elif value:  # Only update if value is not empty
-            merged[key] = value
-        elif key not in merged:
-            merged[key] = ""
-    
-    return merged
+    """TASK 5.2: Optimized risk debate state merger with memory efficiency."""
+    return optimized_debate_reducer(left, right)
 
 
 # Researcher team state
@@ -93,29 +58,39 @@ class RiskDebateState(TypedDict):
 
 
 class AgentState(TypedDict):
-    """Represents the state of our multi-agent system with separate message channels."""
+    """
+    TASK 5.2: Memory-optimized multi-agent system state with atomic updates
+    Target: 40% memory reduction through optimized reducers and state validation
+    """
     
     # Basic information
     company_of_interest: Annotated[str, update_value]
     trade_date: Annotated[str, update_value]
     
-    # Analyst message channels
-    market_messages: Annotated[Sequence[BaseMessage], add_messages]
-    social_messages: Annotated[Sequence[BaseMessage], add_messages]
-    news_messages: Annotated[Sequence[BaseMessage], add_messages]
-    fundamentals_messages: Annotated[Sequence[BaseMessage], add_messages]
+    # TASK 5.2: Optimized analyst message channels with memory efficiency
+    market_messages: Annotated[Sequence[BaseMessage], optimized_message_reducer]
+    social_messages: Annotated[Sequence[BaseMessage], optimized_message_reducer]
+    news_messages: Annotated[Sequence[BaseMessage], optimized_message_reducer]
+    fundamentals_messages: Annotated[Sequence[BaseMessage], optimized_message_reducer]
     
-    # Reports from analysts (using update_value to handle concurrent updates)
-    market_report: Annotated[Optional[str], update_value]
-    sentiment_report: Annotated[Optional[str], update_value]
-    news_report: Annotated[Optional[str], update_value]
-    fundamentals_report: Annotated[Optional[str], update_value]
+    # TASK 5.2: Optimized reports with conflict resolution and validation
+    market_report: Annotated[Optional[str], optimized_report_reducer]
+    sentiment_report: Annotated[Optional[str], optimized_report_reducer]
+    news_report: Annotated[Optional[str], optimized_report_reducer]
+    fundamentals_report: Annotated[Optional[str], optimized_report_reducer]
     
-    # Debate states (using custom reducers to prevent concurrent update errors)
+    # TASK 5.2: Optimized debate states with atomic updates and memory efficiency
     investment_debate_state: Annotated[Optional[InvestDebateState], merge_debate_state]
     risk_debate_state: Annotated[Optional[RiskDebateState], merge_risk_debate_state]
+    
+    # Research debate state for multi-round bull/bear research debates
+    research_debate_state: Annotated[Optional[dict], update_value]
     
     # Investment and trading plans
     investment_plan: Annotated[Optional[str], update_value]
     trader_investment_plan: Annotated[Optional[str], update_value]
     final_trade_decision: Annotated[Optional[str], update_value]
+    
+    # TASK 7.5.2: Add aggregation ready flag and report readiness tracking
+    aggregation_ready: Annotated[Optional[bool], update_value]
+    report_readiness: Annotated[Optional[dict], update_value]

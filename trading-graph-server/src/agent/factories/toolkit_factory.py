@@ -38,7 +38,10 @@ class ToolkitFactory:
             "get_fundamentals_openai",
             # Insider information
             "get_finnhub_company_insider_sentiment",
-            "get_finnhub_company_insider_transactions"
+            "get_finnhub_company_insider_transactions",
+            # Task 7.4.2: Additional market analysis tools
+            "get_volume_analysis",
+            "get_support_resistance"
         ] 
         return BaseAnalystToolkit(base_toolkit, allowed_tools)
     
@@ -51,7 +54,10 @@ class ToolkitFactory:
             "get_stock_news_openai",
             "get_reddit_stock_info",
             # General social sentiment  
-            "get_reddit_news"
+            "get_reddit_news",
+            # Task 7.4.1: Additional social sentiment tools
+            "get_stocktwits_sentiment",
+            "get_twitter_mentions"
         ]
         return BaseAnalystToolkit(base_toolkit, allowed_tools)
     

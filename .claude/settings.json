@@ -24,7 +24,10 @@
       "Bash(node *)",
       "Bash(which *)",
       "Bash(pwd)",
-      "Bash(ls *)"
+      "Bash(ls *)",
+      "Bash(.claude/commands/trace-analyze.sh *)",
+      "Bash(*/analyze_trace_production.sh *)",
+      "Bash(python3 */analyze_langsmith_trace_optimized.py *)"
     ],
     "deny": [
       "Bash(rm -rf /)",

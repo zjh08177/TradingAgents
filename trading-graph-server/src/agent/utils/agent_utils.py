@@ -205,7 +205,7 @@ class Toolkit:
     def get_stockstats_indicators_report_online(
         symbol: Annotated[str, "ticker symbol of the company"],
         indicator: Annotated[
-            str, "technical indicator to get the analysis and report of"
+            str, "technical indicator to get - valid options: 'close_50_sma', 'close_200_sma', 'close_10_ema', 'macd', 'macds', 'macdh', 'rsi', 'boll', 'boll_ub', 'boll_lb', 'atr', 'vwma', 'mfi'. Use 'boll' instead of 'bollinger', 'close_50_sma' instead of 'sma'"
         ],
         curr_date: Annotated[
             str, "The current trading date you are trading on, YYYY-mm-dd"
@@ -427,3 +427,68 @@ class Toolkit:
         )
 
         return openai_fundamentals_results
+    
+    # Task 7.4.3: New placeholder tools for enhanced coverage
+    @staticmethod
+    @tool
+    async def get_stocktwits_sentiment(
+        ticker: Annotated[str, "the company's ticker"],
+    ):
+        """
+        Get StockTwits sentiment data for a given stock ticker.
+        Args:
+            ticker (str): Ticker of a company. e.g. AAPL, TSM
+        Returns:
+            str: A formatted string containing StockTwits sentiment data.
+        """
+        from ..dataflows.interface_new_tools import get_stocktwits_sentiment as _get_stocktwits
+        result = await _get_stocktwits(ticker)
+        return str(result)
+    
+    @staticmethod
+    @tool
+    async def get_twitter_mentions(
+        ticker: Annotated[str, "the company's ticker"],
+    ):
+        """
+        Get Twitter/X mentions and sentiment for a given stock ticker.
+        Args:
+            ticker (str): Ticker of a company. e.g. AAPL, TSM
+        Returns:
+            str: A formatted string containing Twitter mention data.
+        """
+        from ..dataflows.interface_new_tools import get_twitter_mentions as _get_twitter
+        result = await _get_twitter(ticker)
+        return str(result)
+    
+    @staticmethod
+    @tool
+    async def get_volume_analysis(
+        ticker: Annotated[str, "the company's ticker"],
+    ):
+        """
+        Get volume analysis and unusual activity detection for a given stock.
+        Args:
+            ticker (str): Ticker of a company. e.g. AAPL, TSM
+        Returns:
+            str: A formatted string containing volume analysis data.
+        """
+        from ..dataflows.interface_new_tools import get_volume_analysis as _get_volume
+        result = await _get_volume(ticker)
+        return str(result)
+    
+    @staticmethod
+    @tool
+    async def get_support_resistance(
+        ticker: Annotated[str, "the company's ticker"],
+    ):
+        """
+        Get support and resistance levels for a given stock.
+        Args:
+            ticker (str): Ticker of a company. e.g. AAPL, TSM
+        Returns:
+            str: A formatted string containing support/resistance levels.
+        """
+        from ..dataflows.interface_new_tools import get_support_resistance as _get_sr
+        result = await _get_sr(ticker)
+        return str(result)

@@ -1,6 +1,10 @@
 import asyncio
 import json
 import logging
+from agent.utils.connection_retry import safe_llm_invoke
+from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
+from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from agent.utils.token_limiter import get_token_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +27,7 @@ def create_trader(llm, memory):
         """
         
         messages = [{"role": "user", "content": prompt}]
-        response = await llm.ainvoke(messages)
+        response = await safe_llm_invoke(llm, messages)
         
         final_decision = response.content if hasattr(response, 'content') else str(response)
         

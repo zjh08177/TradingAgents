@@ -1,0 +1,74 @@
+{
+  "timestamp": "2025-07-31T21:57:44.097322",
+  "measurements": {
+    "token_counting": [
+      {
+        "text_length": 10,
+        "tokens": 2,
+        "duration": 0.17575907707214355
+      },
+      {
+        "text_length": 82,
+        "tokens": 14,
+        "duration": 2.5033950805664062e-05
+      },
+      {
+        "text_length": 930,
+        "tokens": 171,
+        "duration": 0.0001571178436279297
+      }
+    ],
+    "prompt_optimization": {
+      "original_tokens": 38,
+      "optimized_tokens": 38,
+      "reduction": 0.0,
+      "duration": 0.0012471675872802734
+    },
+    "tokenizer_init": [
+      {
+        "model": "gpt-4o-mini",
+        "init_duration": 3.0994415283203125e-06
+      },
+      {
+        "model": "gpt-4",
+        "init_duration": 0.07992792129516602
+      },
+      {
+        "model": "gpt-3.5-turbo",
+        "init_duration": 3.0994415283203125e-06
+      }
+    ],
+    "agent_processing": [
+      {
+        "agent": "market_analyst",
+        "duration": 0.002299070358276367,
+        "tokens": 198
+      },
+      {
+        "agent": "news_analyst",
+        "duration": 0.0002560615539550781,
+        "tokens": 198
+      },
+      {
+        "agent": "social_media_analyst",
+        "duration": 0.00024080276489257812,
+        "tokens": 199
+      },
+      {
+        "agent": "fundamentals_analyst",
+        "duration": 0.00023508071899414062,
+        "tokens": 198
+      },
+      {
+        "agent": "risk_manager",
+        "duration": 0.00022411346435546875,
+        "tokens": 196
+      },
+      {
+        "agent": "trader",
+        "duration": 0.00021982192993164062,
+        "tokens": 195
+      }
+    ]
+  }
+}

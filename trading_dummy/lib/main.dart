@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'services/langgraph_service.dart';
-import 'pages/clean_trading_analysis_page.dart';
+import 'services/auto_test.dart';
 import 'core/logging/app_logger.dart';
+import 'auth/auth_module.dart';
+import 'services/service_provider.dart';
+import 'pages/analysis_page_wrapper.dart';
 
 void main() async {
-  // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
   
-  AppLogger.info('main', '🚀 Starting Trading Dummy App with LangGraph Cloud integration...');
+  AppLogger.info('main', '🚀 Starting Simplified Trading App...');
   
   try {
     // Load environment variables
@@ -16,7 +19,7 @@ void main() async {
     await dotenv.load(fileName: '.env');
     AppLogger.info('main', '✅ Environment configuration loaded');
     
-    // Get LangGraph Cloud configuration from environment
+    // Get LangGraph configuration
     final langGraphUrl = dotenv.env['LANGGRAPH_URL'];
     final langSmithApiKey = dotenv.env['LANGSMITH_API_KEY'];
     final assistantId = dotenv.env['LANGGRAPH_ASSISTANT_ID'];
@@ -32,64 +35,109 @@ void main() async {
       throw Exception('LANGGRAPH_ASSISTANT_ID is required in .env file');
     }
     
-    // Initialize LangGraph service
-    AppLogger.info('main', '🔧 Setting up LangGraph service...');
-    final langGraphService = LangGraphServiceFactory.create(
+    // Create simple service
+    AppLogger.info('main', '🔧 Setting up simplified LangGraph service...');
+    final langGraphService = SimpleLangGraphService(
       url: langGraphUrl,
       apiKey: langSmithApiKey,
       assistantId: assistantId,
     );
     
-    AppLogger.info('main', '✅ LangGraph service initialized successfully');
-    AppLogger.info('main', '🌐 Endpoint: $langGraphUrl');
-    AppLogger.info('main', '🤖 Assistant: $assistantId');
+    // Create auto-test controller
+    final autoTest = AutoTestController();
     
-    // Perform health check
-    AppLogger.info('main', '=== STARTING HEALTH CHECK ===');
-    try {
-      final isHealthy = await langGraphService.checkHealth();
-      AppLogger.info('main', '🏥 Health check result: ${isHealthy ? "PASSED" : "FAILED"}');
-    } catch (e) {
-      AppLogger.error('main', 'Health check threw exception', e);
-    }
-    AppLogger.info('main', '=== HEALTH CHECK COMPLETE ===');
+    AppLogger.info('main', '✅ Services initialized - ready for final report display');
     
-    // Start the app with LangGraph Cloud integration
-    AppLogger.info('main', '🎯 Starting Flutter app...');
-    runApp(MyApp(langGraphService: langGraphService));
+    // Start the app with authentication
+    runApp(TradingApp(
+      langGraphService: langGraphService,
+      autoTest: autoTest,
+    ));
     
   } catch (e, stackTrace) {
     AppLogger.error('main', '💥 Failed to initialize app', e, stackTrace);
-    
-    // Still try to run the app with a fallback error screen
     runApp(ErrorApp(error: e.toString()));
   }
 }
 
-class MyApp extends StatelessWidget {
-  final ILangGraphService langGraphService;
+class TradingApp extends StatelessWidget {
+  final SimpleLangGraphService langGraphService;
+  final AutoTestController autoTest;
   
-  const MyApp({
+  const TradingApp({
     super.key,
     required this.langGraphService,
+    required this.autoTest,
   });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Trading Analysis - LangGraph Cloud',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
-      ),
-      home: CleanTradingAnalysisPage(
-        langGraphService: langGraphService,
+    return ServiceProvider(
+      langGraphService: langGraphService,
+      autoTest: autoTest,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => AuthViewModel(),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Trading Analysis',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+            useMaterial3: true,
+          ),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const SplashScreen(),
+            '/login': (context) => const LoginScreen(),
+            '/home': (context) => AuthGuard(
+              child: const HomeScreen(),
+            ),
+            '/analysis': (context) => const AuthGuard(
+              child: AnalysisPageWrapper(),
+            ),
+          },
+        ),
       ),
     );
   }
 }
 
-/// Error app to display when initialization fails
+/// Widget that guards routes requiring authentication
+class AuthGuard extends StatelessWidget {
+  final Widget child;
+  
+  const AuthGuard({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthViewModel>(
+      builder: (context, authViewModel, _) {
+        // Listen to auth state changes
+        if (!authViewModel.isAuthenticated) {
+          // If not authenticated, navigate to login
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pushReplacementNamed('/login');
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        // Check if token needs refresh
+        if (authViewModel.willTokenExpireSoon) {
+          authViewModel.refreshTokenIfNeeded();
+        }
+        
+        return child;
+      },
+    );
+  }
+}
+
 class ErrorApp extends StatelessWidget {
   final String error;
   
@@ -98,7 +146,7 @@ class ErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Trading Analysis - Configuration Error',
+      title: 'Trading Analysis - Error',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
@@ -110,36 +158,15 @@ class ErrorApp extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.cloud_off,
-                  color: Colors.red,
-                  size: 64,
-                ),
+                const Icon(Icons.error, color: Colors.red, size: 64),
                 const SizedBox(height: 16),
                 const Text(
-                  'LangGraph Cloud Configuration Error',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
+                  'Configuration Error',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.red),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  error,
-                  style: const TextStyle(fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Please check your .env file configuration:\n'
-                  '• LANGGRAPH_URL\n'
-                  '• LANGSMITH_API_KEY\n'
-                  '• LANGGRAPH_ASSISTANT_ID',
-                  style: TextStyle(fontSize: 12),
-                  textAlign: TextAlign.center,
-                ),
+                Text(error, style: const TextStyle(fontSize: 14), textAlign: TextAlign.center),
               ],
             ),
           ),

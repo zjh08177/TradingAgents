@@ -1,0 +1,25 @@
+{
+  "// IMPORTANT": "Google Sign-In Configuration Required",
+  "instructions": [
+    "This is a placeholder file. To enable Google Sign-In on Android:",
+    "",
+    "1. Go to Firebase Console (https://console.firebase.google.com) or",
+    "   Google Cloud Console (https://console.cloud.google.com)",
+    "",
+    "2. Create a new project or select existing one",
+    "",
+    "3. Add an Android app with package name: com.tradingdummy.app",
+    "",
+    "4. Add your SHA-1 and SHA-256 certificates:",
+    "   - Debug: keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android",
+    "   - Release: Use your release keystore",
+    "",
+    "5. Download the google-services.json file",
+    "",
+    "6. Replace this placeholder:",
+    "   - Delete this file (google-services.json.PLACEHOLDER)",
+    "   - Copy the downloaded google-services.json to this directory",
+    "",
+    "Note: Never commit the actual google-services.json to public repositories!"
+  ]
+}

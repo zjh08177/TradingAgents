@@ -9,6 +9,7 @@ import functools
 import logging
 import time
 import json
+import traceback
 from typing import Any, Dict, Callable, Optional
 from datetime import datetime
 import os
@@ -17,6 +18,15 @@ import os
 # Configure main logger - NOTE: No file handler at module level to prevent blocking
 logger = logging.getLogger('trading_graph_debug')
 logger.setLevel(logging.DEBUG)
+
+def _format_value(value):
+    """Format values for logging display"""
+    if isinstance(value, str):
+        return value[:100] + "..." if len(value) > 100 else value
+    elif isinstance(value, (list, dict)):
+        return f"{type(value).__name__}(len={len(value)})"
+    else:
+        return str(value)[:50]
 
 # Console handler (non-blocking)
 console_handler = logging.StreamHandler()
@@ -340,5 +350,4 @@ def log_state_transition(state, node_name, logger):
             continue  # Skip empty investment plan entirely
             
         # Only log non-empty values
-        logger.debug(f"   📝 {key}: {format_value(value)}")
-        logger.debug(f"   📝 {key}: {format_value(value)}") 
+        logger.debug(f"   📝 {key}: {_format_value(value)}") 

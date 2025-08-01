@@ -1,0 +1,24 @@
+<!-- IMPORTANT: Google Sign-In Configuration Required
+
+This is a placeholder file. To enable Google Sign-In on iOS:
+
+1. Go to Firebase Console (https://console.firebase.google.com) or 
+   Google Cloud Console (https://console.cloud.google.com)
+
+2. Create a new project or select existing one
+
+3. Add an iOS app with bundle ID: com.tradingdummy.app (or your custom bundle ID)
+
+4. Download the GoogleService-Info.plist file
+
+5. Replace this placeholder:
+   - Delete this file (GoogleService-Info.plist.PLACEHOLDER)
+   - Copy the downloaded GoogleService-Info.plist to this directory
+   - Add it to Xcode project (drag into Runner folder in Xcode)
+
+6. Update Info.plist:
+   - Find YOUR_REVERSED_CLIENT_ID in GoogleService-Info.plist
+   - Replace "com.googleusercontent.apps.YOUR_REVERSED_CLIENT_ID" in Info.plist
+   
+Note: Never commit the actual GoogleService-Info.plist to public repositories!
+-->
