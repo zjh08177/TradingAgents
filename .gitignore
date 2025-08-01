@@ -216,7 +216,7 @@ celerybeat.pid
 
 # mkdocs
 /site
-
+*.tar.gz
 # mypy
 .mypy_cache/
 .dmypy.json
