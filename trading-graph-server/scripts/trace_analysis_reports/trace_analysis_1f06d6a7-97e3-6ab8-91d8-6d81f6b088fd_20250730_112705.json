@@ -1,0 +1,322 @@
+{
+  "trace_data": {
+    "id": "1f06d6a7-97e3-6ab8-91d8-6d81f6b088fd",
+    "name": "trading_agents",
+    "run_type": "chain",
+    "status": "pending",
+    "start_time": "2025-07-30T17:27:32.715010",
+    "end_time": null,
+    "inputs": {
+      "company_of_interest": "HOOD",
+      "trade_date": "2025-07-30"
+    },
+    "outputs": null,
+    "error": null,
+    "total_tokens": 34896,
+    "prompt_tokens": 28200,
+    "completion_tokens": 6696,
+    "child_runs": [
+      {
+        "id": "9665c513-e91f-42aa-92bb-c5aad170ff01",
+        "name": "trader",
+        "run_type": "chain",
+        "status": "pending",
+        "start_time": "2025-07-30T17:29:28.429385",
+        "end_time": null,
+        "total_tokens": 1133,
+        "error": null
+      },
+      {
+        "id": "fd597ec7-0fa9-4094-92ae-cfebb322dc60",
+        "name": "risk_manager",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:29:21.549082",
+        "end_time": "2025-07-30T17:29:28.423679",
+        "total_tokens": 5193,
+        "error": null
+      },
+      {
+        "id": "d8e9b0d3-3028-4447-9a7b-0d6a755ffe68",
+        "name": "risk_aggregator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:29:21.543679",
+        "end_time": "2025-07-30T17:29:21.545404",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "62d8cef2-1f11-482b-9e67-5ad497bbcfd5",
+        "name": "neutral_debator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:29:08.285993",
+        "end_time": "2025-07-30T17:29:21.539626",
+        "total_tokens": 5702,
+        "error": null
+      },
+      {
+        "id": "fa3d2a9c-60bc-4cfa-a67e-be5c0a1d6aee",
+        "name": "conservative_debator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:28:54.221562",
+        "end_time": "2025-07-30T17:29:08.282984",
+        "total_tokens": 4179,
+        "error": null
+      },
+      {
+        "id": "3ea679db-4425-46f8-97fe-ca561fbdb1ab",
+        "name": "aggressive_debator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:28:42.196708",
+        "end_time": "2025-07-30T17:28:54.218915",
+        "total_tokens": 2690,
+        "error": null
+      },
+      {
+        "id": "c8d31d07-b14f-4855-b3d8-3c9614100636",
+        "name": "research_manager",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:28:26.824166",
+        "end_time": "2025-07-30T17:28:42.194524",
+        "total_tokens": 2496,
+        "error": null
+      },
+      {
+        "id": "37e60baf-fa91-4b4d-a12c-dd7dab75bae1",
+        "name": "bear_researcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:28:12.052557",
+        "end_time": "2025-07-30T17:28:26.815976",
+        "total_tokens": 2661,
+        "error": null
+      },
+      {
+        "id": "62727f3c-6858-47d1-b023-088a013e9cb8",
+        "name": "bull_researcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:28:00.086787",
+        "end_time": "2025-07-30T17:28:12.049088",
+        "total_tokens": 2541,
+        "error": null
+      },
+      {
+        "id": "1af4a31c-bafe-48cc-a574-2a4fdf00f686",
+        "name": "aggregator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:28:00.082295",
+        "end_time": "2025-07-30T17:28:00.083912",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "829dd231-8003-45bf-853c-26ee24cc9e09",
+        "name": "social_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:42.296522",
+        "end_time": "2025-07-30T17:27:43.954189",
+        "total_tokens": 841,
+        "error": null
+      },
+      {
+        "id": "1704be25-051c-4440-9e63-676e25d523e1",
+        "name": "news_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:42.296291",
+        "end_time": "2025-07-30T17:27:54.033150",
+        "total_tokens": 1702,
+        "error": null
+      },
+      {
+        "id": "e4022ded-1b6a-4909-a682-06240a606dd8",
+        "name": "market_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:42.296053",
+        "end_time": "2025-07-30T17:28:00.079426",
+        "total_tokens": 1666,
+        "error": null
+      },
+      {
+        "id": "5b4d85d5-162b-4ff9-a573-289cfb202f13",
+        "name": "fundamentals_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:42.295749",
+        "end_time": "2025-07-30T17:27:43.484298",
+        "total_tokens": 798,
+        "error": null
+      },
+      {
+        "id": "e5091769-a209-497f-8bbb-607090d8b543",
+        "name": "social_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:38.441135",
+        "end_time": "2025-07-30T17:27:38.471230",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "50a01baf-d4ce-4d35-b066-f3ad96860ab0",
+        "name": "news_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:38.440942",
+        "end_time": "2025-07-30T17:27:39.619638",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "fb81c28d-a57f-4754-87bd-ce81298a78d6",
+        "name": "market_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:38.440730",
+        "end_time": "2025-07-30T17:27:42.289482",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "375af429-371e-41f7-bce7-99c2ad8bbdc4",
+        "name": "fundamentals_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:38.440401",
+        "end_time": "2025-07-30T17:27:38.471895",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "434953d7-34da-4c27-8b8a-e2068fe0b3e3",
+        "name": "social_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:32.750050",
+        "end_time": "2025-07-30T17:27:34.460055",
+        "total_tokens": 837,
+        "error": null
+      },
+      {
+        "id": "ada06fef-def1-47bf-a1b3-8c5b04a4ae51",
+        "name": "news_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:32.749885",
+        "end_time": "2025-07-30T17:27:34.388325",
+        "total_tokens": 928,
+        "error": null
+      },
+      {
+        "id": "97b3d48f-4140-4b05-b26b-018ea0c3f3d8",
+        "name": "market_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:32.749653",
+        "end_time": "2025-07-30T17:27:38.388971",
+        "total_tokens": 735,
+        "error": null
+      },
+      {
+        "id": "9456fb03-dedf-4eaa-a98e-62c3c078c770",
+        "name": "fundamentals_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:32.749383",
+        "end_time": "2025-07-30T17:27:34.070435",
+        "total_tokens": 794,
+        "error": null
+      },
+      {
+        "id": "c3da2339-adb8-432c-b832-5805ccfeba98",
+        "name": "dispatcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-30T17:27:32.741546",
+        "end_time": "2025-07-30T17:27:32.745361",
+        "total_tokens": 0,
+        "error": null
+      }
+    ],
+    "extra": {
+      "metadata": {
+        "created_by": "system",
+        "graph_id": "trading_agents",
+        "assistant_id": "b07ca2df-7906-5911-85ed-209158e01746",
+        "from_studio": true,
+        "LANGGRAPH_API_URL": "http://127.0.0.1:2024",
+        "thread_id": "27c5c156-0b8a-4d69-ae90-a241f7939792",
+        "x-auth-scheme": "langsmith",
+        "x-user-id": "86432c3b-ea5d-49ab-8912-f22cc8317bcf",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+        "x-request-id": "dc267748-3699-4821-a352-e98cbf95cab8",
+        "langgraph_auth_user_id": "",
+        "langgraph_request_id": "dc267748-3699-4821-a352-e98cbf95cab8",
+        "run_id": "1f06d6a7-97e3-6ab8-91d8-6d81f6b088fd",
+        "user_id": "",
+        "run_attempt": 1,
+        "langgraph_version": "0.5.3",
+        "langgraph_api_version": "0.2.98",
+        "langgraph_plan": "developer",
+        "langgraph_host": "self-hosted",
+        "langgraph_api_url": "http://127.0.0.1:2024",
+        "LANGSMITH_LANGGRAPH_API_VARIANT": "local_dev",
+        "LANGSMITH_PROJECT": "trading-agent-graph",
+        "ls_run_depth": 0
+      },
+      "runtime": {
+        "sdk": "langsmith-py",
+        "sdk_version": "0.4.8",
+        "library": "langchain-core",
+        "platform": "macOS-15.5-arm64-arm-64bit",
+        "runtime": "python",
+        "py_implementation": "CPython",
+        "runtime_version": "3.11.12",
+        "langchain_version": "0.3.26",
+        "langchain_core_version": "0.3.69",
+        "library_version": "0.3.69"
+      }
+    }
+  },
+  "analysis": {
+    "trace_id": "1f06d6a7-97e3-6ab8-91d8-6d81f6b088fd",
+    "summary": {
+      "name": "trading_agents",
+      "status": "pending",
+      "total_runs": 24,
+      "run_types": {
+        "chain": 23
+      },
+      "duration_seconds": null,
+      "has_errors": false
+    },
+    "performance_metrics": {
+      "total_tokens": 34896,
+      "prompt_tokens": 28200,
+      "completion_tokens": 6696,
+      "child_run_count": 23,
+      "success_rate": 91.66666666666666
+    },
+    "error_analysis": [],
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_success_rate": 100.0
+    },
+    "recommendations": [
+      "\ud83d\udca1 Consider optimizing token usage"
+    ],
+    "timestamp": "2025-07-30T11:27:05.128154"
+  }
+}

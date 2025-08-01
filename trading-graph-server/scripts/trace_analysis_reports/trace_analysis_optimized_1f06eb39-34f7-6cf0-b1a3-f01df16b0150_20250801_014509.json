@@ -1,0 +1,219 @@
+{
+  "metadata": {
+    "trace_id": "1f06eb39-34f7-6cf0-b1a3-f01df16b0150",
+    "analysis_timestamp": "2025-08-01T01:45:09.374054",
+    "analysis_version": "optimized_v1.0",
+    "estimated_size_bytes": 6738,
+    "optimization_applied": false
+  },
+  "analysis": {
+    "trace_id": "1f06eb39-34f7-6cf0-b1a3-f01df16b0150",
+    "summary": {
+      "name": "trading_agents",
+      "status": "error",
+      "total_runs": 1,
+      "analyzed_runs": 1,
+      "run_types": {
+        "chain": 1
+      },
+      "status_distribution": {
+        "error": 1
+      },
+      "duration_seconds": 0.046726,
+      "duration_formatted": "0.05s",
+      "has_errors": true,
+      "error_count": 2
+    },
+    "performance_metrics": {
+      "total_tokens": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "token_efficiency": 0,
+      "child_run_count": 1,
+      "total_run_count": 1,
+      "success_rate": 0.0,
+      "successful_runs": 0,
+      "failed_runs": 2,
+      "avg_run_duration": 0.010071,
+      "min_run_duration": 0.010071,
+      "max_run_duration": 0.010071,
+      "total_run_time": 0.010071,
+      "timing_samples": 1
+    },
+    "error_analysis": {
+      "total_errors": 2,
+      "error_categories": {
+        "validation_error": 2
+      },
+      "errors": [
+        {
+          "run_id": "1f06eb39-34f7-6cf0-b1a3-f01df16b0150",
+          "run_name": "trading_agents",
+          "error": "InvalidUpdateError(\"Expected dict, got [Send(node='market_analyst', arg={'company_of_interest': 'TSLA', 'trade_date': '2025-07-31', 'market_messages': [HumanMessage(content='Begin comprehensive ana...",
+          "category": "validation_error"
+        },
+        {
+          "run_id": "0d7c6668-1576-4f30-8c8a-cca8db35955c",
+          "run_name": "dispatcher",
+          "error": "InvalidUpdateError(\"Expected dict, got [Send(node='market_analyst', arg={'company_of_interest': 'TSLA', 'trade_date': '2025-07-31', 'market_messages': [HumanMessage(content='Begin comprehensive ana...",
+          "category": "validation_error"
+        }
+      ],
+      "has_critical_errors": false
+    },
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_performance": {},
+      "overall_tool_success_rate": 100.0,
+      "most_used_tool": null,
+      "most_problematic_tool": null
+    },
+    "timing_analysis": {
+      "timing_by_type": {
+        "chain": {
+          "count": 1,
+          "total_time": 0.010071,
+          "avg_time": 0.010071,
+          "max_time": 0.010071,
+          "min_time": 0.010071
+        }
+      },
+      "bottlenecks": [],
+      "has_bottlenecks": false
+    },
+    "token_analysis": {
+      "total_tokens": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "prompt_to_completion_ratio": 0,
+      "tokens_per_second": 0.0,
+      "target_comparison": {
+        "total_tokens_vs_target": 0.0,
+        "under_token_target": true,
+        "runtime_vs_target": 0.03893833333333333,
+        "under_runtime_target": true
+      },
+      "efficiency_rating": "Excellent"
+    },
+    "quality_metrics": {
+      "success_rate": 0.0,
+      "error_rate": 100.0,
+      "completeness_rate": 100.0,
+      "quality_score": 20.0,
+      "quality_grade": "D",
+      "total_runs_analyzed": 2
+    },
+    "recommendations": [
+      {
+        "category": "Quality",
+        "priority": "High",
+        "issue": "Success rate is 0.0% (below 95% target)",
+        "recommendation": "Improve error handling and retry logic",
+        "details": "Quality grade: D"
+      },
+      {
+        "category": "Reliability",
+        "priority": "Medium",
+        "issue": "Found 2 errors in trace execution",
+        "recommendation": "Investigate and fix errors to improve reliability",
+        "details": "Error categories: ['validation_error']"
+      }
+    ],
+    "timestamp": "2025-08-01T01:45:09.374054",
+    "analysis_version": "optimized_v1.0"
+  },
+  "trace_summary": {
+    "id": "1f06eb39-34f7-6cf0-b1a3-f01df16b0150",
+    "name": "trading_agents",
+    "status": "error",
+    "duration": "2025-08-01T08:43:20.434546",
+    "total_tokens": 0,
+    "child_runs_count": 1,
+    "has_errors": true
+  },
+  "trace_data": {
+    "id": "1f06eb39-34f7-6cf0-b1a3-f01df16b0150",
+    "name": "trading_agents",
+    "run_type": "chain",
+    "status": "error",
+    "start_time": "2025-08-01T08:43:20.434546",
+    "end_time": "2025-08-01T08:43:20.481272",
+    "total_tokens": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "InvalidUpdateError(\"Expected dict, got [Send(node='market_analyst', arg={'company_of_interest': 'TSLA', 'trade_date': '2025-07-31', 'market_messages': [HumanMessage(content='Begin comprehensive ana...",
+    "inputs_summary": {
+      "company_of_interest": "TSLA",
+      "trade_date": "2025-07-31"
+    },
+    "outputs_summary": {},
+    "child_runs": [
+      {
+        "id": "0d7c6668-1576-4f30-8c8a-cca8db35955c",
+        "name": "dispatcher",
+        "run_type": "chain",
+        "status": "error",
+        "start_time": "2025-08-01T08:43:20.469568",
+        "end_time": "2025-08-01T08:43:20.479639",
+        "total_tokens": 0,
+        "error": "InvalidUpdateError(\"Expected dict, got [Send(node='market_analyst', arg={'company_of_interest': 'TSLA', 'trade_date': '2025-07-31', 'market_messages': [HumanMessage(content='Begin comprehensive ana...",
+        "inputs_summary": {
+          "company_of_interest": "TSLA",
+          "trade_date": "2025-07-31",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          }
+        },
+        "outputs_summary": {}
+      }
+    ],
+    "child_runs_total": 1,
+    "extra": {
+      "metadata": {
+        "created_by": "system",
+        "graph_id": "trading_agents",
+        "assistant_id": "b07ca2df-7906-5911-85ed-209158e01746",
+        "from_studio": true,
+        "LANGGRAPH_API_URL": "http://127.0.0.1:2024",
+        "thread_id": "30fdc9d2-e46d-4895-a19c-deee52afb5ef",
+        "x-auth-scheme": "langsmith",
+        "x-user-id": "86432c3b-ea5d-49ab-8912-f22cc8317bcf",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+        "x-request-id": "8c26a6ec-b981-47dc-8ca8-9188bd424bc1",
+        "langgraph_auth_user_id": "",
+        "langgraph_request_id": "8c26a6ec-b981-47dc-8ca8-9188bd424bc1",
+        "run_id": "1f06eb39-34f7-6cf0-b1a3-f01df16b0150",
+        "user_id": "",
+        "run_attempt": 1,
+        "langgraph_version": "0.5.3",
+        "langgraph_api_version": "0.2.98",
+        "langgraph_plan": "developer",
+        "langgraph_host": "self-hosted",
+        "langgraph_api_url": "http://127.0.0.1:2024",
+        "LANGSMITH_LANGGRAPH_API_VARIANT": "local_dev",
+        "LANGSMITH_PROJECT": "trading-agent-graph",
+        "ls_run_depth": 0
+      }
+    }
+  }
+}

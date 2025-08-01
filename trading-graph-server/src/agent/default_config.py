@@ -28,14 +28,36 @@ DEFAULT_CONFIG = {
     
     # LLM settings
     "llm_provider": "openai",
-    "deep_think_llm": "gpt-4o-mini",
-    "quick_think_llm": "gpt-4o-mini",
+    "deep_think_llm": "o1",
+    "quick_think_llm": "gpt-4o",
     "backend_url": "https://api.openai.com/v1",
     
     # Debate and discussion settings
     "max_debate_rounds": 1,
     "max_risk_discuss_rounds": 1,
+    "max_research_debate_rounds": 1,  # Default to 1 for performance (was 3)
     "max_recur_limit": 100,
+    
+    # Research debate is now always parallel - no timeout or waiting needed
+    
+    # Token limits
+    "max_tokens_per_analyst": 2000,  # Task C4: Token limit per analyst
+    "execution_timeout": 120,  # Task C3: Execution timeout in seconds
+    
+    # Token optimization settings
+    "enable_token_optimization": True,  # Enable comprehensive token optimization
+    "enable_prompt_compression": True,  # Enable prompt compression (22%+ reduction)
+    "enable_response_control": True,  # Enable response word limits
+    "enable_intelligent_limiting": True,  # Enable predictive token limiting
+    "token_optimization_target": 40000,  # Target tokens per complete run
+    "enable_token_monitoring": True,  # Track and report token usage
+    
+    # Feature toggles
+    # Risk debate is now always parallel - sequential mode removed
+    "enable_parallel_tools": True,  # Optimization 2: Enable parallel tool execution for all analysts
+    "enable_smart_caching": True,  # Optimization 3: Enable smart caching for tool results (~10s savings)
+    "enable_smart_retry": True,  # Optimization 4: Enable smart retry logic to skip unnecessary retries
+    "enable_debate_optimization": True,  # Optimization 5: Enable multi-round debate optimization
     
     # Tool settings
     "online_tools": True,

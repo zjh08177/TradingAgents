@@ -2,9 +2,12 @@
 
 import os
 import json
+import signal
+import asyncio
 from datetime import date
 from typing import Dict, Any, Tuple
 import logging
+from functools import wraps
 
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 
@@ -30,17 +33,21 @@ class TradingAgentsGraph:
         """Initialize with simplified configuration"""
         self.config = config or get_config()
         self.selected_analysts = selected_analysts or ["market", "social", "news", "fundamentals"]
+        
+        # Log optimization status
+        from ..utils.optimization_logger import log_config_status
+        log_config_status(self.config)
 
         # Create LLMs using factory with safe config access
         self.llm_factory = LLMFactory()
         self.quick_thinking_llm = self.llm_factory.create_llm(
             self.config.get("llm_provider", "openai"), 
-            self.config.get("quick_thinking_model", "gpt-4o-mini"), 
+            self.config.get("quick_thinking_model", "gpt-4o"), 
             self.config
         )
         self.deep_thinking_llm = self.llm_factory.create_llm(
             self.config.get("llm_provider", "openai"), 
-            self.config.get("reasoning_model", "gpt-4o-mini"), 
+            self.config.get("reasoning_model", "o3"), 
             self.config
         )
 
@@ -62,8 +69,26 @@ class TradingAgentsGraph:
         return final_state.get("final_trade_decision", "HOLD - No decision provided")
 
     async def propagate(self, company_name: str, date: str):
-        """Run analysis through the graph"""
+        """Run analysis through the graph with hard timeout"""
         logger.info(f"🚀 Starting analysis for {company_name} on {date}")
+        
+        # Get timeout from config or use default 120s
+        timeout_seconds = self.config.get('execution_timeout', 120)
+        logger.warning(f"⏰ HARD TIMEOUT SET: {timeout_seconds}s")
+        
+        try:
+            # Run with timeout using asyncio
+            return await asyncio.wait_for(
+                self._execute_graph(company_name, date),
+                timeout=timeout_seconds
+            )
+        except asyncio.TimeoutError:
+            logger.error(f"🚨 EXECUTION TIMEOUT: Graph execution exceeded {timeout_seconds}s limit")
+            raise TimeoutError(f"Execution exceeded {timeout_seconds}s limit")
+    
+    async def _execute_graph(self, company_name: str, date: str):
+        """Internal method to execute the graph (separated for timeout wrapper)"""
+        logger.info(f"Executing graph for {company_name} on {date}")
         
         # Create initial state (simplified inline)
         initial_state = {

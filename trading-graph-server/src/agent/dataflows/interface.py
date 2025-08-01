@@ -56,12 +56,13 @@ def _get_yfinance():
 # This prevents LangGraph Studio blocking errors by deferring file I/O until runtime
 _dotenv_loaded = False
 
-def _ensure_dotenv_loaded():
+async def _ensure_dotenv_loaded():
     """Lazy loader for .env file to prevent blocking I/O during module import"""
     global _dotenv_loaded
     if not _dotenv_loaded:
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        load_dotenv(os.path.join(project_root, ".env"))
+        # Use asyncio.to_thread to run synchronous code in thread pool
+        await asyncio.to_thread(load_dotenv, os.path.join(project_root, ".env"))
         _dotenv_loaded = True
 
 
@@ -837,17 +838,17 @@ def get_YFin_data(
 async def get_stock_news_openai(ticker, curr_date):
     import logging
     import os
-    from openai import OpenAI
+    from openai import AsyncOpenAI
     logger = logging.getLogger(__name__)
     
     # Ensure environment variables are loaded (lazy loading to prevent blocking I/O)
-    _ensure_dotenv_loaded()
+    await _ensure_dotenv_loaded()
     
-    # Create OpenAI client locally instead of importing from api
+    # Create AsyncOpenAI client locally instead of importing from api
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY environment variable is not set")
-    client = OpenAI(api_key=api_key)
+    client = AsyncOpenAI(api_key=api_key)
     model = "gpt-4o-mini"  # Use compatible model for tools
     
     # Enhanced logging - Tool entry
@@ -885,8 +886,8 @@ async def get_stock_news_openai(ticker, curr_date):
     logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
-        # OpenAI client call (responses.create is sync)
-        response = client.responses.create(**request_params)
+        # OpenAI client call (using async)
+        response = await client.responses.create(**request_params)
         
         # Enhanced logging - Raw response details
         logger.info(f"✅ TOOL SUCCESS: get_stock_news_openai")
@@ -959,17 +960,17 @@ async def get_stock_news_openai(ticker, curr_date):
 async def get_global_news_openai(curr_date):
     import logging
     import os
-    from openai import OpenAI
+    from openai import AsyncOpenAI
     logger = logging.getLogger(__name__)
     
     # Ensure environment variables are loaded (lazy loading to prevent blocking I/O)
-    _ensure_dotenv_loaded()
+    await _ensure_dotenv_loaded()
     
-    # Create OpenAI client locally instead of importing from api
+    # Create AsyncOpenAI client locally instead of importing from api
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY environment variable is not set")
-    client = OpenAI(api_key=api_key)
+    client = AsyncOpenAI(api_key=api_key)
     model = "gpt-4o-mini"  # Use compatible model for tools
     
     # Enhanced logging - Tool entry
@@ -1007,8 +1008,8 @@ async def get_global_news_openai(curr_date):
     logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
-        # OpenAI client call (responses.create is sync)
-        response = client.responses.create(**request_params)
+        # OpenAI client call (using async)
+        response = await client.responses.create(**request_params)
         
         # Enhanced logging - Raw response details
         logger.info(f"✅ TOOL SUCCESS: get_global_news_openai")
@@ -1084,17 +1085,17 @@ async def get_fundamentals_openai(ticker, curr_date):
     import time
     import json
     import os
-    from openai import OpenAI
+    from openai import AsyncOpenAI
     logger = logging.getLogger(__name__)
     
     # Ensure environment variables are loaded (lazy loading to prevent blocking I/O)
-    _ensure_dotenv_loaded()
+    await _ensure_dotenv_loaded()
     
-    # Create OpenAI client locally instead of importing from api
+    # Create AsyncOpenAI client locally instead of importing from api
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("OPENAI_API_KEY environment variable is not set")
-    client = OpenAI(api_key=api_key)
+    client = AsyncOpenAI(api_key=api_key)
     model = "gpt-4o-mini"  # Use compatible model for tools
     
     # Enhanced logging - Tool entry
@@ -1133,7 +1134,7 @@ async def get_fundamentals_openai(ticker, curr_date):
     logger.info(f"📤 TOOL REQUEST PARAMS: {json.dumps(request_params, indent=2)}")
 
     try:
-        response = client.responses.create(**request_params)
+        response = await client.responses.create(**request_params)
         
         # Enhanced logging - Raw response details
         duration = time.time() - start_time

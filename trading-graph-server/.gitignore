@@ -162,3 +162,20 @@ cython_debug/
 #.idea/
 uv.lock
 .langgraph_api/
+
+# Project-specific ignores
+# Cache and temporary files
+dataflows/data_cache/*.csv
+debug_logs/*.log
+*_output.log
+*_debug.log
+diagnostic_output.txt
+
+# Test artifacts
+test_results/
+*test*.py
+test_*.sh
+
+# Temporary files
+tmp/
+temp/

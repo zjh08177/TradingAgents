@@ -1,0 +1,136 @@
+{
+  "metadata": {
+    "trace_id": "1f06ea41-e420-659a-b3f0-fb8eee7bd80f",
+    "analysis_timestamp": "2025-08-01T00:46:29.260386",
+    "analysis_version": "optimized_v1.0",
+    "estimated_size_bytes": 10117622,
+    "optimization_applied": true
+  },
+  "analysis": {
+    "trace_id": "1f06ea41-e420-659a-b3f0-fb8eee7bd80f",
+    "summary": {
+      "name": "trading_agents",
+      "status": "success",
+      "total_runs": 24,
+      "analyzed_runs": 24,
+      "run_types": {
+        "chain": 24
+      },
+      "status_distribution": {
+        "success": 24
+      },
+      "duration_seconds": 590.127029,
+      "duration_formatted": "590.13s",
+      "has_errors": false,
+      "error_count": 0
+    },
+    "performance_metrics": {
+      "total_tokens": 41945,
+      "prompt_tokens": 34367,
+      "completion_tokens": 7578,
+      "token_efficiency": 0.22050222597258998,
+      "child_run_count": 24,
+      "total_run_count": 24,
+      "success_rate": 100.0,
+      "successful_runs": 25,
+      "failed_runs": 0,
+      "avg_run_duration": 28.931102041666666,
+      "min_run_duration": 0.001575,
+      "max_run_duration": 288.475807,
+      "total_run_time": 694.346449,
+      "timing_samples": 24
+    },
+    "error_analysis": {
+      "total_errors": 0,
+      "error_categories": {},
+      "errors": [],
+      "has_critical_errors": false
+    },
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_performance": {},
+      "overall_tool_success_rate": 100.0,
+      "most_used_tool": null,
+      "most_problematic_tool": null
+    },
+    "timing_analysis": {
+      "timing_by_type": {
+        "chain": {
+          "count": 24,
+          "total_time": 694.346449,
+          "avg_time": 28.931102041666666,
+          "max_time": 288.475807,
+          "min_time": 0.001575
+        }
+      },
+      "bottlenecks": [
+        {
+          "type": "chain",
+          "avg_duration": 28.931102041666666,
+          "total_impact": 694.346449
+        }
+      ],
+      "has_bottlenecks": true
+    },
+    "token_analysis": {
+      "total_tokens": 41945,
+      "prompt_tokens": 34367,
+      "completion_tokens": 7578,
+      "prompt_to_completion_ratio": 4.535101609923463,
+      "tokens_per_second": 71.07791702250601,
+      "target_comparison": {
+        "total_tokens_vs_target": 104.8625,
+        "under_token_target": false,
+        "runtime_vs_target": 491.7725241666667,
+        "under_runtime_target": false
+      },
+      "efficiency_rating": "Needs Improvement"
+    },
+    "quality_metrics": {
+      "success_rate": 100.0,
+      "error_rate": 0.0,
+      "completeness_rate": 100.0,
+      "quality_score": 100.0,
+      "quality_grade": "A+",
+      "total_runs_analyzed": 25
+    },
+    "recommendations": [
+      {
+        "category": "Performance",
+        "priority": "High",
+        "issue": "Runtime exceeds 120s target",
+        "recommendation": "Optimize execution speed and parallel processing",
+        "details": "Runtime is 491.8% of target"
+      },
+      {
+        "category": "Performance",
+        "priority": "Medium",
+        "issue": "Token usage (41,945) exceeds target (40K)",
+        "recommendation": "Optimize prompts and reduce token consumption",
+        "details": "Current usage is 104.9% of target"
+      },
+      {
+        "category": "Performance",
+        "priority": "Medium",
+        "issue": "Performance bottleneck detected in chain operations",
+        "recommendation": "Optimize slow operations or implement parallel processing",
+        "details": "Average duration: 28.93s"
+      }
+    ],
+    "timestamp": "2025-08-01T00:46:29.260386",
+    "analysis_version": "optimized_v1.0"
+  },
+  "trace_summary": {
+    "id": "1f06ea41-e420-659a-b3f0-fb8eee7bd80f",
+    "name": "trading_agents",
+    "status": "success",
+    "duration": "2025-08-01T06:52:41.532092",
+    "total_tokens": 41945,
+    "child_runs_count": 24,
+    "has_errors": false
+  },
+  "trace_data_note": "Full trace data omitted due to size optimization. Summary available in trace_summary."
+}

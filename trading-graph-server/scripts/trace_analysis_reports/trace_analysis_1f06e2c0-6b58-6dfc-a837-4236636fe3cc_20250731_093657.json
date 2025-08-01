@@ -1,0 +1,275 @@
+{
+  "trace_data": {
+    "id": "1f06e2c0-6b58-6dfc-a837-4236636fe3cc",
+    "name": "trading_agents",
+    "run_type": "chain",
+    "status": "error",
+    "start_time": "2025-07-31T16:33:02.558324",
+    "end_time": "2025-07-31T16:34:22.792253",
+    "inputs": {
+      "company_of_interest": "UNH",
+      "trade_date": "2025-07-30"
+    },
+    "outputs": null,
+    "error": "RemoteProtocolError('peer closed connection without sending complete message body (incomplete chunked read)')Traceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 101, in map_httpcore_exceptions\n    yield\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 271, in __aiter__\n    async for part in self._httpcore_stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 407, in __aiter__\n    raise exc from None\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 403, in __aiter__\n    async for part in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 342, in __aiter__\n    raise exc\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 334, in __aiter__\n    async for chunk in self._connection._receive_response_body(**kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 203, in _receive_response_body\n    event = await self._receive_event(timeout=timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 213, in _receive_event\n    with map_exceptions({h11.RemoteProtocolError: RemoteProtocolError}):\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_exceptions.py\", line 14, in map_exceptions\n    raise to_exc(exc) from exc\n\n\nhttpcore.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)\n\n\n\nThe above exception was the direct cause of the following exception:\n\n\n\nTraceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langgraph/pregel/__init__.py\", line 2768, in astream\n    async for _ in runner.atick(\n\n\n  File \"/Users/bytedance/Documents/TradingAgents/trading-graph-server/src/agent/researchers/bear_researcher.py\", line 79, in bear_node\n    result = await llm.ainvoke(messages)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 400, in ainvoke\n    llm_result = await self.agenerate_prompt(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 974, in agenerate_prompt\n    return await self.agenerate(\n           ^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 932, in agenerate\n    raise exceptions[0]\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 1089, in _agenerate_with_cache\n    async for chunk in self._astream(messages, stop=stop, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 2709, in _astream\n    async for chunk in super()._astream(*args, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 1281, in _astream\n    async for chunk in response:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 152, in __aiter__\n    async for item in self._iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 165, in __stream__\n    async for sse in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 156, in _iter_events\n    async for sse in self._decoder.aiter_bytes(self.response.aiter_bytes()):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 307, in aiter_bytes\n    async for chunk in self._aiter_chunks(iterator):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 318, in _aiter_chunks\n    async for chunk in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 997, in aiter_bytes\n    async for raw_bytes in self.aiter_raw():\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 1055, in aiter_raw\n    async for raw_stream_bytes in self.stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_client.py\", line 176, in __aiter__\n    async for chunk in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 270, in __aiter__\n    with map_httpcore_exceptions():\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions\n    raise mapped_exc(message) from exc\n\n\nhttpx.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)\n\n\nDuring task with name 'bear_researcher' and id 'cc3182cb-84f9-0a8b-a4ec-cd0858b891f6'",
+    "total_tokens": 15758,
+    "prompt_tokens": 11301,
+    "completion_tokens": 4457,
+    "child_runs": [
+      {
+        "id": "83373d42-2454-4bc9-b62a-c21afc717d50",
+        "name": "bear_researcher",
+        "run_type": "chain",
+        "status": "error",
+        "start_time": "2025-07-31T16:34:18.675170",
+        "end_time": "2025-07-31T16:34:22.788640",
+        "total_tokens": 0,
+        "error": "RemoteProtocolError('peer closed connection without sending complete message body (incomplete chunked read)')Traceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 101, in map_httpcore_exceptions\n    yield\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 271, in __aiter__\n    async for part in self._httpcore_stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 407, in __aiter__\n    raise exc from None\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 403, in __aiter__\n    async for part in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 342, in __aiter__\n    raise exc\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 334, in __aiter__\n    async for chunk in self._connection._receive_response_body(**kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 203, in _receive_response_body\n    event = await self._receive_event(timeout=timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 213, in _receive_event\n    with map_exceptions({h11.RemoteProtocolError: RemoteProtocolError}):\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_exceptions.py\", line 14, in map_exceptions\n    raise to_exc(exc) from exc\n\n\nhttpcore.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)\n\n\n\nThe above exception was the direct cause of the following exception:\n\n\n\nTraceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langgraph/utils/runnable.py\", line 672, in ainvoke\n    input = await asyncio.create_task(\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langgraph/utils/runnable.py\", line 440, in ainvoke\n    ret = await self.afunc(*args, **kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/Users/bytedance/Documents/TradingAgents/trading-graph-server/src/agent/researchers/bear_researcher.py\", line 79, in bear_node\n    result = await llm.ainvoke(messages)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 400, in ainvoke\n    llm_result = await self.agenerate_prompt(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 974, in agenerate_prompt\n    return await self.agenerate(\n           ^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 932, in agenerate\n    raise exceptions[0]\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 1089, in _agenerate_with_cache\n    async for chunk in self._astream(messages, stop=stop, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 2709, in _astream\n    async for chunk in super()._astream(*args, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 1281, in _astream\n    async for chunk in response:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 152, in __aiter__\n    async for item in self._iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 165, in __stream__\n    async for sse in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 156, in _iter_events\n    async for sse in self._decoder.aiter_bytes(self.response.aiter_bytes()):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 307, in aiter_bytes\n    async for chunk in self._aiter_chunks(iterator):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 318, in _aiter_chunks\n    async for chunk in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 997, in aiter_bytes\n    async for raw_bytes in self.aiter_raw():\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 1055, in aiter_raw\n    async for raw_stream_bytes in self.stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_client.py\", line 176, in __aiter__\n    async for chunk in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 270, in __aiter__\n    with map_httpcore_exceptions():\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions\n    raise mapped_exc(message) from exc\n\n\nhttpx.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)"
+      },
+      {
+        "id": "d3761c9a-3530-4545-bd50-00a845324e6f",
+        "name": "bull_researcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:58.844504",
+        "end_time": "2025-07-31T16:34:18.672161",
+        "total_tokens": 4576,
+        "error": null
+      },
+      {
+        "id": "33094d50-8c9d-49b0-bbe8-b847fe277d41",
+        "name": "research_debate_controller",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:58.841328",
+        "end_time": "2025-07-31T16:33:58.842197",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "c197cf09-3a24-4a49-97ee-de0ec1b3ef13",
+        "name": "aggregator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:58.821864",
+        "end_time": "2025-07-31T16:33:58.837268",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "2ef900d3-d521-44c8-9b3e-8459b422d1ea",
+        "name": "social_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:39.356192",
+        "end_time": "2025-07-31T16:33:58.817971",
+        "total_tokens": 1690,
+        "error": null
+      },
+      {
+        "id": "0cc34250-3d6f-4d52-b819-ff95cc683156",
+        "name": "news_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:39.355917",
+        "end_time": "2025-07-31T16:33:58.690489",
+        "total_tokens": 2027,
+        "error": null
+      },
+      {
+        "id": "d58560b7-89e2-47a9-bb7e-03b209520f4b",
+        "name": "market_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:39.355631",
+        "end_time": "2025-07-31T16:33:55.108191",
+        "total_tokens": 1751,
+        "error": null
+      },
+      {
+        "id": "28fd754b-02df-46f2-b107-f2ea4fdaaa65",
+        "name": "fundamentals_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:39.355129",
+        "end_time": "2025-07-31T16:33:57.224900",
+        "total_tokens": 1912,
+        "error": null
+      },
+      {
+        "id": "d9463dbc-4774-46fe-971d-cf85f628fa11",
+        "name": "social_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:10.863660",
+        "end_time": "2025-07-31T16:33:16.426038",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "1d8b20ce-2847-44f1-a914-4b07b6d579ae",
+        "name": "news_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:10.863410",
+        "end_time": "2025-07-31T16:33:39.348965",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "c0004042-428b-4a36-b87d-eed40221b719",
+        "name": "market_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:10.863179",
+        "end_time": "2025-07-31T16:33:16.956357",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "d3515efb-dec2-44da-a7a7-f55910bd7204",
+        "name": "fundamentals_tools",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:10.862857",
+        "end_time": "2025-07-31T16:33:18.175452",
+        "total_tokens": 0,
+        "error": null
+      },
+      {
+        "id": "f39a4154-95ab-4d0f-9f36-01478afe77e2",
+        "name": "social_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:02.597746",
+        "end_time": "2025-07-31T16:33:05.596740",
+        "total_tokens": 944,
+        "error": null
+      },
+      {
+        "id": "b21a8623-c7e5-45b3-8e51-ab7b162960c9",
+        "name": "news_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:02.597580",
+        "end_time": "2025-07-31T16:33:05.074049",
+        "total_tokens": 1034,
+        "error": null
+      },
+      {
+        "id": "78e03dd6-e853-46b5-a321-cc0394969b38",
+        "name": "market_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:02.597336",
+        "end_time": "2025-07-31T16:33:10.821507",
+        "total_tokens": 868,
+        "error": null
+      },
+      {
+        "id": "625db8fc-bd0c-423b-8c12-53f04b02be60",
+        "name": "fundamentals_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:02.597034",
+        "end_time": "2025-07-31T16:33:04.046775",
+        "total_tokens": 956,
+        "error": null
+      },
+      {
+        "id": "25d0b9ed-f2b7-4d5e-b855-af2a91b8913d",
+        "name": "dispatcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-07-31T16:33:02.590284",
+        "end_time": "2025-07-31T16:33:02.593394",
+        "total_tokens": 0,
+        "error": null
+      }
+    ],
+    "extra": {
+      "metadata": {
+        "created_by": "system",
+        "graph_id": "trading_agents",
+        "assistant_id": "b07ca2df-7906-5911-85ed-209158e01746",
+        "from_studio": true,
+        "LANGGRAPH_API_URL": "http://127.0.0.1:2024",
+        "thread_id": "12d695b7-fa1b-4e3a-9534-88afaeac9943",
+        "x-auth-scheme": "langsmith",
+        "x-user-id": "86432c3b-ea5d-49ab-8912-f22cc8317bcf",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+        "x-request-id": "fdcfc196-3d57-4436-80fb-ed2ac0ec7014",
+        "langgraph_auth_user_id": "",
+        "langgraph_request_id": "fdcfc196-3d57-4436-80fb-ed2ac0ec7014",
+        "run_id": "1f06e2c0-6b58-6dfc-a837-4236636fe3cc",
+        "user_id": "",
+        "run_attempt": 1,
+        "langgraph_version": "0.5.3",
+        "langgraph_api_version": "0.2.98",
+        "langgraph_plan": "developer",
+        "langgraph_host": "self-hosted",
+        "langgraph_api_url": "http://127.0.0.1:2024",
+        "LANGSMITH_LANGGRAPH_API_VARIANT": "local_dev",
+        "LANGSMITH_PROJECT": "trading-agent-graph",
+        "ls_run_depth": 0
+      },
+      "runtime": {
+        "sdk": "langsmith-py",
+        "sdk_version": "0.4.8",
+        "library": "langchain-core",
+        "platform": "macOS-15.5-arm64-arm-64bit",
+        "runtime": "python",
+        "py_implementation": "CPython",
+        "runtime_version": "3.11.12",
+        "langchain_version": "0.3.26",
+        "langchain_core_version": "0.3.69",
+        "library_version": "0.3.69"
+      }
+    }
+  },
+  "analysis": {
+    "trace_id": "1f06e2c0-6b58-6dfc-a837-4236636fe3cc",
+    "summary": {
+      "name": "trading_agents",
+      "status": "error",
+      "total_runs": 18,
+      "run_types": {
+        "chain": 17
+      },
+      "duration_seconds": 80.233929,
+      "has_errors": true
+    },
+    "performance_metrics": {
+      "total_tokens": 15758,
+      "prompt_tokens": 11301,
+      "completion_tokens": 4457,
+      "child_run_count": 17,
+      "success_rate": 88.88888888888889
+    },
+    "error_analysis": [
+      {
+        "run_id": "1f06e2c0-6b58-6dfc-a837-4236636fe3cc",
+        "run_name": "trading_agents",
+        "error": "RemoteProtocolError('peer closed connection without sending complete message body (incomplete chunked read)')Traceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 101, in map_httpcore_exceptions\n    yield\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 271, in __aiter__\n    async for part in self._httpcore_stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 407, in __aiter__\n    raise exc from None\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 403, in __aiter__\n    async for part in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 342, in __aiter__\n    raise exc\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 334, in __aiter__\n    async for chunk in self._connection._receive_response_body(**kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 203, in _receive_response_body\n    event = await self._receive_event(timeout=timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 213, in _receive_event\n    with map_exceptions({h11.RemoteProtocolError: RemoteProtocolError}):\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_exceptions.py\", line 14, in map_exceptions\n    raise to_exc(exc) from exc\n\n\nhttpcore.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)\n\n\n\nThe above exception was the direct cause of the following exception:\n\n\n\nTraceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langgraph/pregel/__init__.py\", line 2768, in astream\n    async for _ in runner.atick(\n\n\n  File \"/Users/bytedance/Documents/TradingAgents/trading-graph-server/src/agent/researchers/bear_researcher.py\", line 79, in bear_node\n    result = await llm.ainvoke(messages)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 400, in ainvoke\n    llm_result = await self.agenerate_prompt(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 974, in agenerate_prompt\n    return await self.agenerate(\n           ^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 932, in agenerate\n    raise exceptions[0]\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 1089, in _agenerate_with_cache\n    async for chunk in self._astream(messages, stop=stop, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 2709, in _astream\n    async for chunk in super()._astream(*args, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 1281, in _astream\n    async for chunk in response:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 152, in __aiter__\n    async for item in self._iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 165, in __stream__\n    async for sse in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 156, in _iter_events\n    async for sse in self._decoder.aiter_bytes(self.response.aiter_bytes()):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 307, in aiter_bytes\n    async for chunk in self._aiter_chunks(iterator):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 318, in _aiter_chunks\n    async for chunk in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 997, in aiter_bytes\n    async for raw_bytes in self.aiter_raw():\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 1055, in aiter_raw\n    async for raw_stream_bytes in self.stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_client.py\", line 176, in __aiter__\n    async for chunk in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 270, in __aiter__\n    with map_httpcore_exceptions():\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions\n    raise mapped_exc(message) from exc\n\n\nhttpx.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)\n\n\nDuring task with name 'bear_researcher' and id 'cc3182cb-84f9-0a8b-a4ec-cd0858b891f6'"
+      },
+      {
+        "run_id": "83373d42-2454-4bc9-b62a-c21afc717d50",
+        "run_name": "bear_researcher",
+        "error": "RemoteProtocolError('peer closed connection without sending complete message body (incomplete chunked read)')Traceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 101, in map_httpcore_exceptions\n    yield\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 271, in __aiter__\n    async for part in self._httpcore_stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 407, in __aiter__\n    raise exc from None\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/connection_pool.py\", line 403, in __aiter__\n    async for part in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 342, in __aiter__\n    raise exc\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 334, in __aiter__\n    async for chunk in self._connection._receive_response_body(**kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 203, in _receive_response_body\n    event = await self._receive_event(timeout=timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_async/http11.py\", line 213, in _receive_event\n    with map_exceptions({h11.RemoteProtocolError: RemoteProtocolError}):\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpcore/_exceptions.py\", line 14, in map_exceptions\n    raise to_exc(exc) from exc\n\n\nhttpcore.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)\n\n\n\nThe above exception was the direct cause of the following exception:\n\n\n\nTraceback (most recent call last):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langgraph/utils/runnable.py\", line 672, in ainvoke\n    input = await asyncio.create_task(\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langgraph/utils/runnable.py\", line 440, in ainvoke\n    ret = await self.afunc(*args, **kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/Users/bytedance/Documents/TradingAgents/trading-graph-server/src/agent/researchers/bear_researcher.py\", line 79, in bear_node\n    result = await llm.ainvoke(messages)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 400, in ainvoke\n    llm_result = await self.agenerate_prompt(\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 974, in agenerate_prompt\n    return await self.agenerate(\n           ^^^^^^^^^^^^^^^^^^^^^\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 932, in agenerate\n    raise exceptions[0]\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_core/language_models/chat_models.py\", line 1089, in _agenerate_with_cache\n    async for chunk in self._astream(messages, stop=stop, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 2709, in _astream\n    async for chunk in super()._astream(*args, **kwargs):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/langchain_openai/chat_models/base.py\", line 1281, in _astream\n    async for chunk in response:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 152, in __aiter__\n    async for item in self._iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 165, in __stream__\n    async for sse in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 156, in _iter_events\n    async for sse in self._decoder.aiter_bytes(self.response.aiter_bytes()):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 307, in aiter_bytes\n    async for chunk in self._aiter_chunks(iterator):\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/openai/_streaming.py\", line 318, in _aiter_chunks\n    async for chunk in iterator:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 997, in aiter_bytes\n    async for raw_bytes in self.aiter_raw():\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_models.py\", line 1055, in aiter_raw\n    async for raw_stream_bytes in self.stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_client.py\", line 176, in __aiter__\n    async for chunk in self._stream:\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 270, in __aiter__\n    with map_httpcore_exceptions():\n\n\n  File \"/opt/homebrew/Cellar/python@3.11/3.11.12/Frameworks/Python.framework/Versions/3.11/lib/python3.11/contextlib.py\", line 158, in __exit__\n    self.gen.throw(typ, value, traceback)\n\n\n  File \"/opt/homebrew/lib/python3.11/site-packages/httpx/_transports/default.py\", line 118, in map_httpcore_exceptions\n    raise mapped_exc(message) from exc\n\n\nhttpx.RemoteProtocolError: peer closed connection without sending complete message body (incomplete chunked read)"
+      }
+    ],
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_success_rate": 100.0
+    },
+    "recommendations": [
+      "\ud83d\udea8 Fix 2 errors found in the trace",
+      "\u26a0\ufe0f Improve success rate (currently 88.9%)",
+      "\ud83d\udca1 Consider optimizing token usage"
+    ],
+    "timestamp": "2025-07-31T09:36:57.035174"
+  }
+}

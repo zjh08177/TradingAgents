@@ -1,17 +1,35 @@
 import asyncio
 import json
 import logging
+from agent.utils.connection_retry import safe_llm_invoke
+from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
+from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from agent.utils.token_limiter import get_token_limiter
 
 logger = logging.getLogger(__name__)
 
 def create_risk_manager(llm, memory):
     async def risk_manager_node(state) -> dict:
-        logger.info("🎯 Risk Manager: Starting final decision process")
+        logger.info("🎯 Risk Manager: Evaluating risk analysis needs")
         
         # Extract information (simplified - no validation needed)
         company_name = state.get("company_of_interest", "")
         risk_debate_state = state.get("risk_debate_state", {})
         history = risk_debate_state.get("history", "")
+        
+        # Check if we need risk analysis or already have it
+        risk_analysis_needed = state.get("risk_analysis_needed", True)
+        has_risk_analysis = len(history) > 100  # Check if we have substantial risk analysis
+        
+        if risk_analysis_needed and not has_risk_analysis:
+            # First pass - we need risk analysis
+            logger.info("🔍 Risk Manager: Risk analysis needed - routing to risk debate")
+            return {
+                "risk_analysis_needed": True
+            }
+        
+        # We have risk analysis - make final decision
+        logger.info("🎯 Risk Manager: Making final decision with risk analysis")
         
         # Get all reports
         market_research_report = state.get("market_report", "")
@@ -45,7 +63,7 @@ def create_risk_manager(llm, memory):
 Make your decision now:"""
 
         messages = [{"role": "user", "content": prompt}]
-        response = await llm.ainvoke(messages)
+        response = await safe_llm_invoke(llm, messages)
         
         logger.info(f"🎯 Risk Manager: Decision: {response.content[:100]}...")
         
@@ -60,6 +78,7 @@ Make your decision now:"""
         return {
             "risk_debate_state": new_risk_debate_state,
             "final_trade_decision": response.content,
+            "risk_analysis_needed": False  # Mark as complete
         }
 
     return risk_manager_node

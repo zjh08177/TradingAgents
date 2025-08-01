@@ -48,3 +48,11 @@ app.*.map.json
 .env
 .env.*
 !.env.example
+
+# Authentication configuration files - DO NOT COMMIT
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+
+# Keep placeholders
+!ios/Runner/GoogleService-Info.plist.PLACEHOLDER
+!android/app/google-services.json.PLACEHOLDER

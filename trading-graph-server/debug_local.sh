@@ -1,9 +1,52 @@
 #!/bin/bash
 
-# 🐛 LangGraph Local Debug Script
-# This script provides comprehensive debugging for the trading graph locally
+# 🎯 Enhanced LangGraph Debug Script with Studio Mirror Mode
+# This script provides comprehensive debugging and Studio compatibility validation
 
 set -e  # Exit on any error
+
+# Command line argument parsing
+STUDIO_MIRROR_MODE=true
+SHOW_HELP=false
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --basic-mode)
+            STUDIO_MIRROR_MODE=false
+            shift
+            ;;
+        --studio-mirror)
+            STUDIO_MIRROR_MODE=true
+            shift
+            ;;
+        --help|-h)
+            SHOW_HELP=true
+            shift
+            ;;
+        *)
+            echo "Unknown option $1"
+            SHOW_HELP=true
+            break
+            ;;
+    esac
+done
+
+if [[ "$SHOW_HELP" == "true" ]]; then
+    echo "🎯 Enhanced LangGraph Debug Script"
+    echo ""
+    echo "Usage: $0 [OPTIONS]"
+    echo ""
+    echo "Options:"
+    echo "  --basic-mode      Run basic debug without Studio compatibility tests"
+    echo "  --studio-mirror   Run with full Studio environment mirroring (default)"
+    echo "  --help, -h        Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  $0                    # Run with Studio mirror mode (recommended)"
+    echo "  $0 --studio-mirror    # Run with Studio mirror mode (explicit)" 
+    echo "  $0 --basic-mode       # Run basic debug only (faster, less validation)"
+    exit 0
+fi
 
 # Global timeout configuration (720 seconds = 12 minutes)
 GLOBAL_TIMEOUT=720
@@ -25,11 +68,17 @@ TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 DEBUG_LOG="$LOG_DIR/debug_session_$TIMESTAMP.log"
 GRAPH_LOG="$LOG_DIR/graph_debug_$TIMESTAMP.log"
 
-echo -e "${BLUE}🐛 LangGraph Local Debug Script${NC}"
-echo -e "${BLUE}======================================${NC}"
+if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
+    echo -e "${BLUE}🎯 Enhanced LangGraph Debug Script (Studio-Mirror Mode)${NC}"
+    echo -e "${BLUE}=======================================================${NC}"
+else
+    echo -e "${BLUE}🐛 LangGraph Debug Script (Basic Mode)${NC}"
+    echo -e "${BLUE}======================================${NC}"
+fi
 echo -e "📂 Working Directory: $SCRIPT_DIR"
 echo -e "📝 Debug Log: $DEBUG_LOG"
 echo -e "📊 Graph Log: $GRAPH_LOG"
+echo -e "🎛️  Mode: $([ "$STUDIO_MIRROR_MODE" = true ] && echo "Studio Mirror" || echo "Basic Debug")"
 echo ""
 
 # Create log directory
@@ -50,7 +99,7 @@ validate_critical_components() {
     fi
     
     # Check 2: Required Python packages are importable
-    if python3 -c "from agent.graph.trading_graph import TradingAgentsGraph" 2>/dev/null; then
+    if python3.11 -c "from agent.graph.trading_graph import TradingAgentsGraph" 2>/dev/null; then
         echo -e "${GREEN}   ✅ Core trading graph imports working${NC}"
     else
         echo -e "${RED}   ❌ Core trading graph imports failed${NC}"
@@ -58,7 +107,7 @@ validate_critical_components() {
     fi
     
     # Check 3: Debug logging system is importable
-    if python3 -c "from agent.utils.debug_logging import debug_node" 2>/dev/null; then
+    if python3.11 -c "from agent.utils.debug_logging import debug_node" 2>/dev/null; then
         echo -e "${GREEN}   ✅ Debug logging system working${NC}"
     else
         echo -e "${RED}   ❌ Debug logging system failed${NC}"
@@ -315,8 +364,8 @@ if [[ ! -f "src/agent/__init__.py" ]]; then
 fi
 
 # Check Python
-if command_exists python3; then
-    PYTHON_VERSION=$(python3 --version)
+if command_exists python3.11; then
+    PYTHON_VERSION=$(python3.11 --version)
     echo -e "${GREEN}✅ Python: $PYTHON_VERSION${NC}"
     log "Python version: $PYTHON_VERSION"
 else
@@ -330,7 +379,7 @@ if [[ -d "venv" ]]; then
     log "Virtual environment directory exists"
 else
     echo -e "${YELLOW}⚠️  Virtual environment not found, creating...${NC}"
-    run_cmd "python3 -m venv venv" "Creating virtual environment"
+    run_cmd "python3.11 -m venv venv" "Creating virtual environment"
 fi
 
 # Activate virtual environment
@@ -395,9 +444,9 @@ echo "================================"
 check_timeout
 
 # Check imports
-run_cmd "python3 -c 'from agent.graph.trading_graph import TradingAgentsGraph; print(\"✅ Core imports working\")'" "Testing core imports"
-run_cmd "python3 -c 'from agent.utils.debug_logging import debug_node; print(\"✅ Debug logging imports working\")'" "Testing debug logging imports"
-run_cmd "python3 -c 'from langchain_openai import ChatOpenAI; print(\"✅ LangChain imports working\")'" "Testing LangChain imports"
+run_cmd "python3.11 -c 'from agent.graph.trading_graph import TradingAgentsGraph; print(\"✅ Core imports working\")'" "Testing core imports"
+run_cmd "python3.11 -c 'from agent.utils.debug_logging import debug_node; print(\"✅ Debug logging imports working\")'" "Testing debug logging imports"
+run_cmd "python3.11 -c 'from langchain_openai import ChatOpenAI; print(\"✅ LangChain imports working\")'" "Testing LangChain imports"
 
 echo ""
 
@@ -418,7 +467,7 @@ echo "🔍 Testing TradingAgentsGraph with comprehensive error validation..."
 if [[ ! -f "debug_test.py" ]]; then
     echo -e "${CYAN}🔄 Creating debug test script...${NC}"
     cat > debug_test.py << 'EOF'
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """
 Enhanced debug test script for LangGraph trading graph
 """
@@ -526,7 +575,7 @@ fi
 
 # Run the debug test
 echo -e "${CYAN}🔄 Running comprehensive debug test...${NC}"
-if python3 debug_test.py 2>&1 | tee -a "$DEBUG_LOG"; then
+if python3.11 debug_test.py 2>&1 | tee -a "$DEBUG_LOG"; then
     echo -e "${GREEN}✅ Debug test completed successfully${NC}"
     log "Debug test passed"
 else
@@ -537,41 +586,196 @@ fi
 
 echo ""
 
-# Phase 4: Server Testing
-echo -e "${PURPLE}📋 Phase 4: Server Testing${NC}"
-echo "=========================="
-check_timeout
+# Phase 4: Studio Environment Mirroring (Optional)
+if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
+    echo -e "${PURPLE}📋 Phase 4: Studio Environment Mirroring${NC}"
+    echo "============================================"
+    check_timeout
 
-# Check if LangGraph CLI is installed
-if command_exists langgraph; then
-    echo -e "${GREEN}✅ LangGraph CLI found${NC}"
-    log "LangGraph CLI available"
-else
-    echo -e "${YELLOW}⚠️  LangGraph CLI not found, installing...${NC}"
+    # Install Studio-specific validation tools
+    echo -e "${CYAN}🔄 Installing Studio validation tools...${NC}"
+    run_cmd "pip install -q blockbuster" "Installing blocking call detector"
     run_cmd "pip install -q langgraph-cli" "Installing LangGraph CLI"
-fi
-
-# Test server startup (dry run)
-echo -e "${CYAN}🔄 Testing server configuration...${NC}"
-if langgraph dev --help >/dev/null 2>&1; then
-    echo -e "${GREEN}✅ LangGraph dev command available${NC}"
-    log "LangGraph dev command working"
 else
-    echo -e "${RED}❌ LangGraph dev command failed${NC}"
-    log "LangGraph dev command failed"
+    echo -e "${PURPLE}📋 Phase 4: Basic Server Testing${NC}"
+    echo "================================"
+    check_timeout
+
+    # Basic LangGraph CLI check
+    if command_exists langgraph; then
+        echo -e "${GREEN}✅ LangGraph CLI found${NC}"
+        log "LangGraph CLI available"
+    else
+        echo -e "${YELLOW}⚠️  LangGraph CLI not found, installing...${NC}"
+        run_cmd "pip install -q langgraph-cli" "Installing LangGraph CLI"
+    fi
+    
+    # Set defaults for basic mode
+    BLOCKING_TEST_PASSED=true
+    PYTHON311_TEST_PASSED=true
+    SERVER_TEST_PASSED=true
 fi
 
-# Check if port 8123 is available
-if command_exists lsof && lsof -Pi :8123 -sTCP:LISTEN -t >/dev/null; then
-    echo -e "${YELLOW}⚠️  Port 8123 is in use${NC}"
-    log "Port 8123 is occupied"
-    echo -e "${CYAN}🔄 Attempting to free port 8123...${NC}"
+if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
+    # Test 1: Blocking Call Detection (exactly like Studio)
+    echo -e "${CYAN}🧪 Test 1: Studio-style Blocking Call Detection${NC}"
+cat > test_studio_blocking.py << 'EOF'
+#!/usr/bin/env python3.11
+"""
+Mirror Studio's exact blocking call detection
+"""
+import sys
+import os
+sys.path.insert(0, 'src')
+
+def test_studio_blocking_detection():
+    """Test with exact Studio blocking detection"""
+    try:
+        import blockbuster.blockbuster as bb
+        bb.install()
+        print("🔒 Blockbuster blocking detection enabled (Studio mode)")
+        
+        # Test the exact import chain Studio uses
+        print("🔗 Testing Studio import chain...")
+        
+        # Step 1: Basic agent import
+        print("  1. Importing agent module...")
+        import agent
+        print("     ✅ Agent module imported")
+        
+        # Step 2: Test importlib pattern (exactly like Studio)
+        print("  2. Testing importlib pattern...")
+        import importlib
+        trading_graph_module = importlib.import_module('.graph.trading_graph', package='agent')
+        print("     ✅ Trading graph importlib success")
+        
+        # Step 3: Test graph factory function (Studio's exact call)
+        print("  3. Testing graph factory function...")
+        from langchain_core.runnables import RunnableConfig
+        
+        config = RunnableConfig(
+            tags=[],
+            metadata={},
+            callbacks=None,
+            recursion_limit=25,
+            configurable={
+                '__pregel_store': None,
+                '__pregel_checkpointer': None
+            }
+        )
+        
+        result = agent.graph(config)
+        print(f"     ✅ Graph factory success: {type(result)}")
+        
+        print("🎉 ALL IMPORTS PASSED BLOCKING DETECTION!")
+        return True
+        
+    except bb.BlockingError as e:
+        print(f"❌ BLOCKING CALL DETECTED: {e}")
+        print("📍 This is the exact error Studio encounters!")
+        return False
+    except Exception as e:
+        print(f"❌ OTHER ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+if __name__ == "__main__":
+    success = test_studio_blocking_detection()
+    exit(0 if success else 1)
+EOF
+
+if python3.11 test_studio_blocking.py 2>&1 | tee -a "$DEBUG_LOG"; then
+    echo -e "${GREEN}✅ Studio blocking detection test PASSED${NC}"
+    log "Studio blocking detection test passed"
+    BLOCKING_TEST_PASSED=true
+else
+    echo -e "${RED}❌ Studio blocking detection test FAILED${NC}"
+    log "Studio blocking detection test failed"
+    BLOCKING_TEST_PASSED=false
+    echo -e "${YELLOW}💡 This is likely the exact issue Studio encounters!${NC}"
+fi
+
+rm -f test_studio_blocking.py
+
+# Test 2: Python 3.11 Compatibility (Studio's version)
+echo -e "${CYAN}🧪 Test 2: Python 3.11 Compatibility Test${NC}"
+if command -v python3.11.11 >/dev/null 2>&1; then
+    cat > test_python3.1111.py << 'EOF'
+#!/usr/bin/env python3.11
+"""Test with Python 3.11 like Studio uses"""
+import sys
+sys.path.insert(0, 'src')
+
+try:
+    import agent
+    from langchain_core.runnables import RunnableConfig
+    
+    config = RunnableConfig(tags=[], metadata={}, callbacks=None, recursion_limit=25)
+    result = agent.graph(config)
+    print(f"✅ Python 3.11 test passed: {type(result)}")
+    
+except Exception as e:
+    print(f"❌ Python 3.11 test failed: {e}")
+    import traceback
+    traceback.print_exc()
+    exit(1)
+EOF
+
+    if python3.11.11 test_python3.1111.py 2>&1 | tee -a "$DEBUG_LOG"; then
+        echo -e "${GREEN}✅ Python 3.11 compatibility test PASSED${NC}"
+        log "Python 3.11 compatibility test passed"
+        PYTHON311_TEST_PASSED=true
+    else
+        echo -e "${RED}❌ Python 3.11 compatibility test FAILED${NC}"
+        log "Python 3.11 compatibility test failed"
+        PYTHON311_TEST_PASSED=false
+    fi
+    
+    rm -f test_python3.1111.py
+else
+    echo -e "${YELLOW}⚠️  Python 3.11 not available, skipping version-specific test${NC}"
+    log "Python 3.11 not available"
+    PYTHON311_TEST_PASSED=true
+fi
+
+# Test 3: LangGraph Dev Server Simulation
+echo -e "${CYAN}🧪 Test 3: LangGraph Dev Server Simulation${NC}"
+
+# Check if port 8125 is available (using different port to avoid conflicts)
+if command_exists lsof && lsof -Pi :8125 -sTCP:LISTEN -t >/dev/null; then
+    echo -e "${YELLOW}⚠️  Port 8125 is in use, cleaning up...${NC}"
     pkill -f "langgraph dev" 2>/dev/null || true
     sleep 2
-else
-    echo -e "${GREEN}✅ Port 8123 is available${NC}"
-    log "Port 8123 is free"
 fi
+
+# Set environment exactly like Studio
+export PYTHONPATH="$SCRIPT_DIR/src"
+
+# Test server startup with timeout (mirror Studio's startup behavior)
+echo -e "${CYAN}🔄 Testing langgraph dev startup (Studio simulation)...${NC}"
+timeout 15s langgraph dev --port 8125 --no-browser &
+SERVER_PID=$!
+
+# Wait for server to start
+sleep 8
+
+# Test if server is responding (like Studio does)
+if curl -s http://127.0.0.1:8125/assistants >/dev/null 2>&1; then
+    echo -e "${GREEN}✅ Studio server simulation PASSED${NC}"
+    log "Studio server simulation passed"
+    SERVER_TEST_PASSED=true
+else
+    echo -e "${RED}❌ Studio server simulation FAILED${NC}"
+    log "Studio server simulation failed"
+    SERVER_TEST_PASSED=false
+fi
+
+# Clean up server
+kill $SERVER_PID 2>/dev/null || true
+wait $SERVER_PID 2>/dev/null || true
+
+fi  # End of Studio mirror mode
 
 echo ""
 
@@ -612,7 +816,7 @@ if __name__ == "__main__":
     exit(0 if success else 1)
 EOF
 
-if python3 analyze_graph.py 2>&1 | tee -a "$DEBUG_LOG"; then
+if python3.11 analyze_graph.py 2>&1 | tee -a "$DEBUG_LOG"; then
     echo -e "${GREEN}✅ Graph analysis completed${NC}"
     log "Graph analysis successful"
 else
@@ -641,7 +845,7 @@ cat > "$REPORT_FILE" << EOF
 
 ## 📋 Environment Status
 
-- **Python Version:** $(python3 --version)
+- **Python Version:** $(python3.11 --version)
 - **Virtual Environment:** $VIRTUAL_ENV
 - **PYTHONPATH:** $PYTHONPATH
 
@@ -737,8 +941,14 @@ else
     ERROR_CHECK_PASSED=false
 fi
 
-# Determine final status
-if [[ "$VALIDATION_PASSED" == "true" ]] && [[ "$ERROR_CHECK_PASSED" == "true" ]]; then
+# Studio compatibility checks
+STUDIO_COMPATIBILITY=true
+if [[ "${BLOCKING_TEST_PASSED:-false}" != "true" ]] || [[ "${PYTHON311_TEST_PASSED:-false}" != "true" ]] || [[ "${SERVER_TEST_PASSED:-false}" != "true" ]]; then
+    STUDIO_COMPATIBILITY=false
+fi
+
+# Determine final status (must pass all validation AND Studio compatibility)
+if [[ "$VALIDATION_PASSED" == "true" ]] && [[ "$ERROR_CHECK_PASSED" == "true" ]] && [[ "$STUDIO_COMPATIBILITY" == "true" ]]; then
     FINAL_STATUS="SUCCESS"
     STATUS_COLOR="${GREEN}"
     STATUS_ICON="✅"
@@ -762,12 +972,36 @@ echo -e "   📊 Graph Log: $GRAPH_LOG"
 echo -e "   📋 Report: $REPORT_FILE"
 echo -e "   📉 Minimalist Log: $MINIMALIST_LOG_FILE"
 echo ""
+if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
+    echo -e "${CYAN}📋 Studio Compatibility Results:${NC}"
+    echo -e "   🔒 Blocking Detection: $([ "${BLOCKING_TEST_PASSED:-false}" = true ] && echo "✅ PASS" || echo "❌ FAIL")"
+    echo -e "   🐍 Python 3.11 Test: $([ "${PYTHON311_TEST_PASSED:-false}" = true ] && echo "✅ PASS" || echo "❌ FAIL")" 
+    echo -e "   🌐 Server Simulation: $([ "${SERVER_TEST_PASSED:-false}" = true ] && echo "✅ PASS" || echo "❌ FAIL")"
+    echo ""
+fi
 echo -e "${CYAN}🚀 Next Steps:${NC}"
-echo -e "   1. Review the debug report: ${YELLOW}cat $REPORT_FILE${NC}"
-echo -e "   2. Start the server: ${YELLOW}langgraph dev --port 8123${NC}"
-echo -e "   3. Monitor logs: ${YELLOW}tail -f $GRAPH_LOG${NC}"
-echo ""
-echo -e "${BLUE}🎯 Happy Debugging!${NC}"
+if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
+    if [[ "$STUDIO_COMPATIBILITY" == "true" ]]; then
+        echo -e "   ${GREEN}✅ All tests passed - Studio compatibility confirmed!${NC}"
+        echo -e "   1. Start the server: ${YELLOW}langgraph dev --port 8123${NC}"
+        echo -e "   2. Access Studio: ${YELLOW}https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:8123${NC}"
+        echo -e "   3. Monitor logs: ${YELLOW}tail -f $GRAPH_LOG${NC}"
+    else
+        echo -e "   ${RED}❌ Studio compatibility issues detected${NC}"
+        echo -e "   1. Review blocking detection failures above"
+        echo -e "   2. Check: ${YELLOW}tail -f $DEBUG_LOG${NC}"
+        echo -e "   3. Fix issues before deploying to Studio"
+    fi
+    echo ""
+    echo -e "${BLUE}🎯 $([ "$STUDIO_COMPATIBILITY" = true ] && echo "Ready for Studio!" || echo "Fix compatibility issues first")${NC}"
+else
+    echo -e "   ${GREEN}✅ Basic debug completed${NC}"
+    echo -e "   1. Start the server: ${YELLOW}langgraph dev --port 8123${NC}"
+    echo -e "   2. Monitor logs: ${YELLOW}tail -f $GRAPH_LOG${NC}"
+    echo -e "   3. For Studio compatibility: ${YELLOW}$0 --studio-mirror${NC}"
+    echo ""
+    echo -e "${BLUE}🎯 Basic validation complete (run with --studio-mirror for full Studio compatibility)${NC}"
+fi
 
 # Calculate and display total execution time
 SCRIPT_END_TIME=$(date +%s)
@@ -777,10 +1011,22 @@ echo -e "${CYAN}⏱️  Total Execution Time: ${TOTAL_TIME}s (Timeout: ${GLOBAL_
 log "Script completed in ${TOTAL_TIME}s (under ${GLOBAL_TIMEOUT}s timeout)"
 
 if [[ "$FINAL_STATUS" == "SUCCESS" ]]; then
-    log "Debug session completed successfully - no errors detected"
+    if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
+        log "Debug session completed successfully - all tests passed including Studio compatibility"
+        echo -e "${GREEN}🎉 SUCCESS: Local environment fully mirrors Studio behavior!${NC}"
+    else
+        log "Debug session completed successfully - basic validation passed"
+        echo -e "${GREEN}🎉 SUCCESS: Basic debug validation completed!${NC}"
+    fi
     exit 0
 else
-    log "Debug session completed with errors detected"
-    echo -e "${RED}⚠️  Please review the errors above and fix them before proceeding${NC}"
+    if [[ "$STUDIO_MIRROR_MODE" == "true" ]] && [[ "$STUDIO_COMPATIBILITY" != "true" ]]; then
+        log "Debug session completed with Studio compatibility issues detected"
+        echo -e "${RED}⚠️  Studio compatibility failed - this explains the Studio vs local discrepancy${NC}"
+        echo -e "${YELLOW}💡 Fix the blocking detection issues above to achieve Studio parity${NC}"
+    else
+        log "Debug session completed with validation errors detected"
+        echo -e "${RED}⚠️  Please review the errors above and fix them before proceeding${NC}"
+    fi
     exit 1
 fi 

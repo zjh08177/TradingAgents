@@ -1,76 +1,147 @@
 import 'package:flutter/material.dart';
-import 'core/config/app_config.dart';
-import 'data/datasources/langgraph_datasource.dart';
-import 'data/repositories/trading_repository_impl.dart';
-import 'domain/repositories/trading_repository.dart';
-import 'presentation/pages/trading_analysis_page.dart';
-import 'core/utils/logger.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'services/langgraph_service.dart';
+import 'services/auto_test.dart';
+import 'core/logging/app_logger.dart';
+import 'auth/auth_module.dart';
+import 'services/service_provider.dart';
+import 'pages/analysis_page_wrapper.dart';
 
 void main() async {
-  // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
   
-  Logger.log('🚀 Starting Trading Dummy App initialization...');
+  AppLogger.info('main', '🚀 Starting Simplified Trading App...');
   
   try {
-    // Initialize configuration with error handling
-    Logger.log('📝 Loading configuration...');
-    await AppConfig.initialize();
-    Logger.success('Configuration loaded successfully');
+    // Load environment variables
+    AppLogger.info('main', '📝 Loading environment configuration...');
+    await dotenv.load(fileName: '.env');
+    AppLogger.info('main', '✅ Environment configuration loaded');
     
-    // Set up dependencies
-    Logger.log('🔧 Setting up dependencies...');
-    final dataSource = LangGraphDataSource(
-      baseUrl: AppConfig.langGraphUrl,
-      apiKey: AppConfig.langSmithApiKey,
-      assistantId: AppConfig.assistantId,
+    // Get LangGraph configuration
+    final langGraphUrl = dotenv.env['LANGGRAPH_URL'];
+    final langSmithApiKey = dotenv.env['LANGSMITH_API_KEY'];
+    final assistantId = dotenv.env['LANGGRAPH_ASSISTANT_ID'];
+    
+    // Validate required configuration
+    if (langGraphUrl == null || langGraphUrl.isEmpty) {
+      throw Exception('LANGGRAPH_URL is required in .env file');
+    }
+    if (langSmithApiKey == null || langSmithApiKey.isEmpty) {
+      throw Exception('LANGSMITH_API_KEY is required in .env file');
+    }
+    if (assistantId == null || assistantId.isEmpty) {
+      throw Exception('LANGGRAPH_ASSISTANT_ID is required in .env file');
+    }
+    
+    // Create simple service
+    AppLogger.info('main', '🔧 Setting up simplified LangGraph service...');
+    final langGraphService = SimpleLangGraphService(
+      url: langGraphUrl,
+      apiKey: langSmithApiKey,
+      assistantId: assistantId,
     );
     
-    final repository = TradingRepositoryImpl(
-      dataSource: dataSource,
-    );
+    // Create auto-test controller
+    final autoTest = AutoTestController();
     
-    Logger.success('Dependencies initialized successfully');
+    AppLogger.info('main', '✅ Services initialized - ready for final report display');
     
-    // Start the app
-    Logger.log('🎯 Starting Flutter app...');
-    runApp(MyApp(repository: repository));
+    // Start the app with authentication
+    runApp(TradingApp(
+      langGraphService: langGraphService,
+      autoTest: autoTest,
+    ));
     
   } catch (e, stackTrace) {
-    Logger.error('💥 Failed to initialize app', {
-      'error': e.toString(),
-      'stackTrace': stackTrace.toString(),
-    });
-    
-    // Still try to run the app with a fallback error screen
-    runApp(const ErrorApp());
+    AppLogger.error('main', '💥 Failed to initialize app', e, stackTrace);
+    runApp(ErrorApp(error: e.toString()));
   }
 }
 
-class MyApp extends StatelessWidget {
-  final TradingRepository repository;
+class TradingApp extends StatelessWidget {
+  final SimpleLangGraphService langGraphService;
+  final AutoTestController autoTest;
   
-  const MyApp({
+  const TradingApp({
     super.key,
-    required this.repository,
+    required this.langGraphService,
+    required this.autoTest,
   });
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Trading Analysis',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
+    return ServiceProvider(
+      langGraphService: langGraphService,
+      autoTest: autoTest,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => AuthViewModel(),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Trading Analysis',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+            useMaterial3: true,
+          ),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const SplashScreen(),
+            '/login': (context) => const LoginScreen(),
+            '/home': (context) => AuthGuard(
+              child: const HomeScreen(),
+            ),
+            '/analysis': (context) => const AuthGuard(
+              child: AnalysisPageWrapper(),
+            ),
+          },
+        ),
       ),
-      home: TradingAnalysisPage(repository: repository),
     );
   }
 }
 
-/// Error app to display when initialization fails
+/// Widget that guards routes requiring authentication
+class AuthGuard extends StatelessWidget {
+  final Widget child;
+  
+  const AuthGuard({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthViewModel>(
+      builder: (context, authViewModel, _) {
+        // Listen to auth state changes
+        if (!authViewModel.isAuthenticated) {
+          // If not authenticated, navigate to login
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pushReplacementNamed('/login');
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+        
+        // Check if token needs refresh
+        if (authViewModel.willTokenExpireSoon) {
+          authViewModel.refreshTokenIfNeeded();
+        }
+        
+        return child;
+      },
+    );
+  }
+}
+
 class ErrorApp extends StatelessWidget {
-  const ErrorApp({super.key});
+  final String error;
+  
+  const ErrorApp({super.key, required this.error});
 
   @override
   Widget build(BuildContext context) {
@@ -80,32 +151,24 @@ class ErrorApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: const Scaffold(
+      home: Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 64,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Failed to Initialize App',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error, color: Colors.red, size: 64),
+                const SizedBox(height: 16),
+                const Text(
+                  'Configuration Error',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.red),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Please check the configuration and try again.',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-            ],
+                const SizedBox(height: 16),
+                Text(error, style: const TextStyle(fontSize: 14), textAlign: TextAlign.center),
+              ],
+            ),
           ),
         ),
       ),

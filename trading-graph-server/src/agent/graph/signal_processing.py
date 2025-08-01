@@ -1,6 +1,7 @@
 # TradingAgents/graph/signal_processing.py
 
 from langchain_openai import ChatOpenAI
+from agent.utils.connection_retry import safe_llm_invoke
 
 
 class SignalProcessor:
@@ -20,5 +21,5 @@ class SignalProcessor:
             ("human", full_signal),
         ]
 
-        result = await self.quick_thinking_llm.ainvoke(messages)
+        result = await safe_llm_invoke(self.quick_thinking_llm, messages)
         return result.content

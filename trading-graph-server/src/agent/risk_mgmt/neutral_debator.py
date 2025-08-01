@@ -1,5 +1,9 @@
 import asyncio
 import json
+from agent.utils.connection_retry import safe_llm_invoke
+from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
+from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from agent.utils.token_limiter import get_token_limiter
 
 
 def create_neutral_debator(llm):
@@ -38,9 +42,9 @@ Here is the last response from the safe analyst: {current_safe_response}
 Provide a balanced perspective that considers both risk and opportunity.
 """
 
-        # Async LLM invocation with proper message format
+        # Async LLM invocation with connection retry protection
         messages = [{"role": "user", "content": prompt}]
-        response = await llm.ainvoke(messages)
+        response = await safe_llm_invoke(llm, messages)
 
         argument = f"Neutral Analyst: {response.content}"
 

@@ -3,12 +3,24 @@ import asyncio
 import json
 import functools
 import time
+import logging
 from agent.utils.debug_logging import debug_node, log_llm_interaction
+from agent.utils.token_limiter import get_token_limiter
+from agent.utils.connection_retry import safe_llm_invoke
+from agent.utils.parallel_tools import log_parallel_execution
+from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
+
+logger = logging.getLogger(__name__)
 
 
 def create_market_analyst(llm, toolkit):
     @debug_node("Market_Analyst") 
     async def market_analyst_node(state):
+        # Task: Add Execution Timing Logs
+        start_time = time.time()
+        logger.info(f"⏱️ market_analyst START: {time.time()}")
+        
         current_date = state.get("trade_date", "")
         ticker = state.get("company_of_interest", "")
         company_name = state.get("company_of_interest", "")
@@ -18,42 +30,53 @@ def create_market_analyst(llm, toolkit):
                 toolkit.get_YFin_data_online,
                 toolkit.get_stockstats_indicators_report_online,
             ]
+            # Add additional tools if available
+            if hasattr(toolkit, 'get_volume_analysis'):
+                tools.append(toolkit.get_volume_analysis)
+            if hasattr(toolkit, 'get_support_resistance'):
+                tools.append(toolkit.get_support_resistance)
         else:
             tools = [
                 toolkit.get_YFin_data,
                 toolkit.get_stockstats_indicators_report,
             ]
 
-        system_message = (
-            """You are a trading assistant tasked with analyzing financial markets. Your role is to select the **most relevant indicators** for a given market condition or trading strategy from the following list. The goal is to choose up to **8 indicators** that provide complementary insights without redundancy. Categories and each category's indicators are:
+        # Check for preprocessed prompt (Phase 3.2 optimization)
+        from agent.utils.prompt_injection import get_preprocessed_prompt
+        preprocessed = get_preprocessed_prompt("market")
+        
+        if preprocessed:
+            # Use preprocessed prompt - already compressed and enhanced
+            system_message = preprocessed
+            logger.info("💉 Using pre-processed prompt for market analyst")
+        else:
+            # Create compressed system message
+            base_system_message = """Expert market analyst: TA & trading signals.
 
-Moving Averages:
-- close_50_sma: 50 SMA: A medium-term trend indicator. Usage: Identify trend direction and serve as dynamic support/resistance. Tips: It lags price; combine with faster indicators for timely signals.
-- close_200_sma: 200 SMA: A long-term trend benchmark. Usage: Confirm overall market trend and identify golden/death cross setups. Tips: It reacts slowly; best for strategic trend confirmation rather than frequent trading entries.
-- close_10_ema: 10 EMA: A responsive short-term average. Usage: Capture quick shifts in momentum and potential entry points. Tips: Prone to noise in choppy markets; use alongside longer averages for filtering false signals.
+MANDATORY: Use tools→get real data before analysis.
+Tools: get_YFin_data, get_stockstats_indicators_report
 
-MACD Related:
-- macd: MACD: Computes momentum via differences of EMAs. Usage: Look for crossovers and divergence as signals of trend changes. Tips: Confirm with other indicators in low-volatility or sideways markets.
-- macds: MACD Signal: An EMA smoothing of the MACD line. Usage: Use crossovers with the MACD line to trigger trades. Tips: Should be part of a broader strategy to avoid false positives.
-- macdh: MACD Histogram: Shows the gap between the MACD line and its signal. Usage: Visualize momentum strength and spot divergence early. Tips: Can be volatile; complement with additional filters in fast-moving markets.
+Workflow: 1)Call tools 2)Get data 3)Analyze 4)Report
 
-Momentum Indicators:
-- rsi: RSI: Measures momentum to flag overbought/oversold conditions. Usage: Apply 70/30 thresholds and watch for divergence to signal reversals. Tips: In strong trends, RSI may remain extreme; always cross-check with trend analysis.
+Analyze (max 8): MA(50,200), EMA(10), MACD, RSI, BB, ATR, VWMA
 
-Volatility Indicators:
-- boll: Bollinger Middle: A 20 SMA serving as the basis for Bollinger Bands. Usage: Acts as a dynamic benchmark for price movement. Tips: Combine with the upper and lower bands to effectively spot breakouts or reversals.
-- boll_ub: Bollinger Upper Band: Typically 2 standard deviations above the middle line. Usage: Signals potential overbought conditions and breakout zones. Tips: Confirm signals with other tools; prices may ride the band in strong trends.
-- boll_lb: Bollinger Lower Band: Typically 2 standard deviations below the middle line. Usage: Indicates potential oversold conditions. Tips: Use additional analysis to avoid false reversal signals.
-- atr: ATR: Averages true range to measure volatility. Usage: Set stop-loss levels and adjust position sizes based on current market volatility. Tips: It's a reactive measure, so use it as part of a broader risk management strategy.
+Output structure:
+1. Summary: Position|Signal|BUY/SELL/HOLD|Confidence|Target
+2. Indicators: Trend(MA)|Momentum(MACD,RSI)|Volatility(BB,ATR)|Volume(VWMA)
+3. Metrics table: Indicator|Value|Signal(↑↓→)|Weight(H/M/L)
+4. Strategy: Entry|SL|TP|Size
+5. Risk: Technical|Market|Volatility
+6. Rec: Decision|Confidence(1-10)|1w/1m outlook"""
 
-Volume-Based Indicators:
-- vwma: VWMA: A moving average weighted by volume. Usage: Confirm trends by integrating price action with volume data. Tips: Watch for skewed results from volume spikes; use in combination with other volume analyses.
-
-- Select indicators, gather market data, and provide comprehensive analysis.
-
-IMPORTANT: After you have gathered all the necessary data through tool calls, you must provide a comprehensive final analysis report. Do not just make tool calls without providing a final written analysis.
-            """ + """ Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read."""
-        )
+            # Compress the system message
+            compressor = get_prompt_compressor()
+            compressed_result = compressor.compress_prompt(base_system_message)
+            system_message = compressed_result.compressed
+            
+            # Add word limit enforcement
+            system_message = enhance_agent_prompt(system_message, "market_analyst")
+            
+            logger.info(f"📊 Market Analyst prompt compression: {compressed_result.original_tokens} → {compressed_result.compressed_tokens} tokens ({compressed_result.reduction_percentage:.1f}% reduction)")
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -81,12 +104,37 @@ IMPORTANT: After you have gathered all the necessary data through tool calls, yo
 
         # Use the correct message channel for market analyst
         messages = state.get("market_messages", [])
+        
+        # TASK C4: Token limits temporarily disabled for debugging
+        messages = get_token_limiter().check_and_enforce_limit(messages, "Market Analyst")
+        
+        # CRITICAL FIX: Validate message sequence AFTER token limiting for OpenAI API compliance
+        from agent.utils.message_validator import clean_messages_for_llm
+        messages = clean_messages_for_llm(messages)
 
-        # Log LLM interaction
+        # TASK 6.2: Enhanced LLM interaction tracking with token optimization
+        from agent.utils.token_optimizer import get_token_optimizer, track_llm_usage
+        
+        optimizer = get_token_optimizer()
         prompt_text = f"System: {system_message}\nUser: Current date: {current_date}, Company: {ticker}"
+        prompt_tokens = optimizer.count_tokens(prompt_text)
+        
         llm_start = time.time()
-        result = await chain.ainvoke(messages)
+        # PT1: Log start of LLM invocation for parallel execution visibility
+        logger.info(f"⚡ MARKET_ANALYST: Starting LLM invocation")
+        result = await safe_llm_invoke(chain, messages)
         llm_time = time.time() - llm_start
+        logger.info(f"⚡ MARKET_ANALYST: LLM invocation completed in {llm_time:.2f}s")
+        
+        completion_tokens = optimizer.count_tokens(result.content) if hasattr(result, 'content') else 0
+        
+        # Track token usage for optimization analysis
+        track_llm_usage(
+            analyst_type="market",
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            execution_time=llm_time
+        )
         
         log_llm_interaction(
             model="market_analyst_llm",
@@ -95,50 +143,29 @@ IMPORTANT: After you have gathered all the necessary data through tool calls, yo
             execution_time=llm_time
         )
 
-        # Generate report when no tool calls are present OR when we have enough tool data
+        # TASK 3.1: Single-pass execution - generate report directly from LLM response
         tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
         
-        report = ""
+        # The LLM response now contains the complete analysis (single-pass)
         if len(result.tool_calls) == 0:
-            # Direct response from LLM - use as report
+            # Direct comprehensive response from LLM - use as final report
             report = result.content
+            # TASK C4: Enforce token limits on response
+            report = get_token_limiter().truncate_response(report, "Market Analyst")
         else:
-            # LLM wants to make tool calls - wait for tool execution
-            report = ""  # Will be generated after tool execution
-        
-        # ALWAYS generate a summary report if we have tool results available
-        if tool_message_count >= 1 and not result.tool_calls:
-            # Create a summary prompt to generate final report
-            summary_prompt = f"""Based on the tool results and data gathered, provide a comprehensive market analysis report for {company_name} on {current_date}. 
-            
-Include:
-- Technical analysis findings
-- Key indicators and their implications
-- Market trends and patterns
-- Trading recommendations
-- Risk assessment
-
-Make this a detailed, actionable report for traders."""
-
-            # Create a separate LLM call for summary
-            summary_chain = llm
-            
-            # Log the summary generation
-            start_time = time.time()
-            summary_result = await summary_chain.ainvoke([{"role": "user", "content": summary_prompt}])
-            summary_time = time.time() - start_time
-            
-            log_llm_interaction(
-                model="market_summary_llm",
-                prompt_length=len(summary_prompt),
-                response_length=len(summary_result.content) if hasattr(summary_result, 'content') else 0,
-                execution_time=summary_time
-            )
-            
-            report = summary_result.content
+            # PT1: LLM wants to make tool calls - log for parallel visibility
+            logger.info(f"⚡ MARKET_ANALYST: LLM requested {len(result.tool_calls)} tool calls")
+            tool_names = [tc.get('name', 'unknown') for tc in result.tool_calls]
+            logger.info(f"⚡ MARKET_ANALYST: Tools requested: {tool_names}")
+            report = ""
 
         # Return updated messages and report
         updated_messages = messages + [result]
+        
+        # Task: Add Execution Timing Logs
+        duration = time.time() - start_time
+        logger.info(f"⏱️ market_analyst END: {time.time()} (duration: {duration:.2f}s)")
+        
         return {
             "market_messages": updated_messages,
             "market_report": report,

@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-07-31T22:18:17.239586",
+  "all_passed": false,
+  "test_results": {
+    "Async Token Operations": {
+      "sync_times": [
+        0.23700284957885742,
+        6.389617919921875e-05,
+        0.0005810260772705078
+      ],
+      "async_times": [
+        0.0003330707550048828,
+        0.00021195411682128906,
+        0.0006289482116699219
+      ],
+      "improvement": 99.50600290739963,
+      "passed": true
+    },
+    "Tokenizer Cache": {
+      "no_cache_duration": 7.700920104980469e-05,
+      "cache_duration": 4.482269287109375e-05,
+      "improvement": 41.795665634674926,
+      "cache_stats": {
+        "cached_models": 1,
+        "total_initializations": 1,
+        "models": [
+          "gpt-4o-mini"
+        ]
+      },
+      "passed": true
+    },
+    "Parallel Processing": {
+      "sequential_duration": 0.004120826721191406,
+      "parallel_duration": 0.0025467872619628906,
+      "speedup": 1.618049054484179,
+      "improvement": 38.19717657949549,
+      "passed": true
+    },
+    "Logging Overhead": {
+      "info_duration": 0.01815009117126465,
+      "debug_duration": 0.019879817962646484,
+      "improvement": -9.53012728729623,
+      "passed": false
+    },
+    "Token Count Caching": {
+      "first_duration": 0.00029397010803222656,
+      "second_duration": 0.00037026405334472656,
+      "speedup": 0.793947198969736,
+      "improvement": -25.9529602595296,
+      "passed": false
+    },
+    "End-to-End Performance": {
+      "baseline_duration": 0.009059906005859375,
+      "optimized_duration": 0.008395910263061523,
+      "speedup": 1.079085616924606,
+      "improvement": 7.328947368421053,
+      "passed": false
+    }
+  },
+  "average_improvement": 25.224117490527547
+}
