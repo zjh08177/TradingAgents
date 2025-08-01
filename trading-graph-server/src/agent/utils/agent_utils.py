@@ -12,6 +12,7 @@ from langchain_openai import ChatOpenAI
 from ..dataflows import interface
 from ..default_config import DEFAULT_CONFIG
 from langchain_core.messages import HumanMessage
+from .tool_caching import cache_tool_result
 
 # IMPORTANT: Pandas import moved to lazy loading to prevent circular imports
 # This fixes the Studio compilation error where pandas circular import occurs
@@ -77,6 +78,7 @@ class Toolkit:
 
     @staticmethod
     @tool
+    @cache_tool_result(ttl=300)  # Cache for 5 minutes
     def get_finnhub_news(
         ticker: Annotated[
             str,
@@ -131,6 +133,7 @@ class Toolkit:
 
     @staticmethod
     @tool
+    @cache_tool_result(ttl=300)  # Cache for 5 minutes
     def get_YFin_data(
         symbol: Annotated[str, "ticker symbol of the company"],
         start_date: Annotated[str, "Start date in yyyy-mm-dd format"],
@@ -152,6 +155,7 @@ class Toolkit:
 
     @staticmethod
     @tool
+    @cache_tool_result(ttl=300)  # Cache for 5 minutes
     def get_YFin_data_online(
         symbol: Annotated[str, "ticker symbol of the company"],
         start_date: Annotated[str, "Start date in yyyy-mm-dd format"],
@@ -173,6 +177,7 @@ class Toolkit:
 
     @staticmethod
     @tool
+    @cache_tool_result(ttl=300)  # Cache for 5 minutes
     def get_stockstats_indicators_report(
         symbol: Annotated[str, "ticker symbol of the company"],
         indicator: Annotated[
@@ -202,6 +207,7 @@ class Toolkit:
 
     @staticmethod
     @tool
+    @cache_tool_result(ttl=300)  # Cache for 5 minutes
     def get_stockstats_indicators_report_online(
         symbol: Annotated[str, "ticker symbol of the company"],
         indicator: Annotated[
@@ -492,3 +498,99 @@ class Toolkit:
         from ..dataflows.interface_new_tools import get_support_resistance as _get_sr
         result = await _get_sr(ticker)
         return str(result)
+    
+    # Priority 2: Create Async Market Data Fetcher
+    async def get_all_market_data(
+        self,
+        symbol: Annotated[str, "ticker symbol of the company"],
+        date: Annotated[str, "The trading date in YYYY-mm-dd format"],
+    ) -> dict:
+        """
+        Get all market data in parallel for maximum performance.
+        
+        This is the implementation for Priority 2: Async Market Data Fetcher.
+        Fetches price data and all technical indicators concurrently.
+        
+        Args:
+            symbol: Stock ticker symbol
+            date: Trading date
+            
+        Returns:
+            Dictionary containing all market data
+        """
+        import asyncio
+        
+        # Define all the data fetching tasks
+        tasks = []
+        
+        # Price data task
+        async def get_price_data():
+            try:
+                # For YFin data, we need start and end dates
+                start_date = (datetime.strptime(date, "%Y-%m-%d") - timedelta(days=30)).strftime("%Y-%m-%d")
+                return ("price_data", self.get_YFin_data(symbol, start_date, date))
+            except Exception as e:
+                return ("price_data", f"Error fetching price data: {str(e)}")
+        
+        # Technical indicator tasks
+        indicators = ["close_50_sma", "close_200_sma", "macd", "rsi"]
+        
+        async def get_indicator(indicator_name):
+            try:
+                return (indicator_name, self.get_stockstats_indicators_report(symbol, indicator_name, date))
+            except Exception as e:
+                return (indicator_name, f"Error fetching {indicator_name}: {str(e)}")
+        
+        # Add price data task
+        tasks.append(get_price_data())
+        
+        # Add indicator tasks
+        for indicator in indicators:
+            tasks.append(get_indicator(indicator))
+        
+        # Execute all tasks in parallel
+        results = await asyncio.gather(*tasks)
+        
+        # Convert results to dictionary
+        market_data = {}
+        for key, value in results:
+            market_data[key] = value
+        
+        return self._combine_market_data(market_data)
+    
+    def _combine_market_data(self, results: dict) -> str:
+        """
+        Combine all market data results into a formatted string.
+        
+        Args:
+            results: Dictionary of market data results
+            
+        Returns:
+            Formatted string with all market data
+        """
+        combined_report = "=== COMPREHENSIVE MARKET DATA ===\n\n"
+        
+        # Add price data
+        if "price_data" in results:
+            combined_report += "📈 PRICE DATA:\n"
+            combined_report += results["price_data"] + "\n\n"
+        
+        # Add technical indicators
+        combined_report += "📊 TECHNICAL INDICATORS:\n"
+        for indicator in ["close_50_sma", "close_200_sma", "macd", "rsi"]:
+            if indicator in results:
+                combined_report += f"\n{indicator.upper()}:\n"
+                combined_report += results[indicator] + "\n"
+        
+        return combined_report
+    
+    # Async versions of existing methods for parallel execution
+    async def get_YFin_data_async(self, symbol: str, start_date: str, end_date: str) -> str:
+        """Async wrapper for get_YFin_data."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, self.get_YFin_data, symbol, start_date, end_date)
+    
+    async def get_stockstats_indicators_async(self, symbol: str, indicator: str, date: str) -> str:
+        """Async wrapper for get_stockstats_indicators_report."""
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, self.get_stockstats_indicators_report, symbol, indicator, date)

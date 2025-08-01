@@ -16,6 +16,10 @@ logger = logging.getLogger(__name__)
 def create_social_media_analyst(llm, toolkit):
     @debug_node("Social_Media_Analyst")
     async def social_media_analyst_node(state):
+        # Task: Add Execution Timing Logs
+        start_time = time.time()
+        logger.info(f"⏱️ social_media_analyst START: {time.time()}")
+        
         current_date = state["trade_date"]
         ticker = state["company_of_interest"]
         company_name = state["company_of_interest"]
@@ -171,6 +175,11 @@ CRITICAL: Quantify sentiment with specific scores, percentages, and confidence l
 
         # Return the state update
         updated_messages = messages + [result]
+        
+        # Task: Add Execution Timing Logs
+        duration = time.time() - start_time
+        logger.info(f"⏱️ social_media_analyst END: {time.time()} (duration: {duration:.2f}s)")
+        
         return {
             "social_messages": updated_messages,
             "sentiment_report": report,

@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 def create_market_analyst(llm, toolkit):
     @debug_node("Market_Analyst") 
     async def market_analyst_node(state):
+        # Task: Add Execution Timing Logs
+        start_time = time.time()
+        logger.info(f"⏱️ market_analyst START: {time.time()}")
+        
         current_date = state.get("trade_date", "")
         ticker = state.get("company_of_interest", "")
         company_name = state.get("company_of_interest", "")
@@ -157,6 +161,11 @@ Output structure:
 
         # Return updated messages and report
         updated_messages = messages + [result]
+        
+        # Task: Add Execution Timing Logs
+        duration = time.time() - start_time
+        logger.info(f"⏱️ market_analyst END: {time.time()} (duration: {duration:.2f}s)")
+        
         return {
             "market_messages": updated_messages,
             "market_report": report,

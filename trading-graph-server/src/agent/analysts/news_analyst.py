@@ -16,6 +16,10 @@ logger = logging.getLogger(__name__)
 def create_news_analyst(llm, toolkit):
     @debug_node("News_Analyst")
     async def news_analyst_node(state):
+        # Task: Add Execution Timing Logs
+        start_time = time.time()
+        logger.info(f"⏱️ news_analyst START: {time.time()}")
+        
         current_date = state["trade_date"]
         ticker = state["company_of_interest"]
 
@@ -168,6 +172,11 @@ CRITICAL: Prioritize market-moving news with quantified impact assessments. Incl
 
         # Return the state update
         updated_messages = messages + [result]
+        
+        # Task: Add Execution Timing Logs
+        duration = time.time() - start_time
+        logger.info(f"⏱️ news_analyst END: {time.time()} (duration: {duration:.2f}s)")
+        
         return {
             "news_messages": updated_messages,
             "news_report": report,

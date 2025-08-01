@@ -47,7 +47,7 @@ class TradingAgentsGraph:
         )
         self.deep_thinking_llm = self.llm_factory.create_llm(
             self.config.get("llm_provider", "openai"), 
-            self.config.get("reasoning_model", "o1"), 
+            self.config.get("reasoning_model", "o3"), 
             self.config
         )
 

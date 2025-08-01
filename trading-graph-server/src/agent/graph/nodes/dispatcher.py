@@ -1,5 +1,5 @@
 """
-Dispatcher Node - SOLID Compliant Implementation
+Dispatcher Node - SOLID Compliant Implementation with Send-based Parallelism
 Single Responsibility: Coordinate parallel analyst execution
 Open/Closed: Extensible for new analyst types
 Liskov Substitution: Compatible with node interface
@@ -8,8 +8,10 @@ Dependency Inversion: Depends on abstractions
 """
 
 import logging
+import time
 from typing import Dict, List, Any
 from langchain_core.messages import HumanMessage
+# from langgraph.types import Send  # Not needed with direct edge approach
 
 from ...utils.agent_states import AgentState
 from ...utils.debug_logging import debug_node
@@ -107,27 +109,82 @@ class ParallelDispatcher(IDispatcher):
 
 def create_parallel_dispatcher(selected_analysts: List[str] = None) -> callable:
     """
-    Factory function to create dispatcher node following SOLID principles
+    Factory function to create parallel dispatcher node
+    
+    This implementation relies on direct graph edges for true parallel execution
+    of all analysts. The graph setup creates edges from dispatcher to all analysts,
+    which LangGraph executes in parallel automatically.
     
     Args:
         selected_analysts: List of analyst types to coordinate
         
     Returns:
-        Async function compatible with LangGraph node interface
+        Async function compatible with LangGraph node interface that returns state dict
     """
-    dispatcher = ParallelDispatcher(selected_analysts)
+    selected_analysts = selected_analysts or ["market", "social", "news", "fundamentals"]
     
     @debug_node("Parallel_Dispatcher")
-    async def dispatcher_node(state: AgentState) -> AgentState:
+    async def parallel_dispatcher_node(state: AgentState) -> Dict[str, Any]:
         """
-        LangGraph-compatible dispatcher node
+        Parallel dispatcher for true concurrent execution
         
-        This function serves as the adapter between LangGraph's node interface
-        and our SOLID-compliant dispatcher implementation
+        This is the key fix for Task 1.1 - the graph has direct edges from
+        dispatcher to all analysts, which LangGraph executes in parallel automatically.
         """
-        return await dispatcher.dispatch_analysts(state)
+        start_time = time.time()
+        
+        company = state.get("company_of_interest", "")
+        trade_date = state.get("trade_date", "")
+        
+        logger.info("⚡ PARALLEL DISPATCHER: Starting TRUE parallel execution")
+        logger.info(f"   📊 Company: {company}")
+        logger.info(f"   📅 Date: {trade_date}")
+        logger.info(f"   👥 Analysts: {len(selected_analysts)} parallel")
+        logger.info(f"⏱️ Dispatcher START: {time.time()}")
+        
+        # Create initial message for all analysts
+        initial_message = HumanMessage(
+            content=f"""Begin comprehensive analysis for {company} on {trade_date}.
+            
+            You are part of a parallel analysis team. Conduct your specialized analysis independently:
+            - Use your dedicated tools to gather data
+            - Provide thorough analysis within your domain
+            - Generate a complete report with actionable insights
+            
+            Company: {company}
+            Analysis Date: {trade_date}
+            """
+        )
+        
+        # Prepare state with initialized message channels
+        prepared_state = dict(state)
+        for analyst_type in selected_analysts:
+            message_key = f"{analyst_type}_messages"
+            prepared_state[message_key] = [initial_message]
+            
+            # Initialize report fields
+            report_mapping = {
+                "market": "market_report",
+                "social": "sentiment_report", 
+                "news": "news_report",
+                "fundamentals": "fundamentals_report"
+            }
+            report_key = report_mapping.get(analyst_type, f"{analyst_type}_report")
+            prepared_state[report_key] = ""
+        
+        # Log the prepared state for all analysts
+        for analyst_type in selected_analysts:
+            logger.info(f"   🚀 Initialized {analyst_type}_analyst for parallel execution")
+        
+        duration = time.time() - start_time
+        logger.info(f"⏱️ Dispatcher END: {time.time()} (duration: {duration:.2f}s)")
+        logger.info(f"⚡ PARALLEL DISPATCHER: {len(selected_analysts)} analysts initialized")
+        logger.info("   ✅ All analysts will execute CONCURRENTLY via graph edges!")
+        
+        # Return the prepared state - graph edges handle parallel execution
+        return prepared_state
     
-    return dispatcher_node
+    return parallel_dispatcher_node
 
 
 # Legacy compatibility - maintains existing interface

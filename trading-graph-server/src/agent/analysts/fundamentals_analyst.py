@@ -17,6 +17,10 @@ logger = logging.getLogger(__name__)
 def create_fundamentals_analyst(llm, toolkit):
     @debug_node("Fundamentals_Analyst")
     async def fundamentals_analyst_node(state):
+        # Task: Add Execution Timing Logs
+        start_time = time.time()
+        logger.info(f"⏱️ fundamentals_analyst START: {time.time()}")
+        
         current_date = state["trade_date"]
         ticker = state["company_of_interest"]
         company_name = state["company_of_interest"]
@@ -191,6 +195,11 @@ Include specific numbers and ratios.
 
         # Return the state update
         updated_messages = messages + [result]
+        
+        # Task: Add Execution Timing Logs
+        duration = time.time() - start_time
+        logger.info(f"⏱️ fundamentals_analyst END: {time.time()} (duration: {duration:.2f}s)")
+        
         return {
             "fundamentals_messages": updated_messages,
             "fundamentals_report": report,
