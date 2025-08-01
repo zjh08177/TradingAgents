@@ -137,6 +137,12 @@ fastlane/readme.md
 # Code Injection
 iOSInjectionProject/
 
+# Claude
+.claude/
+.claude-flow/
+
+
+
 # IDE & Editors
 .idea/
 .vscode/

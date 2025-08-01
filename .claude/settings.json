@@ -108,6 +108,16 @@
       }
     ]
   },
+  "commands": {
+    "cleanup": {
+      "description": "Clean up stale files and optimize disk usage",
+      "script": ".claude/commands/cleanup"
+    },
+    "eric-cleanup": {
+      "description": "Clean up stale files and optimize disk usage",
+      "script": ".claude/commands/eric-cleanup"
+    }
+  },
   "includeCoAuthoredBy": true,
   "enabledMcpjsonServers": ["claude-flow", "ruv-swarm"]
 }
