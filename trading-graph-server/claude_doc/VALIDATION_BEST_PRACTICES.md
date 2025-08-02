@@ -178,7 +178,7 @@ System is production-ready when:
 
 - [VALIDATION_WORKFLOW.md](../VALIDATION_WORKFLOW.md) - Detailed validation procedures
 - [message_validator.py](../src/agent/utils/message_validator.py) - Message validation implementation
-- [debug_local.sh](../debug_local.sh) - Comprehensive validation script
+- [debug_local.sh](../debug_local_old.sh) - Comprehensive validation script
 
 ---
 

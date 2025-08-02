@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'services/langgraph_service.dart';
 import 'services/auto_test.dart';
 import 'core/logging/app_logger.dart';
 import 'auth/auth_module.dart';
 import 'services/service_provider.dart';
 import 'pages/analysis_page_wrapper.dart';
+import 'history/infrastructure/models/hive_history_entry.dart';
+import 'history/infrastructure/models/hive_analysis_details.dart';
+import 'history/infrastructure/repositories/hive_history_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +22,18 @@ void main() async {
     AppLogger.info('main', '📝 Loading environment configuration...');
     await dotenv.load(fileName: '.env');
     AppLogger.info('main', '✅ Environment configuration loaded');
+    
+    // Initialize Hive
+    AppLogger.info('main', '💾 Initializing Hive database...');
+    await Hive.initFlutter();
+    
+    // Register Hive adapters
+    Hive.registerAdapter(HiveHistoryEntryAdapter());
+    Hive.registerAdapter(HiveAnalysisDetailsAdapter());
+    
+    // Open Hive boxes
+    await HiveHistoryRepository.openBox();
+    AppLogger.info('main', '✅ Hive database initialized');
     
     // Get LangGraph configuration
     final langGraphUrl = dotenv.env['LANGGRAPH_URL'];

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🎯 Enhanced LangGraph Debug Script with Studio Mirror Mode (No Virtual Environment)
+# 🎯 Enhanced LangGraph Debug Script with Studio Mirror Mode
 # This script provides comprehensive debugging and Studio compatibility validation
 
 set -e  # Exit on any error
@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ "$SHOW_HELP" == "true" ]]; then
-    echo "🎯 Enhanced LangGraph Debug Script (No Virtual Environment)"
+    echo "🎯 Enhanced LangGraph Debug Script"
     echo ""
     echo "Usage: $0 [OPTIONS]"
     echo ""
@@ -69,17 +69,16 @@ DEBUG_LOG="$LOG_DIR/debug_session_$TIMESTAMP.log"
 GRAPH_LOG="$LOG_DIR/graph_debug_$TIMESTAMP.log"
 
 if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
-    echo -e "${BLUE}🎯 Enhanced LangGraph Debug Script (Studio-Mirror Mode) - No Virtual Environment${NC}"
-    echo -e "${BLUE}========================================================================${NC}"
+    echo -e "${BLUE}🎯 Enhanced LangGraph Debug Script (Studio-Mirror Mode)${NC}"
+    echo -e "${BLUE}=======================================================${NC}"
 else
-    echo -e "${BLUE}🐛 LangGraph Debug Script (Basic Mode) - No Virtual Environment${NC}"
-    echo -e "${BLUE}==============================================================${NC}"
+    echo -e "${BLUE}🐛 LangGraph Debug Script (Basic Mode)${NC}"
+    echo -e "${BLUE}======================================${NC}"
 fi
 echo -e "📂 Working Directory: $SCRIPT_DIR"
 echo -e "📝 Debug Log: $DEBUG_LOG"
 echo -e "📊 Graph Log: $GRAPH_LOG"
 echo -e "🎛️  Mode: $([ "$STUDIO_MIRROR_MODE" = true ] && echo "Studio Mirror" || echo "Basic Debug")"
-echo -e "🔧 Environment: Local (No Virtual Environment)"
 echo ""
 
 # Create log directory
@@ -91,16 +90,16 @@ validate_critical_components() {
     
     echo -e "${CYAN}🔄 Performing post-run validation checks...${NC}"
     
-    # Check 1: Python version (using system Python)
-    if python3 --version >/dev/null 2>&1; then
-        echo -e "${GREEN}   ✅ Python3 available: $(python3 --version)${NC}"
-    else
-        echo -e "${RED}   ❌ Python3 not found${NC}"
+    # Check 1: Virtual environment is active
+    if [[ -z "$VIRTUAL_ENV" ]]; then
+        echo -e "${RED}   ❌ Virtual environment not active${NC}"
         validation_errors=$((validation_errors + 1))
+    else
+        echo -e "${GREEN}   ✅ Virtual environment active${NC}"
     fi
     
     # Check 2: Required Python packages are importable
-    if python3 -c "from src.agent.graph.trading_graph import TradingAgentsGraph" 2>/dev/null; then
+    if python3.11 -c "from agent.graph.trading_graph import TradingAgentsGraph" 2>/dev/null; then
         echo -e "${GREEN}   ✅ Core trading graph imports working${NC}"
     else
         echo -e "${RED}   ❌ Core trading graph imports failed${NC}"
@@ -108,7 +107,7 @@ validate_critical_components() {
     fi
     
     # Check 3: Debug logging system is importable
-    if python3 -c "from src.agent.utils.debug_logging import debug_node" 2>/dev/null; then
+    if python3.11 -c "from agent.utils.debug_logging import debug_node" 2>/dev/null; then
         echo -e "${GREEN}   ✅ Debug logging system working${NC}"
     else
         echo -e "${RED}   ❌ Debug logging system failed${NC}"
@@ -145,123 +144,164 @@ validate_critical_components() {
 # Function to check for errors in logs
 check_for_errors() {
     local log_file="$1"
-    local critical_error_count=0
-    local warning_count=0
+    local error_count=0
     
     echo "🔍 Performing comprehensive error validation..."
-    echo "🔍 Scanning logs for critical errors (excluding warnings and test artifacts)..."
+    echo "🔍 Scanning logs for errors, warnings, and fallback logic..."
     
-    # Critical error patterns - only real failures
-    local critical_patterns=(
-        "FAILED.*✅.*PASS"  # This pattern should NOT match
-        "CRITICAL"
-        "FATAL" 
-        "Exception.*[^W]"  # Exclude WARNING exceptions
+    # Critical error patterns
+    local error_patterns=(
+        "Error:"
+        "❌"
+        "failed"
+        "Traceback"
+        "ValueError"
+        "TypeError"
+        "AttributeError"
+        "ImportError"
+        "ModuleNotFoundError"
+        "KeyError"
         "RuntimeError"
-        "SystemError"
-        "MemoryError"
-        "TimeoutError"
+        "Exception"
     )
     
-    # Patterns that indicate actual system failures (not test failures or warnings)
-    local failure_patterns=(
-        "ImportError.*cannot import"
-        "ModuleNotFoundError.*No module named"
-        "FileNotFoundError.*No such file"
-        "ConnectionError"
-        "PermissionError"
-        "OSError"
+    # Warning and fallback patterns (treat as errors)
+    local warning_patterns=(
+        "WARNING"
+        "⚠️"
+        "Warning"
+        "warning"
+        "WARN"
+        "warn"
+        "fallback"
+        "Fallback"
+        "FALLBACK"
+        "default"
+        "Default"
+        "DEFAULT"
+        "insufficient"
+        "Insufficient"
+        "INSUFFICIENT"
+        "missing data"
+        "Missing data"
+        "MISSING DATA"
+        "empty data"
+        "Empty data"
+        "EMPTY DATA"
+        "no data"
+        "No data"
+        "NO DATA"
+        "length: 0"
+        "0 items"
+        "0 chars"
+        "empty report"
+        "Empty report"
+        "EMPTY REPORT"
+        "incomplete"
+        "Incomplete"
+        "INCOMPLETE"
+        "partial"
+        "Partial"
+        "PARTIAL"
+        "backup"
+        "Backup"
+        "BACKUP"
     )
     
-    # Business logic critical failures only
-    local business_critical_patterns=(
-        "HOLD.*due to.*system.*failure"
-        "Unable to.*analyze"
-        "Failed to.*load.*data"
-        "Cannot.*access.*API"
-        "Database.*error"
-        "Network.*timeout"
+    # Business logic fallback patterns
+    local business_fallback_patterns=(
+        "HOLD.*insufficient"
+        "HOLD.*missing"
+        "HOLD.*incomplete"
+        "fallback decision"
+        "default decision"
+        "safe fallback"
+        "conservative fallback"
+        "using default"
+        "reverting to"
+        "falling back"
+        "backup strategy"
+        "precautionary"
     )
     
-    echo "📋 Critical Error Detection Results:"
+    echo "📋 Error Detection Results:"
     
-    # Check for critical system errors
-    for pattern in "${critical_patterns[@]}"; do
-        local count
-        count=$(grep -v "✅.*PASS" "$log_file" | grep -c "$pattern" 2>/dev/null || echo "0")
-        count=$(echo "$count" | tr -d '\n' | tr -d ' ' | head -1)
-        if [ "$count" -gt 0 ]; then
-            echo "   ❌ Found $count instances of: Critical System Error"
-            critical_error_count=$((critical_error_count + count))
-            echo "      Sample occurrences:"
-            grep -v "✅.*PASS" "$log_file" | grep -n "$pattern" | head -3 | sed 's/^/        /'
-            echo ""
-        fi
-    done
-    
-    # Check for actual import/system failures (excluding test artifacts)
-    for pattern in "${failure_patterns[@]}"; do
-        local count
-        count=$(grep -v "test_studio_blocking" "$log_file" | grep -c "$pattern" 2>/dev/null || echo "0")
-        count=$(echo "$count" | tr -d '\n' | head -1)
-        if [ "$count" -gt 0 ]; then
-            echo "   ❌ Found $count instances of: System Failure ($pattern)"
-            critical_error_count=$((critical_error_count + count))
-            echo "      Sample occurrences:"
-            grep -v "test_studio_blocking" "$log_file" | grep -n "$pattern" | head -3 | sed 's/^/        /'
-            echo ""
-        fi
-    done
-    
-    # Check for actual Python exceptions that aren't in passing tests
-    if grep -q "Traceback" "$log_file"; then
-        # Only count tracebacks that don't lead to passing tests
-        local traceback_lines=$(grep -B2 -A10 "Traceback" "$log_file" | grep -v "✅.*PASS" | grep -c "Traceback" 2>/dev/null || echo "0")
-        if [ "$traceback_lines" -gt 0 ]; then
-            echo "   ❌ Found $traceback_lines instances of: Unresolved Tracebacks"
-            critical_error_count=$((critical_error_count + traceback_lines))
-            echo ""
-        fi
-    fi
-    
-    # Check for business logic critical failures
-    for pattern in "${business_critical_patterns[@]}"; do
+    # Check critical errors
+    for pattern in "${error_patterns[@]}"; do
         local count
         count=$(grep -c "$pattern" "$log_file" 2>/dev/null || echo "0")
-        count=$(echo "$count" | tr -d '\n' | head -1)
+        count=$(echo "$count" | tr -d '\n' | tr -d ' ' | head -1)  # Clean the count variable
         if [ "$count" -gt 0 ]; then
-            echo "   ❌ Found $count instances of: Business Critical Failure"
-            critical_error_count=$((critical_error_count + count))
+            echo "   ❌ Found $count instances of: $pattern"
+            error_count=$((error_count + count))
             echo "      Sample occurrences:"
             grep -n "$pattern" "$log_file" | head -3 | sed 's/^/        /'
             echo ""
         fi
     done
     
-    # Count warnings separately (informational only)
-    warning_count=$(grep -c "WARNING:\|⚠️.*Quality check failed" "$log_file" 2>/dev/null || echo "0")
+    # Check warnings and fallbacks (treat as errors)
+    for pattern in "${warning_patterns[@]}"; do
+        local count
+        count=$(grep -i -c "$pattern" "$log_file" 2>/dev/null || echo "0")
+        # Remove any newlines and ensure we have a valid integer
+        count=$(echo "$count" | tr -d '\n' | head -1)
+        if [ "$count" -gt 0 ] 2>/dev/null; then
+            echo "   ❌ Found $count instances of WARNING/FALLBACK: $pattern"
+            error_count=$((error_count + count))
+            echo "      Sample occurrences:"
+            grep -i -n "$pattern" "$log_file" | head -3 | sed 's/^/        /'
+            echo ""
+        fi
+    done
+    
+    # Check business logic fallbacks
+    for pattern in "${business_fallback_patterns[@]}"; do
+        local count
+        count=$(grep -i -c "$pattern" "$log_file" 2>/dev/null || echo "0")
+        # Remove any newlines and ensure we have a valid integer
+        count=$(echo "$count" | tr -d '\n' | head -1)
+        if [ "$count" -gt 0 ] 2>/dev/null; then
+            echo "   ❌ Found $count instances of BUSINESS FALLBACK: $pattern"
+            error_count=$((error_count + count))
+            echo "      Sample occurrences:"
+            grep -i -n "$pattern" "$log_file" | head -3 | sed 's/^/        /'
+            echo ""
+        fi
+    done
     
     # Additional specific checks for our trading system
-    echo "🔍 Checking for specific trading system critical failures..."
+    echo "🔍 Checking for specific trading system fallbacks..."
     
-    # Check for complete system failures (not quality warnings)
-    if grep -q "HOLD.*due to.*system.*failure\|Unable to initialize.*graph\|Cannot start.*server" "$log_file"; then
-        echo "   ❌ Found system initialization failures (critical failure)"
-        critical_error_count=$((critical_error_count + 1))
+    # Check for empty reports
+    if grep -q "report.*length.*0" "$log_file"; then
+        echo "   ❌ Found empty reports (critical failure)"
+        error_count=$((error_count + 1))
     fi
     
-    # Summary
-    if [ "$critical_error_count" -eq 0 ]; then
-        echo "   ✅ No critical errors detected"
-        if [ "$warning_count" -gt 0 ]; then
-            echo "   📝 Found $warning_count warnings (non-critical - acceptable)"
-        fi
+    # Check for missing debate data
+    if grep -q "Missing.*debate" "$log_file"; then
+        echo "   ❌ Found missing debate data (critical failure)"
+        error_count=$((error_count + 1))
+    fi
+    
+    # Check for insufficient analysis
+    if grep -q "insufficient.*analysis" "$log_file"; then
+        echo "   ❌ Found insufficient analysis warnings (critical failure)"
+        error_count=$((error_count + 1))
+    fi
+    
+    # Check for safe/conservative fallbacks in trading decisions
+    if grep -q "HOLD.*due to.*missing\|HOLD.*insufficient\|HOLD.*incomplete" "$log_file"; then
+        echo "   ❌ Found conservative fallback trading decisions (critical failure)"
+        error_count=$((error_count + 1))
+    fi
+    
+    if [ "$error_count" -eq 0 ]; then
+        echo "   ✅ No errors, warnings, or fallbacks detected"
         return 0
     else
-        echo "   ❌ Total critical error instances found: $critical_error_count"
-        if [ "$warning_count" -gt 0 ]; then
-            echo "   📝 Also found $warning_count warnings (separate from critical errors)"
-        fi
+        echo "   ❌ Total error/warning/fallback instances found: $error_count"
         return 1
     fi
 }
@@ -324,68 +364,40 @@ if [[ ! -f "src/agent/__init__.py" ]]; then
 fi
 
 # Check Python
-if command_exists python3; then
-    PYTHON_VERSION=$(python3 --version)
+if command_exists python3.11; then
+    PYTHON_VERSION=$(python3.11 --version)
     echo -e "${GREEN}✅ Python: $PYTHON_VERSION${NC}"
     log "Python version: $PYTHON_VERSION"
-    PYTHON_CMD="python3"
-elif command_exists python; then
-    PYTHON_VERSION=$(python --version)
-    echo -e "${GREEN}✅ Python: $PYTHON_VERSION${NC}"
-    log "Python version: $PYTHON_VERSION"
-    PYTHON_CMD="python"
 else
-    echo -e "${RED}❌ Python not found${NC}"
+    echo -e "${RED}❌ Python3 not found${NC}"
     exit 1
 fi
 
-# Check if required packages are installed locally
-echo -e "${CYAN}🔄 Checking for required packages in local environment...${NC}"
-MISSING_PACKAGES=()
+# Check virtual environment
+if [[ -d "venv" ]]; then
+    echo -e "${GREEN}✅ Virtual environment found${NC}"
+    log "Virtual environment directory exists"
+else
+    echo -e "${YELLOW}⚠️  Virtual environment not found, creating...${NC}"
+    run_cmd "python3.11 -m venv venv" "Creating virtual environment"
+fi
 
-# Check for pip
-if ! $PYTHON_CMD -m pip --version >/dev/null 2>&1; then
-    echo -e "${RED}❌ pip not available. Please install pip first.${NC}"
+# Activate virtual environment
+echo -e "${CYAN}🔄 Activating virtual environment...${NC}"
+source venv/bin/activate
+if [[ "$VIRTUAL_ENV" != "" ]]; then
+    echo -e "${GREEN}✅ Virtual environment activated: $VIRTUAL_ENV${NC}"
+    log "Virtual environment activated: $VIRTUAL_ENV"
+else
+    echo -e "${RED}❌ Failed to activate virtual environment${NC}"
     exit 1
 fi
 
-# Check for required packages - using import names
-import_packages=(
-    "langchain:langchain"
-    "langchain_openai:langchain-openai"
-    "langchain_core:langchain-core"
-    "langchain_anthropic:langchain-anthropic"
-    "langchain_google_genai:langchain-google-genai"
-    "langgraph:langgraph"
-    "httpx:httpx"
-    "aiofiles:aiofiles"
-    "numpy:numpy"
-    "pandas:pandas"
-    "stockstats:stockstats"
-    "bs4:beautifulsoup4"
-    "requests:requests"
-    "serpapi:google-search-results"
-    "dotenv:python-dotenv"
-    "dateutil:python-dateutil"
-    "tenacity:tenacity"
-    "tqdm:tqdm"
-    "asyncio_throttle:asyncio-throttle"
-)
-for pkg_spec in "${import_packages[@]}"; do
-    import_name="${pkg_spec%%:*}"
-    install_name="${pkg_spec#*:}"
-    if ! $PYTHON_CMD -c "import $import_name" 2>/dev/null; then
-        MISSING_PACKAGES+=($install_name)
-    fi
-done
-
-if [ ${#MISSING_PACKAGES[@]} -ne 0 ]; then
-    echo -e "${YELLOW}⚠️  Missing packages: ${MISSING_PACKAGES[*]}${NC}"
-    echo -e "${CYAN}🔄 Installing missing packages...${NC}"
-    run_cmd "$PYTHON_CMD -m pip install --user --break-system-packages ${MISSING_PACKAGES[*]}" "Installing missing packages"
-else
-    echo -e "${GREEN}✅ All required packages are installed${NC}"
-fi
+# Install/update dependencies
+echo -e "${CYAN}🔄 Installing/updating dependencies...${NC}"
+run_cmd "pip install -q --upgrade pip" "Upgrading pip"
+run_cmd "pip install -q -e ." "Installing project dependencies"
+run_cmd "pip install -q langchain-openai httpx aiofiles" "Installing additional debug dependencies"
 
 # Check .env file
 if [[ -f ".env" ]]; then
@@ -402,9 +414,8 @@ if [[ -f ".env" ]]; then
     fi
     
     # Source environment variables
-    set -a
     source .env
-    set +a
+    export $(grep -v '^#' .env | xargs) 2>/dev/null || true
 else
     echo -e "${YELLOW}⚠️  .env file not found${NC}"
     echo -e "${YELLOW}💡 Please create .env with your API keys${NC}"
@@ -433,9 +444,9 @@ echo "================================"
 check_timeout
 
 # Check imports
-run_cmd "$PYTHON_CMD -c 'from src.agent.graph.trading_graph import TradingAgentsGraph; print(\"✅ Core imports working\")'" "Testing core imports"
-run_cmd "$PYTHON_CMD -c 'from src.agent.utils.debug_logging import debug_node; print(\"✅ Debug logging imports working\")'" "Testing debug logging imports"
-run_cmd "$PYTHON_CMD -c 'from langchain_openai import ChatOpenAI; print(\"✅ LangChain imports working\")'" "Testing LangChain imports"
+run_cmd "python3.11 -c 'from agent.graph.trading_graph import TradingAgentsGraph; print(\"✅ Core imports working\")'" "Testing core imports"
+run_cmd "python3.11 -c 'from agent.utils.debug_logging import debug_node; print(\"✅ Debug logging imports working\")'" "Testing debug logging imports"
+run_cmd "python3.11 -c 'from langchain_openai import ChatOpenAI; print(\"✅ LangChain imports working\")'" "Testing LangChain imports"
 
 echo ""
 
@@ -456,7 +467,7 @@ echo "🔍 Testing TradingAgentsGraph with comprehensive error validation..."
 if [[ ! -f "debug_test.py" ]]; then
     echo -e "${CYAN}🔄 Creating debug test script...${NC}"
     cat > debug_test.py << 'EOF'
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """
 Enhanced debug test script for LangGraph trading graph
 """
@@ -495,10 +506,10 @@ async def test_graph_execution():
         
         # Test 2: Import verification
         logger.debug("📦 Testing imports...")
-        from src.agent.graph.trading_graph import TradingAgentsGraph
-        from src.agent.default_config import DEFAULT_CONFIG
+        from agent.graph.trading_graph import TradingAgentsGraph
+        from agent.default_config import DEFAULT_CONFIG
         from langchain_openai import ChatOpenAI
-        from src.agent.utils.debug_logging import debug_node
+        from agent.utils.debug_logging import debug_node
         logger.debug("✅ All imports successful")
         
         # Test 3: LLM creation
@@ -509,7 +520,7 @@ async def test_graph_execution():
         
         # Test 4: Memory system
         logger.debug("💾 Testing memory system...")
-        from src.agent.utils.memory import FinancialSituationMemory
+        from agent.utils.memory import FinancialSituationMemory
         memory = FinancialSituationMemory("test_memory", DEFAULT_CONFIG)
         logger.debug("✅ Memory system created successfully")
         
@@ -564,7 +575,7 @@ fi
 
 # Run the debug test
 echo -e "${CYAN}🔄 Running comprehensive debug test...${NC}"
-if $PYTHON_CMD debug_test.py 2>&1 | tee -a "$DEBUG_LOG"; then
+if python3.11 debug_test.py 2>&1 | tee -a "$DEBUG_LOG"; then
     echo -e "${GREEN}✅ Debug test completed successfully${NC}"
     log "Debug test passed"
 else
@@ -583,8 +594,8 @@ if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
 
     # Install Studio-specific validation tools
     echo -e "${CYAN}🔄 Installing Studio validation tools...${NC}"
-    run_cmd "$PYTHON_CMD -m pip install --user --break-system-packages blockbuster" "Installing blocking call detector"
-    run_cmd "$PYTHON_CMD -m pip install --user --break-system-packages langgraph-cli" "Installing LangGraph CLI"
+    run_cmd "pip install -q blockbuster" "Installing blocking call detector"
+    run_cmd "pip install -q langgraph-cli" "Installing LangGraph CLI"
 else
     echo -e "${PURPLE}📋 Phase 4: Basic Server Testing${NC}"
     echo "================================"
@@ -596,7 +607,7 @@ else
         log "LangGraph CLI available"
     else
         echo -e "${YELLOW}⚠️  LangGraph CLI not found, installing...${NC}"
-        run_cmd "$PYTHON_CMD -m pip install --user --break-system-packages langgraph-cli" "Installing LangGraph CLI"
+        run_cmd "pip install -q langgraph-cli" "Installing LangGraph CLI"
     fi
     
     # Set defaults for basic mode
@@ -609,43 +620,19 @@ if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
     # Test 1: Blocking Call Detection (exactly like Studio)
     echo -e "${CYAN}🧪 Test 1: Studio-style Blocking Call Detection${NC}"
 cat > test_studio_blocking.py << 'EOF'
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 """
 Mirror Studio's exact blocking call detection
 """
 import sys
 import os
-
-# Ensure we can import from the src directory
-script_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.join(script_dir, 'src')
-sys.path.insert(0, src_dir)
-
-# Load environment variables from .env file
-try:
-    from dotenv import load_dotenv
-    env_file = os.path.join(script_dir, '.env')
-    if os.path.exists(env_file):
-        load_dotenv(env_file)
-        print(f"✅ Environment loaded from {env_file}")
-except ImportError:
-    # Fallback: manually read .env file if python-dotenv is not available
-    env_file = os.path.join(script_dir, '.env')
-    if os.path.exists(env_file):
-        with open(env_file) as f:
-            for line in f:
-                if '=' in line and not line.startswith('#'):
-                    key, value = line.strip().split('=', 1)
-                    os.environ[key] = value
-        print(f"✅ Environment loaded manually from {env_file}")
-    else:
-        print("⚠️ No .env file found")
+sys.path.insert(0, 'src')
 
 def test_studio_blocking_detection():
     """Test with exact Studio blocking detection"""
     try:
-        import blockbuster
-        # blockbuster doesn't have install() method, just importing it is enough
+        import blockbuster.blockbuster as bb
+        bb.install()
         print("🔒 Blockbuster blocking detection enabled (Studio mode)")
         
         # Test the exact import chain Studio uses
@@ -677,18 +664,13 @@ def test_studio_blocking_detection():
             }
         )
         
-        # Test both the function call and the module.graph pattern
-        if hasattr(agent, 'graph') and callable(agent.graph):
-            result = agent.graph(config)
-        else:
-            # Fallback to direct graph creation
-            result = agent.create_studio_compatible_graph()
+        result = agent.graph(config)
         print(f"     ✅ Graph factory success: {type(result)}")
         
         print("🎉 ALL IMPORTS PASSED BLOCKING DETECTION!")
         return True
         
-    except blockbuster.BlockingError as e:
+    except bb.BlockingError as e:
         print(f"❌ BLOCKING CALL DETECTED: {e}")
         print("📍 This is the exact error Studio encounters!")
         return False
@@ -703,7 +685,7 @@ if __name__ == "__main__":
     exit(0 if success else 1)
 EOF
 
-if $PYTHON_CMD test_studio_blocking.py 2>&1 | tee -a "$DEBUG_LOG"; then
+if python3.11 test_studio_blocking.py 2>&1 | tee -a "$DEBUG_LOG"; then
     echo -e "${GREEN}✅ Studio blocking detection test PASSED${NC}"
     log "Studio blocking detection test passed"
     BLOCKING_TEST_PASSED=true
@@ -716,8 +698,49 @@ fi
 
 rm -f test_studio_blocking.py
 
-# Test 2: LangGraph Dev Server Simulation
-echo -e "${CYAN}🧪 Test 2: LangGraph Dev Server Simulation${NC}"
+# Test 2: Python 3.11 Compatibility (Studio's version)
+echo -e "${CYAN}🧪 Test 2: Python 3.11 Compatibility Test${NC}"
+if command -v python3.11.11 >/dev/null 2>&1; then
+    cat > test_python3.1111.py << 'EOF'
+#!/usr/bin/env python3.11
+"""Test with Python 3.11 like Studio uses"""
+import sys
+sys.path.insert(0, 'src')
+
+try:
+    import agent
+    from langchain_core.runnables import RunnableConfig
+    
+    config = RunnableConfig(tags=[], metadata={}, callbacks=None, recursion_limit=25)
+    result = agent.graph(config)
+    print(f"✅ Python 3.11 test passed: {type(result)}")
+    
+except Exception as e:
+    print(f"❌ Python 3.11 test failed: {e}")
+    import traceback
+    traceback.print_exc()
+    exit(1)
+EOF
+
+    if python3.11.11 test_python3.1111.py 2>&1 | tee -a "$DEBUG_LOG"; then
+        echo -e "${GREEN}✅ Python 3.11 compatibility test PASSED${NC}"
+        log "Python 3.11 compatibility test passed"
+        PYTHON311_TEST_PASSED=true
+    else
+        echo -e "${RED}❌ Python 3.11 compatibility test FAILED${NC}"
+        log "Python 3.11 compatibility test failed"
+        PYTHON311_TEST_PASSED=false
+    fi
+    
+    rm -f test_python3.1111.py
+else
+    echo -e "${YELLOW}⚠️  Python 3.11 not available, skipping version-specific test${NC}"
+    log "Python 3.11 not available"
+    PYTHON311_TEST_PASSED=true
+fi
+
+# Test 3: LangGraph Dev Server Simulation
+echo -e "${CYAN}🧪 Test 3: LangGraph Dev Server Simulation${NC}"
 
 # Check if port 8125 is available (using different port to avoid conflicts)
 if command_exists lsof && lsof -Pi :8125 -sTCP:LISTEN -t >/dev/null; then
@@ -731,22 +754,8 @@ export PYTHONPATH="$SCRIPT_DIR/src"
 
 # Test server startup with timeout (mirror Studio's startup behavior)
 echo -e "${CYAN}🔄 Testing langgraph dev startup (Studio simulation)...${NC}"
-
-# Check if timeout command exists, otherwise use background process with kill
-if command -v timeout >/dev/null 2>&1; then
-    timeout 15s langgraph dev --port 8125 --no-browser &
-    SERVER_PID=$!
-elif command -v gtimeout >/dev/null 2>&1; then
-    gtimeout 15s langgraph dev --port 8125 --no-browser &
-    SERVER_PID=$!
-else
-    # Fallback: start server in background and kill after timeout
-    langgraph dev --port 8125 --no-browser &
-    SERVER_PID=$!
-    # Create a timeout mechanism
-    (sleep 15; kill $SERVER_PID 2>/dev/null) &
-    TIMEOUT_PID=$!
-fi
+timeout 15s langgraph dev --port 8125 --no-browser &
+SERVER_PID=$!
 
 # Wait for server to start
 sleep 8
@@ -762,10 +771,7 @@ else
     SERVER_TEST_PASSED=false
 fi
 
-# Clean up server and timeout process
-if [ -n "$TIMEOUT_PID" ]; then
-    kill $TIMEOUT_PID 2>/dev/null || true
-fi
+# Clean up server
 kill $SERVER_PID 2>/dev/null || true
 wait $SERVER_PID 2>/dev/null || true
 
@@ -782,8 +788,8 @@ check_timeout
 echo -e "${CYAN}🔄 Analyzing graph structure...${NC}"
 cat > analyze_graph.py << 'EOF'
 import asyncio
-from src.agent.graph.trading_graph import TradingAgentsGraph
-from src.agent.default_config import DEFAULT_CONFIG
+from agent.graph.trading_graph import TradingAgentsGraph
+from agent.default_config import DEFAULT_CONFIG
 
 async def analyze_graph():
     try:
@@ -810,7 +816,7 @@ if __name__ == "__main__":
     exit(0 if success else 1)
 EOF
 
-if $PYTHON_CMD analyze_graph.py 2>&1 | tee -a "$DEBUG_LOG"; then
+if python3.11 analyze_graph.py 2>&1 | tee -a "$DEBUG_LOG"; then
     echo -e "${GREEN}✅ Graph analysis completed${NC}"
     log "Graph analysis successful"
 else
@@ -831,16 +837,16 @@ check_timeout
 REPORT_FILE="$LOG_DIR/debug_report_$TIMESTAMP.md"
 
 cat > "$REPORT_FILE" << EOF
-# 🐛 LangGraph Debug Report (No Virtual Environment)
+# 🐛 LangGraph Debug Report
 
 **Generated:** $(date)  
 **Session ID:** $TIMESTAMP  
 **Working Directory:** $SCRIPT_DIR
-**Environment:** Local (No Virtual Environment)
 
 ## 📋 Environment Status
 
-- **Python Version:** $($PYTHON_CMD --version)
+- **Python Version:** $(python3.11 --version)
+- **Virtual Environment:** $VIRTUAL_ENV
 - **PYTHONPATH:** $PYTHONPATH
 
 ## 🔧 Configuration
@@ -937,7 +943,7 @@ fi
 
 # Studio compatibility checks
 STUDIO_COMPATIBILITY=true
-if [[ "${BLOCKING_TEST_PASSED:-false}" != "true" ]] || [[ "${SERVER_TEST_PASSED:-false}" != "true" ]]; then
+if [[ "${BLOCKING_TEST_PASSED:-false}" != "true" ]] || [[ "${PYTHON311_TEST_PASSED:-false}" != "true" ]] || [[ "${SERVER_TEST_PASSED:-false}" != "true" ]]; then
     STUDIO_COMPATIBILITY=false
 fi
 
@@ -969,6 +975,7 @@ echo ""
 if [[ "$STUDIO_MIRROR_MODE" == "true" ]]; then
     echo -e "${CYAN}📋 Studio Compatibility Results:${NC}"
     echo -e "   🔒 Blocking Detection: $([ "${BLOCKING_TEST_PASSED:-false}" = true ] && echo "✅ PASS" || echo "❌ FAIL")"
+    echo -e "   🐍 Python 3.11 Test: $([ "${PYTHON311_TEST_PASSED:-false}" = true ] && echo "✅ PASS" || echo "❌ FAIL")" 
     echo -e "   🌐 Server Simulation: $([ "${SERVER_TEST_PASSED:-false}" = true ] && echo "✅ PASS" || echo "❌ FAIL")"
     echo ""
 fi
@@ -1022,4 +1029,4 @@ else
         echo -e "${RED}⚠️  Please review the errors above and fix them before proceeding${NC}"
     fi
     exit 1
-fi
+fi 
