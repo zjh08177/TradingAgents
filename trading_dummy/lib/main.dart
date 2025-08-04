@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'services/langgraph_service.dart';
 import 'services/auto_test.dart';
 import 'core/logging/app_logger.dart';
@@ -22,11 +23,18 @@ import 'jobs/application/use_cases/cancel_job_use_case.dart';
 import 'jobs/presentation/view_models/job_queue_view_model.dart';
 import 'jobs/presentation/view_models/job_list_view_model.dart';
 import 'jobs/presentation/screens/job_test_screen.dart';
+import 'jobs/presentation/screens/task5_debug_screen.dart';
 // Phase 8: Notification system imports
 import 'jobs/infrastructure/services/job_notification_handler.dart';
 import 'jobs/infrastructure/services/job_queue_manager.dart';
 // Phase 9: Retry system imports
 import 'jobs/infrastructure/services/retry_scheduler.dart';
+// Task 5: Local-first architecture imports
+import 'jobs/infrastructure/persistence/analysis_database.dart';
+import 'jobs/infrastructure/services/langgraph_api_service.dart';
+import 'jobs/infrastructure/services/smart_polling_service.dart';
+import 'jobs/infrastructure/services/job_event_bus.dart';
+import 'jobs/infrastructure/services/app_lifecycle_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +78,45 @@ void main() async {
     final notificationHandler = JobNotificationHandler();
     await notificationHandler.initialize();
     
+    // Initialize Task 5 services for local-first architecture
+    AppLogger.info('main', '🔧 Initializing local-first architecture services...');
+    
+    // Initialize SQLite database
+    final analysisDatabase = AnalysisDatabase();
+    
+    // Initialize LangGraph API service
+    final langGraphApiService = LangGraphApiService(
+      baseUrl: dotenv.env['LANGGRAPH_URL'] ?? 'http://localhost:8123',
+      apiKey: dotenv.env['LANGGRAPH_API_KEY'] ?? dotenv.env['LANGSMITH_API_KEY'] ?? '',
+      assistantId: dotenv.env['LANGGRAPH_ASSISTANT_ID'] ?? 'trade-team-v1',
+    );
+    
+    // Initialize event bus
+    final jobEventBus = JobEventBus();
+    
+    // Initialize app lifecycle service
+    final appLifecycleService = AppLifecycleService();
+    appLifecycleService.initialize();
+    
+    // Initialize smart polling service
+    final smartPollingService = SmartPollingService(
+      apiService: langGraphApiService,
+      database: analysisDatabase,
+      lifecycleService: appLifecycleService,
+      eventBus: jobEventBus,
+    );
+    smartPollingService.initialize();
+    
+    // Register services with GetIt for dependency injection
+    final getIt = GetIt.instance;
+    getIt.registerSingleton<AnalysisDatabase>(analysisDatabase);
+    getIt.registerSingleton<LangGraphApiService>(langGraphApiService);
+    getIt.registerSingleton<SmartPollingService>(smartPollingService);
+    getIt.registerSingleton<JobEventBus>(jobEventBus);
+    getIt.registerSingleton<AppLifecycleService>(appLifecycleService);
+    
+    AppLogger.info('main', '✅ Local-first services initialized and registered');
+    
     AppLogger.info('main', '✅ Hive database initialized');
     
     // Get LangGraph configuration
@@ -109,6 +156,12 @@ void main() async {
       jobQueueManager: jobQueueManager,
       notificationHandler: notificationHandler,
       retryScheduler: retryScheduler,
+      // Task 5 services
+      analysisDatabase: analysisDatabase,
+      langGraphApiService: langGraphApiService,
+      smartPollingService: smartPollingService,
+      jobEventBus: jobEventBus,
+      appLifecycleService: appLifecycleService,
     ));
     
   } catch (e, stackTrace) {
@@ -124,6 +177,12 @@ class TradingApp extends StatelessWidget {
   final JobQueueManager jobQueueManager;
   final JobNotificationHandler notificationHandler;
   final RetryScheduler retryScheduler;
+  // Task 5 services
+  final AnalysisDatabase analysisDatabase;
+  final LangGraphApiService langGraphApiService;
+  final SmartPollingService smartPollingService;
+  final JobEventBus jobEventBus;
+  final AppLifecycleService appLifecycleService;
   
   const TradingApp({
     super.key,
@@ -133,6 +192,12 @@ class TradingApp extends StatelessWidget {
     required this.jobQueueManager,
     required this.notificationHandler,
     required this.retryScheduler,
+    // Task 5 services
+    required this.analysisDatabase,
+    required this.langGraphApiService,
+    required this.smartPollingService,
+    required this.jobEventBus,
+    required this.appLifecycleService,
   });
 
   @override
@@ -149,8 +214,10 @@ class TradingApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (_) => JobQueueViewModel(
               queueAnalysis: QueueAnalysisUseCase(
-                repository: jobRepository,
-                queueManager: jobQueueManager,
+                database: analysisDatabase,
+                apiService: langGraphApiService,
+                pollingService: smartPollingService,
+                eventBus: jobEventBus,
               ),
               getJobStatus: GetJobStatusUseCase(repository: jobRepository),
               cancelJob: CancelJobUseCase(

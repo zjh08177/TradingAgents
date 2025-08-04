@@ -83,6 +83,9 @@ dependencies:
   # SQLite database for analysis polling
   sqflite: ^2.3.0
   path_provider: ^2.1.5
+  
+  # Dependency injection
+  get_it: ^7.6.7
 
 dev_dependencies:
   flutter_test:
