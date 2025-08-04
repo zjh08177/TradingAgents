@@ -79,6 +79,10 @@ dependencies:
   
   # Local notifications for job completion alerts
   flutter_local_notifications: ^17.2.3
+  
+  # SQLite database for analysis polling
+  sqflite: ^2.3.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -101,6 +105,9 @@ dev_dependencies:
   # Integration testing
   integration_test:
     sdk: flutter
+  
+  # SQLite testing support
+  sqflite_common_ffi: ^2.3.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
