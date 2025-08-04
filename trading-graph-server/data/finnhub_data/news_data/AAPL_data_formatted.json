@@ -1,0 +1,39 @@
+{
+  "status": "OK",
+  "totalResults": 3,
+  "articles": [
+    {
+      "category": "company",
+      "datetime": 1754154432,
+      "headline": "AAPL Reports Strong Quarterly Performance",
+      "id": 1,
+      "image": "https://example.com/aapl_image1.jpg",
+      "related": "AAPL",
+      "source": "Financial News",
+      "summary": "AAPL Corporation reported strong quarterly results with revenue growth driven by market demand.",
+      "url": "https://example.com/aapl_news1"
+    },
+    {
+      "category": "company",
+      "datetime": 1754068032,
+      "headline": "AAPL Announces Strategic Partnership",
+      "id": 2,
+      "image": "https://example.com/aapl_image2.jpg",
+      "related": "AAPL",
+      "source": "Tech Daily",
+      "summary": "The company announced new strategic partnerships to expand market reach.",
+      "url": "https://example.com/aapl_news2"
+    },
+    {
+      "category": "general",
+      "datetime": 1753981632,
+      "headline": "Industry Outlook Positive for AAPL",
+      "id": 3,
+      "image": "https://example.com/aapl_image3.jpg",
+      "related": "AAPL",
+      "source": "Market Watch",
+      "summary": "Industry analysts project continued growth benefiting companies like AAPL.",
+      "url": "https://example.com/aapl_news3"
+    }
+  ]
+}

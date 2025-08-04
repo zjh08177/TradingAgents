@@ -1,7 +1,7 @@
 # TradingAgents/graph/signal_processing.py
 
 from langchain_openai import ChatOpenAI
-from agent.utils.connection_retry import safe_llm_invoke
+from ..utils.connection_retry import safe_llm_invoke
 
 
 class SignalProcessor:

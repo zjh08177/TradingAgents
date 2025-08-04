@@ -60,7 +60,11 @@ async def _ensure_dotenv_loaded():
     """Lazy loader for .env file to prevent blocking I/O during module import"""
     global _dotenv_loaded
     if not _dotenv_loaded:
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        # FIXED: Move os.path.abspath to async context to prevent blocking during import
+        project_root_task = asyncio.to_thread(
+            lambda: os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        )
+        project_root = await project_root_task
         # Use asyncio.to_thread to run synchronous code in thread pool
         await asyncio.to_thread(load_dotenv, os.path.join(project_root, ".env"))
         _dotenv_loaded = True

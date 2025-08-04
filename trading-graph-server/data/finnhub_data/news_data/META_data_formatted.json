@@ -1,0 +1,39 @@
+{
+  "status": "OK",
+  "totalResults": 3,
+  "articles": [
+    {
+      "category": "company",
+      "datetime": 1754154432,
+      "headline": "META Reports Strong Quarterly Performance",
+      "id": 1,
+      "image": "https://example.com/meta_image1.jpg",
+      "related": "META",
+      "source": "Financial News",
+      "summary": "META Corporation reported strong quarterly results with revenue growth driven by market demand.",
+      "url": "https://example.com/meta_news1"
+    },
+    {
+      "category": "company",
+      "datetime": 1754068032,
+      "headline": "META Announces Strategic Partnership",
+      "id": 2,
+      "image": "https://example.com/meta_image2.jpg",
+      "related": "META",
+      "source": "Tech Daily",
+      "summary": "The company announced new strategic partnerships to expand market reach.",
+      "url": "https://example.com/meta_news2"
+    },
+    {
+      "category": "general",
+      "datetime": 1753981632,
+      "headline": "Industry Outlook Positive for META",
+      "id": 3,
+      "image": "https://example.com/meta_image3.jpg",
+      "related": "META",
+      "source": "Market Watch",
+      "summary": "Industry analysts project continued growth benefiting companies like META.",
+      "url": "https://example.com/meta_news3"
+    }
+  ]
+}

@@ -3,12 +3,12 @@ import asyncio
 import json
 import time
 import logging
-from agent.utils.debug_logging import debug_node, log_llm_interaction
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.parallel_tools import log_parallel_execution
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.debug_logging import debug_node, log_llm_interaction
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.parallel_tools import log_parallel_execution
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -43,72 +43,20 @@ def create_social_media_analyst(llm, toolkit):
                 tools.append(toolkit.get_stock_news_openai)
 
         system_message = (
-            """You are an expert social sentiment analyst specializing in social media intelligence and public perception analysis for financial markets.
+            """Expert social media analyst: sentiment & public perception.
 
-CRITICAL: Use tools to get real social sentiment data.
-DO NOT provide sentiment analysis without actual data.
+MANDATORY: Use tools→get real social data before analysis.
+Tools: {tool_names}
 
-Required tool:
-1. get_stock_news_openai - Get stock-specific news with sentiment
-Note: Reddit tool temporarily disabled due to technical issues
+Workflow: 1)Call tools 2)Get data 3)Analyze 4)Report
 
-WORKFLOW:
-1. Call the available sentiment tool
-2. Wait for response with real sentiment data
-3. Analyze actual sentiment data from the tool
-4. Include data source and timestamp in analysis
-5. NEVER fabricate sentiment scores or social media data
+After getting real social sentiment data from tools, provide analysis:
+1. Sentiment Score: Quantified sentiment (-100 to +100)
+2. Trend Direction: Rising/Falling/Stable momentum
+3. Trading Signals: BUY/SELL/HOLD based on sentiment
+4. Risk Assessment: Reputation & viral risks
 
-TASK 3.2 OPTIMIZED SOCIAL SENTIMENT FRAMEWORK:
-After getting real sentiment data from tools, provide a comprehensive analysis following this exact structure:
-
-## 📱 Social Sentiment Analysis Report
-
-### 1. Sentiment Overview
-- **Overall Sentiment Score**: Quantified measure (-100 to +100)
-- **Trend Direction**: 7-day momentum (Rising/Falling/Stable)
-- **Market Impact Assessment**: Direct correlation to price movements
-
-### 2. Key Metrics Dashboard
-
-| Metric | Current | 7D Change | Impact Level | Source Quality |
-|--------|---------|-----------|--------------|----------------|
-| Reddit Sentiment | [score] | [±%] | [H/M/L] | [reliability] |
-| Twitter/X Volume | [count] | [±%] | [H/M/L] | [engagement] |
-| News Mentions | [count] | [±%] | [H/M/L] | [credibility] |
-| Discussion Quality | [1-10] | [±] | [H/M/L] | [depth] |
-
-### 3. Thematic Analysis
-- **Dominant Themes**: Top 3 discussion topics with frequency analysis
-- **Emerging Topics**: New conversations gaining traction
-- **Sentiment Drivers**: Specific events/news causing sentiment shifts
-- **Influencer Activity**: Key opinion leaders and their positioning
-
-### 4. Public Perception Insights
-- **Investor Confidence**: Retail vs institutional sentiment comparison
-- **Product/Service Reception**: Consumer feedback patterns
-- **Management Perception**: Leadership trust and communication effectiveness
-- **Competitive Positioning**: Relative sentiment vs peer companies
-
-### 5. Trading Implications
-- **Sentiment-Price Correlation**: Historical alignment and current divergence
-- **Volume Prediction**: Expected trading activity based on social buzz
-- **Contrarian Signals**: Overextended sentiment readings
-- **Catalyst Identification**: Upcoming events likely to drive sentiment
-
-### 6. Risk Assessment
-- **Reputation Risks**: Potential PR issues or controversies
-- **Viral Risk Factors**: Topics that could trigger negative viral spread
-- **Misinformation Threats**: False narratives gaining traction
-- **Sentiment Reversal Probability**: Likelihood of current sentiment changing
-
-### 7. Strategic Recommendations
-- **Position Timing**: Optimal entry/exit based on sentiment cycles
-- **Risk Management**: Sentiment-based stop-loss considerations
-- **Opportunity Windows**: Sentiment-driven price inefficiencies
-- **Monitoring Alerts**: Key metrics to watch for trend changes
-
-CRITICAL: Quantify sentiment with specific scores, percentages, and confidence levels. Focus on actionable trading insights rather than general social commentary.
+Focus on actionable trading insights from current social data.
             """
         )
 
@@ -129,8 +77,12 @@ CRITICAL: Quantify sentiment with specific scores, percentages, and confidence l
             ]
         )
 
+        # Format system message with tool names first
+        tool_names_str = ", ".join([tool.name for tool in tools])
+        system_message = system_message.format(tool_names=tool_names_str)
+        
         prompt = prompt.partial(system_message=system_message)
-        prompt = prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
+        prompt = prompt.partial(tool_names=tool_names_str)
         prompt = prompt.partial(current_date=current_date)
         prompt = prompt.partial(ticker=ticker)
 
@@ -140,7 +92,7 @@ CRITICAL: Quantify sentiment with specific scores, percentages, and confidence l
         messages = state.get("social_messages", [])
         
         # CRITICAL FIX: Validate message sequence for OpenAI API compliance
-        from agent.utils.message_validator import clean_messages_for_llm
+        from ..utils.message_validator import clean_messages_for_llm
         messages = clean_messages_for_llm(messages)
         
         # TASK 4.2: Add LLM interaction logging
@@ -162,16 +114,27 @@ CRITICAL: Quantify sentiment with specific scores, percentages, and confidence l
         # TASK 3.1: Single-pass execution - generate report directly from LLM response
         tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
         
-        # The LLM response now contains the complete analysis (single-pass)
+        # CRITICAL FIX: ENFORCE MANDATORY TOOL USAGE
         if len(result.tool_calls) == 0:
-            # Direct comprehensive response from LLM - use as final report
-            report = result.content
+            # No tool calls in current response - THIS IS A PROBLEM!
+            if tool_message_count > 0:
+                # Tools were executed previously, this should be the final report
+                report = result.content
+                logger.info(f"📊 SOCIAL_ANALYST: Generated final report after tool execution ({len(report)} chars)")
+            else:
+                # CRITICAL ERROR: LLM failed to call tools - force error message
+                logger.error(f"❌ SOCIAL_ANALYST: NO TOOLS CALLED - Report will be marked as failed")
+                report = f"⚠️ WARNING: Social sentiment analysis conducted without current social data for {ticker}. Tool execution failed."
+                logger.warning(f"🚨 SOCIAL_ANALYST: Completed WITHOUT tool calls!")
+            
+            # Apply token limits
+            report = get_token_limiter().truncate_response(report, "Social Media Analyst")
         else:
-            # PT1: LLM wants to make tool calls - log for parallel visibility
+            # Current response contains tool calls - tools need to be executed first
             logger.info(f"⚡ SOCIAL_ANALYST: LLM requested {len(result.tool_calls)} tool calls")
             tool_names = [tc.get('name', 'unknown') for tc in result.tool_calls]
             logger.info(f"⚡ SOCIAL_ANALYST: Tools requested: {tool_names}")
-            report = ""
+            report = ""  # No report yet, tools need to be executed first
 
         # Return the state update
         updated_messages = messages + [result]

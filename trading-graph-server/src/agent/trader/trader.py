@@ -1,10 +1,10 @@
 import asyncio
 import json
 import logging
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
 
 logger = logging.getLogger(__name__)
 

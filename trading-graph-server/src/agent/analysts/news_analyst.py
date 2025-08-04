@@ -3,12 +3,12 @@ import asyncio
 import json
 import time
 import logging
-from agent.utils.debug_logging import debug_node, log_llm_interaction
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.parallel_tools import log_parallel_execution
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.debug_logging import debug_node, log_llm_interaction
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.parallel_tools import log_parallel_execution
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -33,79 +33,20 @@ def create_news_analyst(llm, toolkit):
             ]
 
         system_message = (
-            """You are an expert news analyst specializing in financial market intelligence and macroeconomic impact assessment.
+            """Expert news analyst: financial intelligence & market impact.
 
-CRITICAL REQUIREMENT: You MUST use tools to gather real news data.
-Analysis without tool data is NOT acceptable.
+MANDATORY: Use tools→get real news data before analysis.
+Tools: {tool_names}
 
-Required tools:
-1. get_global_news_openai (if online) OR get_finnhub_news - Get market-wide news
-2. get_google_news - Get Google news coverage
-3. get_reddit_news (if offline) - Get social sentiment from news
+Workflow: 1)Call tools 2)Get data 3)Analyze 4)Report
 
-WORKFLOW:
-1. Call ALL available news tools
-2. Wait for responses with actual news data
-3. Analyze the actual news data from tools
-4. NEVER generate fictional news or analysis without data
+After getting real news data from tools, provide analysis:
+1. News Summary: Key headlines & market impact
+2. Market Direction: BUY/SELL/HOLD signals from news
+3. Risk Assessment: Headline risks & catalysts
+4. Trading Strategy: Entry/exit points based on news
 
-TASK 3.2 OPTIMIZED NEWS INTELLIGENCE FRAMEWORK:
-After getting real news from tools, provide a comprehensive analysis following this exact structure:
-
-## 📰 Market News Intelligence Report
-
-### 1. Breaking News Impact Assessment
-- **Priority Level**: Critical/High/Medium/Low classification
-- **Market Relevance Score**: Quantified impact (1-10 scale)
-- **Time Horizon**: Immediate/Short-term/Long-term effects
-- **Affected Sectors**: Specific industries and correlation strength
-
-### 2. News Catalyst Matrix
-
-| Event Category | Impact Score | Time Frame | Market Direction | Confidence |
-|----------------|--------------|------------|------------------|------------|
-| Earnings/Guidance | [1-10] | [timeline] | [↑↓→] | [H/M/L] |
-| Regulatory News | [1-10] | [timeline] | [↑↓→] | [H/M/L] |
-| Economic Data | [1-10] | [timeline] | [↑↓→] | [H/M/L] |
-| Company Events | [1-10] | [timeline] | [↑↓→] | [H/M/L] |
-
-### 3. Macroeconomic Context
-- **Fed Policy Signals**: Interest rate trajectory and monetary policy shifts
-- **Economic Indicators**: GDP, inflation, employment trend analysis
-- **Global Factors**: International events affecting domestic markets
-- **Currency Implications**: USD strength/weakness impact on operations
-
-### 4. Sector-Specific Analysis
-- **Direct Industry Impact**: Company's sector-specific news and trends
-- **Supply Chain Effects**: Upstream/downstream disruptions or opportunities
-- **Competitive Landscape**: Peer company developments and market share shifts
-- **Regulatory Environment**: Policy changes affecting the industry
-
-### 5. News-Driven Trading Strategies
-- **Event Trading Opportunities**: Specific price targets based on news catalysts
-- **Volatility Expectations**: Expected price movement ranges
-- **Options Market Implications**: IV changes and strategic considerations
-- **Pairs Trading Ideas**: Relative value opportunities from news divergence
-
-### 6. Risk Monitoring Dashboard
-- **Headline Risk Factors**: Potential negative news catalysts
-- **Regulatory Risks**: Policy changes that could impact operations
-- **Geopolitical Exposure**: International developments affecting business
-- **Black Swan Indicators**: Low-probability, high-impact event monitoring
-
-### 7. Forward-Looking Intelligence
-- **Upcoming Catalysts**: Scheduled events and their potential impact
-- **Earnings Preview**: Key metrics and guidance expectations
-- **Calendar Risks**: Important dates that could drive volatility
-- **Narrative Shifts**: Changing market themes and sentiment drivers
-
-### 8. Trading Recommendations
-- **News-Based Entry Points**: Specific trigger events for position initiation
-- **Risk Management**: News-driven stop-loss and position sizing
-- **Timeline Expectations**: Expected duration of news impact
-- **Monitoring Protocol**: Key developments to track for position management
-
-CRITICAL: Prioritize market-moving news with quantified impact assessments. Include specific price implications and probability estimates for each scenario.
+Focus on actionable trading insights from current news data.
             """
         )
 
@@ -126,8 +67,12 @@ CRITICAL: Prioritize market-moving news with quantified impact assessments. Incl
             ]
         )
 
+        # Format system message with tool names first
+        tool_names_str = ", ".join([tool.name for tool in tools])
+        system_message = system_message.format(tool_names=tool_names_str)
+        
         prompt = prompt.partial(system_message=system_message)
-        prompt = prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
+        prompt = prompt.partial(tool_names=tool_names_str)
         prompt = prompt.partial(current_date=current_date)
         prompt = prompt.partial(ticker=ticker)
 
@@ -137,7 +82,7 @@ CRITICAL: Prioritize market-moving news with quantified impact assessments. Incl
         messages = state.get("news_messages", [])
         
         # CRITICAL FIX: Validate message sequence for OpenAI API compliance
-        from agent.utils.message_validator import clean_messages_for_llm
+        from ..utils.message_validator import clean_messages_for_llm
         messages = clean_messages_for_llm(messages)
         
         # TASK 4.2: Add LLM interaction logging
@@ -159,16 +104,28 @@ CRITICAL: Prioritize market-moving news with quantified impact assessments. Incl
         # TASK 3.1: Single-pass execution - generate report directly from LLM response
         tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
         
-        # The LLM response now contains the complete analysis (single-pass)
+        # CRITICAL FIX: ENFORCE MANDATORY TOOL USAGE
         if len(result.tool_calls) == 0:
-            # Direct comprehensive response from LLM - use as final report
-            report = result.content
+            # No tool calls in current response - THIS IS A PROBLEM!
+            if tool_message_count > 0:
+                # Tools were executed previously, this should be the final report
+                report = result.content
+                logger.info(f"📊 NEWS_ANALYST: Generated final report after tool execution ({len(report)} chars)")
+            else:
+                # CRITICAL ERROR: LLM failed to call tools - force error message
+                logger.error(f"❌ NEWS_ANALYST: NO TOOLS CALLED - Report will be marked as failed")
+                report = f"⚠️ WARNING: News analysis conducted without current news data for {ticker}. Tool execution failed."
+                logger.warning(f"🚨 NEWS_ANALYST: Completed WITHOUT tool calls!")
+            
+            # Apply token limits
+            from ..utils.token_limiter import get_token_limiter
+            report = get_token_limiter().truncate_response(report, "News Analyst")
         else:
-            # PT1: LLM wants to make tool calls - log for parallel visibility
+            # Current response contains tool calls - tools need to be executed first
             logger.info(f"⚡ NEWS_ANALYST: LLM requested {len(result.tool_calls)} tool calls")
             tool_names = [tc.get('name', 'unknown') for tc in result.tool_calls]
             logger.info(f"⚡ NEWS_ANALYST: Tools requested: {tool_names}")
-            report = ""
+            report = ""  # No report yet, tools need to be executed first
 
         # Return the state update
         updated_messages = messages + [result]

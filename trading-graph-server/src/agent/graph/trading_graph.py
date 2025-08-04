@@ -4,6 +4,7 @@ import os
 import json
 import signal
 import asyncio
+import time
 from datetime import date
 from typing import Dict, Any, Tuple
 import logging
@@ -22,7 +23,8 @@ from ..factories.llm_factory import LLMFactory
 from ..factories.memory_factory import MemoryFactory
 from ..default_config import DEFAULT_CONFIG
 from ..dataflows.config import get_config
-from .setup import GraphSetup
+from .optimized_setup import OptimizedGraphBuilder
+from .enhanced_optimized_setup import EnhancedOptimizedGraphBuilder
 from .signal_processing import SignalProcessor
 
 
@@ -51,12 +53,21 @@ class TradingAgentsGraph:
             self.config
         )
 
-        # Initialize components 
-        self.graph_setup = GraphSetup(
-            self.quick_thinking_llm,
-            self.deep_thinking_llm,
-            self.config
-        )
+        # Initialize components - choose implementation based on config
+        if self.config.get('enable_send_api', True):
+            logger.info("🚀 Using Enhanced Graph Builder with Send API support")
+            self.graph_setup = EnhancedOptimizedGraphBuilder(
+                self.quick_thinking_llm,
+                self.deep_thinking_llm,
+                self.config
+            )
+        else:
+            logger.info("🔧 Using Standard Optimized Graph Builder")
+            self.graph_setup = OptimizedGraphBuilder(
+                self.quick_thinking_llm,
+                self.deep_thinking_llm,
+                self.config
+            )
         self.signal_processor = SignalProcessor(self.quick_thinking_llm)
 
         # Build the graph
@@ -94,6 +105,7 @@ class TradingAgentsGraph:
         initial_state = {
             "company_of_interest": company_name,
             "trade_date": str(date),
+            "trace_id": f"trace_{company_name}_{date}_{time.time()}",  # Add trace ID for circuit breaker
             "market_messages": [],
             "social_messages": [],
             "news_messages": [],
@@ -122,7 +134,15 @@ class TradingAgentsGraph:
                 "judge_decision": "",
                 "count": 0
             },
-            "investment_plan": ""
+            "investment_plan": "",
+            # Add research debate state with max rounds
+            "research_debate_state": {
+                "current_round": 1,
+                "max_rounds": self.config.get('max_debate_rounds', 3),
+                "consensus_reached": False,
+                "judge_feedback": "",
+                "debate_history": []
+            }
         }
         
         try:

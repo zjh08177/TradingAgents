@@ -1,0 +1,39 @@
+{
+  "status": "OK",
+  "totalResults": 3,
+  "articles": [
+    {
+      "category": "company",
+      "datetime": 1722700800,
+      "headline": "NVIDIA Reports Strong Q2 Earnings",
+      "id": 1,
+      "image": "https://example.com/image1.jpg",
+      "related": "NVDA",
+      "source": "Financial News",
+      "summary": "NVIDIA Corporation reported strong quarterly earnings with revenue growth driven by AI and data center demand.",
+      "url": "https://example.com/news1"
+    },
+    {
+      "category": "company", 
+      "datetime": 1722614400,
+      "headline": "NVIDIA Expands AI Partnerships",
+      "id": 2,
+      "image": "https://example.com/image2.jpg",
+      "related": "NVDA",
+      "source": "Tech Daily",
+      "summary": "The company announced new partnerships to expand its AI computing platform globally.",
+      "url": "https://example.com/news2"
+    },
+    {
+      "category": "general",
+      "datetime": 1722528000,
+      "headline": "Semiconductor Market Outlook Positive",
+      "id": 3,
+      "image": "https://example.com/image3.jpg", 
+      "related": "NVDA",
+      "source": "Market Watch",
+      "summary": "Industry analysts project continued growth in the semiconductor sector, benefiting major players like NVIDIA.",
+      "url": "https://example.com/news3"
+    }
+  ]
+}

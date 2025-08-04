@@ -1,0 +1,7 @@
+{
+  "ticker": "PYPL",
+  "trade_date": "2025-08-02",
+  "error": "'tuple' object has no attribute 'get'",
+  "traceback": "Traceback (most recent call last):\n  File \"/Users/bytedance/Documents/TradingAgents/trading-graph-server/execute_graph.py\", line 73, in execute_full_graph\n    final_decision = result.get('processed_signal', 'No signal')\n                     ^^^^^^^^^^\nAttributeError: 'tuple' object has no attribute 'get'\n",
+  "timestamp": "2025-08-02T10:54:23.924588"
+}

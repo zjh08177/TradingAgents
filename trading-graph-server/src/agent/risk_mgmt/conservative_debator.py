@@ -1,29 +1,33 @@
 from langchain_core.messages import AIMessage
 import asyncio
 import json
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
+from ..utils.safe_state_access import create_safe_state_wrapper
 
 
 def create_safe_debator(llm):
     async def safe_node(state) -> dict:
+        # CRITICAL FIX: Use safe state wrapper to prevent KeyError
+        safe_state = create_safe_state_wrapper(state)
+        
         # Safe access to risk_debate_state
-        risk_debate_state = state.get("risk_debate_state", {})
+        risk_debate_state = safe_state.get("risk_debate_state", {})
         history = risk_debate_state.get("history", "")
         safe_history = risk_debate_state.get("safe_history", "")
 
         current_risky_response = risk_debate_state.get("current_risky_response", "")
         current_neutral_response = risk_debate_state.get("current_neutral_response", "")
 
-        # Safe access to all report fields
-        market_research_report = state.get("market_report", "")
-        sentiment_report = state.get("sentiment_report", "")
-        news_report = state.get("news_report", "")
-        fundamentals_report = state.get("fundamentals_report", "")
+        # CRITICAL FIX: Safe access to all report fields using safe state wrapper
+        market_research_report = safe_state.get("market_report", "")
+        sentiment_report = safe_state.get("sentiment_report", "")
+        news_report = safe_state.get("news_report", "")
+        fundamentals_report = safe_state.get("fundamentals_report", "")
 
-        trader_decision = state.get("trader_investment_plan", "")
+        trader_decision = safe_state.get("trader_investment_plan", "")
 
         prompt = f"""As the Safe/Conservative Risk Analyst, your primary objective is to protect assets, minimize volatility, and ensure steady, reliable growth. You prioritize stability, security, and risk mitigation, carefully assessing potential losses, economic downturns, and market volatility. When evaluating the trader's decision or plan, critically examine high-risk elements, pointing out where the decision may expose the firm to undue risk and where more cautious alternatives could secure long-term gains. Here is the trader's decision:
 

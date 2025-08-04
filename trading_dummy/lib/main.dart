@@ -11,6 +11,22 @@ import 'pages/analysis_page_wrapper.dart';
 import 'history/infrastructure/models/hive_history_entry.dart';
 import 'history/infrastructure/models/hive_analysis_details.dart';
 import 'history/infrastructure/repositories/hive_history_repository.dart';
+import 'history/presentation/screens/history_screen.dart';
+import 'history/presentation/screens/history_detail_screen.dart';
+// Job system imports for Phase 7 UI testing
+import 'jobs/infrastructure/models/hive_analysis_job.dart';
+import 'jobs/infrastructure/repositories/hive_job_repository.dart';
+import 'jobs/application/use_cases/queue_analysis_use_case.dart';
+import 'jobs/application/use_cases/get_job_status_use_case.dart';
+import 'jobs/application/use_cases/cancel_job_use_case.dart';
+import 'jobs/presentation/view_models/job_queue_view_model.dart';
+import 'jobs/presentation/view_models/job_list_view_model.dart';
+import 'jobs/presentation/screens/job_test_screen.dart';
+// Phase 8: Notification system imports
+import 'jobs/infrastructure/services/job_notification_handler.dart';
+import 'jobs/infrastructure/services/job_queue_manager.dart';
+// Phase 9: Retry system imports
+import 'jobs/infrastructure/services/retry_scheduler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,9 +46,30 @@ void main() async {
     // Register Hive adapters
     Hive.registerAdapter(HiveHistoryEntryAdapter());
     Hive.registerAdapter(HiveAnalysisDetailsAdapter());
+    Hive.registerAdapter(HiveAnalysisJobAdapter());
     
     // Open Hive boxes
     await HiveHistoryRepository.openBox();
+    
+    // Initialize job repository
+    final jobRepository = HiveJobRepository();
+    await jobRepository.init();
+    
+    // Initialize job queue manager for Phase 8
+    final jobQueueManager = JobQueueManager(repository: jobRepository);
+    await jobQueueManager.initialize();
+    
+    // Initialize retry scheduler for Phase 9 with queue manager
+    final retryScheduler = RetryScheduler(
+      repository: jobRepository,
+      queueManager: jobQueueManager,
+    );
+    await retryScheduler.initialize();
+    
+    // Initialize notification handler for Phase 8
+    final notificationHandler = JobNotificationHandler();
+    await notificationHandler.initialize();
+    
     AppLogger.info('main', '✅ Hive database initialized');
     
     // Get LangGraph configuration
@@ -68,6 +105,10 @@ void main() async {
     runApp(TradingApp(
       langGraphService: langGraphService,
       autoTest: autoTest,
+      jobRepository: jobRepository,
+      jobQueueManager: jobQueueManager,
+      notificationHandler: notificationHandler,
+      retryScheduler: retryScheduler,
     ));
     
   } catch (e, stackTrace) {
@@ -79,11 +120,19 @@ void main() async {
 class TradingApp extends StatelessWidget {
   final SimpleLangGraphService langGraphService;
   final AutoTestController autoTest;
+  final HiveJobRepository jobRepository;
+  final JobQueueManager jobQueueManager;
+  final JobNotificationHandler notificationHandler;
+  final RetryScheduler retryScheduler;
   
   const TradingApp({
     super.key,
     required this.langGraphService,
     required this.autoTest,
+    required this.jobRepository,
+    required this.jobQueueManager,
+    required this.notificationHandler,
+    required this.retryScheduler,
   });
 
   @override
@@ -96,23 +145,57 @@ class TradingApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (_) => AuthViewModel(),
           ),
-        ],
-        child: MaterialApp(
-          title: 'Trading Analysis',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-            useMaterial3: true,
+          // Job system providers for Phase 8 UI testing with notifications
+          ChangeNotifierProvider(
+            create: (_) => JobQueueViewModel(
+              queueAnalysis: QueueAnalysisUseCase(
+                repository: jobRepository,
+                queueManager: jobQueueManager,
+              ),
+              getJobStatus: GetJobStatusUseCase(repository: jobRepository),
+              cancelJob: CancelJobUseCase(
+                repository: jobRepository,
+                queueManager: jobQueueManager,
+              ),
+            ),
           ),
-          initialRoute: '/',
-          routes: {
-            '/': (context) => const SplashScreen(),
-            '/login': (context) => const LoginScreen(),
-            '/home': (context) => AuthGuard(
-              child: const HomeScreen(),
+          ChangeNotifierProvider(
+            create: (_) => JobListViewModel(
+              getJobStatus: GetJobStatusUseCase(repository: jobRepository),
             ),
-            '/analysis': (context) => const AuthGuard(
-              child: AnalysisPageWrapper(),
-            ),
+          ),
+        ],
+        child: Builder(
+          builder: (context) {
+            // Initialize notification handler with navigation context
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              notificationHandler.updateNavigationContext(context);
+            });
+            
+            return MaterialApp(
+              title: 'Trading Analysis',
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+                useMaterial3: true,
+              ),
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const SplashScreen(),
+                '/login': (context) => const LoginScreen(),
+                '/home': (context) => AuthGuard(
+                  child: const HomeScreen(),
+                ),
+                '/analysis': (context) => const AuthGuard(
+                  child: AnalysisPageWrapper(),
+                ),
+                '/history': (context) => const AuthGuard(
+                  child: HistoryScreen(),
+                ),
+                '/jobs': (context) => const AuthGuard(
+                  child: JobTestScreen(),
+                ),
+              },
+            );
           },
         ),
       ),

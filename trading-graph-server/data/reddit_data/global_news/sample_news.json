@@ -1,0 +1,31 @@
+{
+  "posts": [
+    {
+      "title": "Market Update: Tech Stocks Rally",
+      "score": 1250,
+      "created_utc": 1722700800,
+      "author": "MarketAnalyst",
+      "selftext": "Technology stocks showed strong performance today with major gains across semiconductor companies.",
+      "url": "https://reddit.com/r/investing/post1",
+      "subreddit": "investing"
+    },
+    {
+      "title": "Fed Meeting Minutes Released",
+      "score": 890,
+      "created_utc": 1722614400,
+      "author": "EconNews",
+      "selftext": "Federal Reserve releases meeting minutes showing cautious optimism about inflation trends.",
+      "url": "https://reddit.com/r/economics/post2", 
+      "subreddit": "economics"
+    },
+    {
+      "title": "AI Sector Investment Surge",
+      "score": 2150,
+      "created_utc": 1722528000,
+      "author": "TechInvestor",
+      "selftext": "Artificial intelligence companies see unprecedented investment levels in Q2 2024.",
+      "url": "https://reddit.com/r/technology/post3",
+      "subreddit": "technology"
+    }
+  ]
+}

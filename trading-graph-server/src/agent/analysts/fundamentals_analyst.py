@@ -3,13 +3,13 @@ import asyncio
 import json
 import logging
 import time
-from agent.utils.debug_logging import debug_node, log_llm_interaction
-from agent.utils.tool_retry import execute_tool_with_fallback
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.parallel_tools import log_parallel_execution
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.debug_logging import debug_node, log_llm_interaction
+from ..utils.tool_retry import execute_tool_with_fallback
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.parallel_tools import log_parallel_execution
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
 
 logger = logging.getLogger(__name__)
 
@@ -38,81 +38,20 @@ def create_fundamentals_analyst(llm, toolkit):
 
         # TASK 0.1.4 & 6.2: Token-optimized system message with MANDATORY tool usage
         system_message = (
-            """Expert fundamentals analyst: financial statements, valuation, health assessment.
+            """Expert fundamentals analyst: financial statements & valuation.
 
-MANDATORY: Use tools to retrieve actual financial data.
-Analysis without real data is prohibited.
+MANDATORY: Use tools→get real financial data before analysis.
+Tools: {tool_names}
 
-Required tools:
-1. get_fundamentals_openai (if online) - Primary fundamentals source
-OR (if offline):
-1. get_finnhub_company_insider_sentiment - Insider sentiment data
-2. get_finnhub_company_insider_transactions - Insider trading data
-3. get_simfin_balance_sheet - Balance sheet data
-4. get_simfin_cashflow - Cash flow data
-5. get_simfin_income_stmt - Income statement data
+Workflow: 1)Call tools 2)Get data 3)Analyze 4)Report
 
-WORKFLOW:
-1. Call fundamentals tools (parallel execution enabled for offline tools)
-2. Wait for data responses with actual financial metrics
-3. Analyze actual financial data from tools
-4. Cite data sources and reporting periods
-5. NEVER invent financial numbers or ratios
+After getting real financial data from tools, provide analysis:
+1. Health Grade: A-F with key metrics (ROE, ROA, D/E)
+2. Valuation: P/E, P/B, EV/EBITDA vs industry
+3. Trading Signals: BUY/SELL/HOLD based on fundamentals
+4. Risk Assessment: Financial & operational risks
 
-After getting real financial data from tools, provide analysis using structure:
-
-## 💰 Fundamentals Report
-
-### 1. Health Overview
-- **Grade**: A-F with rationale
-- **Strengths**: Top 3 advantages
-- **Concerns**: Critical weaknesses
-- **Peer Rank**: Industry quartile
-
-### 2. Key Metrics
-| Category | Current | Industry | Trend | Score |
-|----------|---------|----------|-------|-------|
-| Profitability | [ROE/ROA] | [bench] | [↑↓→] | [1-10] |
-| Liquidity | [Current] | [bench] | [↑↓→] | [1-10] |
-| Leverage | [D/E] | [bench] | [↑↓→] | [1-10] |
-| Efficiency | [Turnover] | [bench] | [↑↓→] | [1-10] |
-
-### 3. Income Statement
-- **Revenue**: YoY/QoQ trends
-- **Margins**: Gross, operating, net evolution
-- **Earnings**: Quality and recurring components
-- **Costs**: Fixed vs variable efficiency
-
-### 4. Balance Sheet
-- **Assets**: Current vs long-term composition
-- **Debt**: Maturity, coverage, covenants
-- **Working Capital**: Conversion cycle metrics
-- **Equity**: Book value trends
-
-### 5. Cash Flow
-- **Operating**: Cash generation quality
-- **Free CF**: Available after capex
-- **Capital**: Allocation strategy
-- **Position**: Liquidity runway
-
-### 6. Valuation
-| Method | Current | Target | Upside | Confidence |
-|--------|---------|--------|--------|------------|
-| P/E | [val] | [target] | [±%] | [H/M/L] |
-| P/B | [val] | [target] | [±%] | [H/M/L] |
-| EV/EBITDA | [val] | [target] | [±%] | [H/M/L] |
-| DCF | [val] | [target] | [±%] | [H/M/L] |
-
-### 7. Growth & Risks
-- **Drivers**: Revenue catalysts
-- **Risks**: Financial, operational, market
-- **Insider**: Recent transactions
-
-### 8. Investment Thesis
-- **Bull/Bear/Base**: Cases with targets
-- **Catalysts**: Key events timeline
-
-Include specific numbers and ratios.
+Focus on actionable investment insights from current financial data.
             """
         )
 
@@ -133,8 +72,12 @@ Include specific numbers and ratios.
             ]
         )
 
+        # Format system message with tool names first
+        tool_names_str = ", ".join([tool.name for tool in tools])
+        system_message = system_message.format(tool_names=tool_names_str)
+        
         prompt = prompt.partial(system_message=system_message)
-        prompt = prompt.partial(tool_names=", ".join([tool.name for tool in tools]))
+        prompt = prompt.partial(tool_names=tool_names_str)
         prompt = prompt.partial(current_date=current_date)
         prompt = prompt.partial(ticker=ticker)
 
@@ -144,16 +87,23 @@ Include specific numbers and ratios.
         messages = state.get("fundamentals_messages", [])
         
         # CRITICAL FIX: Validate message sequence for OpenAI API compliance
-        from agent.utils.message_validator import clean_messages_for_llm
+        from ..utils.message_validator import clean_messages_for_llm
         messages = clean_messages_for_llm(messages)
         
         # TASK 4.2: Add LLM interaction logging
         # TASK 6.2: Enhanced LLM interaction tracking with token optimization
-        from agent.utils.token_optimizer import get_token_optimizer, track_llm_usage
+        from ..utils.token_optimizer import get_token_optimizer, track_llm_usage
         
+        # CRITICAL FIX: Use async tokenizer initialization to prevent blocking calls
         optimizer = get_token_optimizer()
         prompt_text = f"System: {system_message}\nUser: {current_date}, {ticker}"
-        prompt_tokens = optimizer.count_tokens(prompt_text)
+        
+        # Use async-safe token counting to prevent os.getcwd() blocking calls
+        try:
+            prompt_tokens = await asyncio.to_thread(optimizer.count_tokens, prompt_text)
+        except Exception as e:
+            logger.warning(f"Token counting failed: {e}, using fallback")
+            prompt_tokens = len(prompt_text) // 4  # Rough estimate fallback
         
         llm_start = time.time()
         # PT1: Log start of LLM invocation for parallel execution visibility
@@ -162,7 +112,12 @@ Include specific numbers and ratios.
         llm_time = time.time() - llm_start
         logger.info(f"⚡ FUNDAMENTALS_ANALYST: LLM invocation completed in {llm_time:.2f}s")
         
-        completion_tokens = optimizer.count_tokens(result.content) if hasattr(result, 'content') else 0
+        # Use async-safe token counting for completion
+        try:
+            completion_tokens = await asyncio.to_thread(optimizer.count_tokens, result.content) if hasattr(result, 'content') else 0
+        except Exception as e:
+            logger.warning(f"Completion token counting failed: {e}, using fallback")
+            completion_tokens = len(result.content) // 4 if hasattr(result, 'content') else 0
         
         # Track token usage for optimization analysis
         track_llm_usage(
@@ -182,16 +137,28 @@ Include specific numbers and ratios.
         # TASK 3.1: Single-pass execution - generate report directly from LLM response
         tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
         
-        # The LLM response now contains the complete analysis (single-pass)
+        # CRITICAL FIX: ENFORCE MANDATORY TOOL USAGE
         if len(result.tool_calls) == 0:
-            # Direct comprehensive response from LLM - use as final report
-            report = result.content
+            # No tool calls in current response - THIS IS A PROBLEM!
+            if tool_message_count > 0:
+                # Tools were executed previously, this should be the final report
+                report = result.content
+                logger.info(f"📊 FUNDAMENTALS_ANALYST: Generated final report after tool execution ({len(report)} chars)")
+            else:
+                # CRITICAL ERROR: LLM failed to call tools - force error message
+                logger.error(f"❌ FUNDAMENTALS_ANALYST: NO TOOLS CALLED - Report will be marked as failed")
+                report = f"⚠️ WARNING: Fundamental analysis conducted without current financial data for {ticker}. Tool execution failed."
+                logger.warning(f"🚨 FUNDAMENTALS_ANALYST: Completed WITHOUT tool calls!")
+            
+            # Apply token limits
+            from ..utils.token_limiter import get_token_limiter
+            report = get_token_limiter().truncate_response(report, "Fundamentals Analyst")
         else:
-            # PT1: LLM wants to make tool calls - log for parallel visibility
+            # Current response contains tool calls - tools need to be executed first
             logger.info(f"⚡ FUNDAMENTALS_ANALYST: LLM requested {len(result.tool_calls)} tool calls")
             tool_names = [tc.get('name', 'unknown') for tc in result.tool_calls]
             logger.info(f"⚡ FUNDAMENTALS_ANALYST: Tools requested: {tool_names}")
-            report = ""
+            report = ""  # No report yet, tools need to be executed first
 
         # Return the state update
         updated_messages = messages + [result]

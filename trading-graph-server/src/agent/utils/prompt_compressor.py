@@ -28,6 +28,7 @@ class AdvancedPromptCompressor:
     def __init__(self):
         self.setup_abbreviations()
         self.setup_compression_rules()
+        self.setup_protected_keywords()
         self.compression_stats = {
             "total_original": 0,
             "total_compressed": 0,
@@ -129,6 +130,34 @@ class AdvancedPromptCompressor:
             (r"dollar", r"$"),
         ]
     
+    def setup_protected_keywords(self):
+        """Setup keywords that must never be removed during compression"""
+        self.protected_keywords = {
+            # Critical functional keywords that break validation if removed
+            "public perception", "headlines", "ratios", "technical analysis", 
+            "sentiment", "social media", "community", "news analysis", 
+            "events", "market impact", "financial statements", "valuation", 
+            "earnings", "price target", "BUY", "SELL", "HOLD", "indicators",
+            
+            # Essential instructions
+            "analyze", "provide", "include", "examine", "investigate", 
+            "comprehensive", "detailed", "thorough",
+            
+            # Output requirements
+            "recommendation", "conclusion", "summary", "assessment"
+        }
+    
+    def _would_remove_protected_keywords(self, original: str, modified: str) -> bool:
+        """Check if modification would remove any protected keywords"""
+        original_lower = original.lower()
+        modified_lower = modified.lower()
+        
+        for keyword in self.protected_keywords:
+            if keyword in original_lower and keyword not in modified_lower:
+                logger.warning(f"🛡️ Protected keyword '{keyword}' would be removed - skipping compression rule")
+                return True
+        return False
+    
     def compress_prompt(self, prompt: str, target_reduction: float = 0.22) -> CompressionResult:
         """
         Apply multi-stage compression to achieve target reduction
@@ -207,24 +236,31 @@ class AdvancedPromptCompressor:
         return result, count
     
     def _apply_compression_rules(self, text: str) -> Tuple[str, int]:
-        """Apply semantic compression rules"""
+        """Apply semantic compression rules with protected keyword checking"""
         result = text
         count = 0
         
         for pattern, replacement in self.compression_rules:
             new_text = re.sub(pattern, replacement, result, flags=re.IGNORECASE)
             if new_text != result:
-                count += 1
-                result = new_text
+                # Check if this rule would remove protected keywords
+                if not self._would_remove_protected_keywords(result, new_text):
+                    count += 1
+                    result = new_text
+                # If it would remove protected keywords, skip this rule
         
         return result, count
     
     def _remove_redundancy(self, text: str) -> str:
-        """Remove semantic redundancy"""
-        # Remove repeated words
-        result = re.sub(r'\b(\w+)\s+\1\b', r'\1', text, flags=re.IGNORECASE)
+        """Remove semantic redundancy with protected keyword checking"""
+        result = text
         
-        # Remove redundant punctuation
+        # Remove repeated words (but check for protected keywords)
+        new_result = re.sub(r'\b(\w+)\s+\1\b', r'\1', result, flags=re.IGNORECASE)
+        if not self._would_remove_protected_keywords(result, new_result):
+            result = new_result
+        
+        # Remove redundant punctuation (safe operations)
         result = re.sub(r'\.+', '.', result)
         result = re.sub(r',+', ',', result)
         result = re.sub(r':+', ':', result)

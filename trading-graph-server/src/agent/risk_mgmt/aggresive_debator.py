@@ -1,28 +1,32 @@
 import asyncio
 import json
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
+from ..utils.safe_state_access import create_safe_state_wrapper
 
 
 def create_risky_debator(llm):
     async def risky_node(state) -> dict:
+        # CRITICAL FIX: Use safe state wrapper to prevent KeyError
+        safe_state = create_safe_state_wrapper(state)
+        
         # Safe access to risk_debate_state
-        risk_debate_state = state.get("risk_debate_state", {})
+        risk_debate_state = safe_state.get("risk_debate_state", {})
         history = risk_debate_state.get("history", "")
         risky_history = risk_debate_state.get("risky_history", "")
 
         current_safe_response = risk_debate_state.get("current_safe_response", "")
         current_neutral_response = risk_debate_state.get("current_neutral_response", "")
 
-        # Safe access to all report fields
-        market_research_report = state.get("market_report", "")
-        sentiment_report = state.get("sentiment_report", "")
-        news_report = state.get("news_report", "")
-        fundamentals_report = state.get("fundamentals_report", "")
+        # CRITICAL FIX: Safe access to all report fields using safe state wrapper
+        market_research_report = safe_state.get("market_report", "")
+        sentiment_report = safe_state.get("sentiment_report", "")
+        news_report = safe_state.get("news_report", "")
+        fundamentals_report = safe_state.get("fundamentals_report", "")
 
-        trader_decision = state.get("trader_investment_plan", "")
+        trader_decision = safe_state.get("trader_investment_plan", "")
 
         prompt = f"""As the Risky Risk Analyst, your role is to actively champion high-reward, high-risk opportunities, emphasizing bold strategies and competitive advantages. When evaluating the trader's decision or plan, focus intently on the potential upside, growth potential, and innovative benefits—even when these come with elevated risk. Use the provided market data and sentiment analysis to strengthen your arguments and challenge the opposing views. Specifically, respond directly to each point made by the conservative and neutral analysts, countering with data-driven rebuttals and persuasive reasoning. Highlight where their caution might miss critical opportunities or where their assumptions may be overly conservative. Here is the trader's decision:
 

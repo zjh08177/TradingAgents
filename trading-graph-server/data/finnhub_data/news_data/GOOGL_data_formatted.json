@@ -1,0 +1,39 @@
+{
+  "status": "OK",
+  "totalResults": 3,
+  "articles": [
+    {
+      "category": "company",
+      "datetime": 1754154432,
+      "headline": "GOOGL Reports Strong Quarterly Performance",
+      "id": 1,
+      "image": "https://example.com/googl_image1.jpg",
+      "related": "GOOGL",
+      "source": "Financial News",
+      "summary": "GOOGL Corporation reported strong quarterly results with revenue growth driven by market demand.",
+      "url": "https://example.com/googl_news1"
+    },
+    {
+      "category": "company",
+      "datetime": 1754068032,
+      "headline": "GOOGL Announces Strategic Partnership",
+      "id": 2,
+      "image": "https://example.com/googl_image2.jpg",
+      "related": "GOOGL",
+      "source": "Tech Daily",
+      "summary": "The company announced new strategic partnerships to expand market reach.",
+      "url": "https://example.com/googl_news2"
+    },
+    {
+      "category": "general",
+      "datetime": 1753981632,
+      "headline": "Industry Outlook Positive for GOOGL",
+      "id": 3,
+      "image": "https://example.com/googl_image3.jpg",
+      "related": "GOOGL",
+      "source": "Market Watch",
+      "summary": "Industry analysts project continued growth benefiting companies like GOOGL.",
+      "url": "https://example.com/googl_news3"
+    }
+  ]
+}

@@ -4,12 +4,12 @@ import json
 import functools
 import time
 import logging
-from agent.utils.debug_logging import debug_node, log_llm_interaction
-from agent.utils.token_limiter import get_token_limiter
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.parallel_tools import log_parallel_execution
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.debug_logging import debug_node, log_llm_interaction
+from ..utils.token_limiter import get_token_limiter
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.parallel_tools import log_parallel_execution
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ def create_market_analyst(llm, toolkit):
             ]
 
         # Check for preprocessed prompt (Phase 3.2 optimization)
-        from agent.utils.prompt_injection import get_preprocessed_prompt
+        from ..utils.prompt_injection import get_preprocessed_prompt
         preprocessed = get_preprocessed_prompt("market")
         
         if preprocessed:
@@ -109,15 +109,22 @@ Output structure:
         messages = get_token_limiter().check_and_enforce_limit(messages, "Market Analyst")
         
         # CRITICAL FIX: Validate message sequence AFTER token limiting for OpenAI API compliance
-        from agent.utils.message_validator import clean_messages_for_llm
+        from ..utils.message_validator import clean_messages_for_llm
         messages = clean_messages_for_llm(messages)
 
         # TASK 6.2: Enhanced LLM interaction tracking with token optimization
-        from agent.utils.token_optimizer import get_token_optimizer, track_llm_usage
+        from ..utils.token_optimizer import get_token_optimizer, track_llm_usage
         
+        # CRITICAL FIX: Use async tokenizer initialization to prevent blocking calls
         optimizer = get_token_optimizer()
         prompt_text = f"System: {system_message}\nUser: Current date: {current_date}, Company: {ticker}"
-        prompt_tokens = optimizer.count_tokens(prompt_text)
+        
+        # Use async-safe token counting to prevent os.getcwd() blocking calls
+        try:
+            prompt_tokens = await asyncio.to_thread(optimizer.count_tokens, prompt_text)
+        except Exception as e:
+            logger.warning(f"Token counting failed: {e}, using fallback")
+            prompt_tokens = len(prompt_text) // 4  # Rough estimate fallback
         
         llm_start = time.time()
         # PT1: Log start of LLM invocation for parallel execution visibility
@@ -126,7 +133,12 @@ Output structure:
         llm_time = time.time() - llm_start
         logger.info(f"⚡ MARKET_ANALYST: LLM invocation completed in {llm_time:.2f}s")
         
-        completion_tokens = optimizer.count_tokens(result.content) if hasattr(result, 'content') else 0
+        # Use async-safe token counting for completion
+        try:
+            completion_tokens = await asyncio.to_thread(optimizer.count_tokens, result.content) if hasattr(result, 'content') else 0
+        except Exception as e:
+            logger.warning(f"Completion token counting failed: {e}, using fallback")
+            completion_tokens = len(result.content) // 4 if hasattr(result, 'content') else 0
         
         # Track token usage for optimization analysis
         track_llm_usage(
@@ -146,18 +158,35 @@ Output structure:
         # TASK 3.1: Single-pass execution - generate report directly from LLM response
         tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
         
-        # The LLM response now contains the complete analysis (single-pass)
+        # CRITICAL FIX: Check if tools have been executed and generate report accordingly
         if len(result.tool_calls) == 0:
-            # Direct comprehensive response from LLM - use as final report
-            report = result.content
+            # No tool calls in current response
+            if tool_message_count > 0:
+                # Tools were executed previously
+                # Check if all tools failed
+                if state.get("market_tools_failed", False):
+                    # All tools failed, generate a report acknowledging the failure
+                    report = ("Unable to retrieve market data due to technical issues. "
+                             "All requested technical indicators and price data are currently unavailable. "
+                             "Recommendation: HOLD - Cannot make informed trading decisions without market data.")
+                    logger.error(f"📊 MARKET_ANALYST: Generating fallback report due to tool failures")
+                else:
+                    # Tools executed successfully, this should be the final report
+                    report = result.content
+                    logger.info(f"📊 MARKET_ANALYST: Generated final report after tool execution ({len(report)} chars)")
+            else:
+                # Direct response without tools
+                report = result.content
+                logger.info(f"📊 MARKET_ANALYST: Direct response without tools ({len(report)} chars)")
+            
             # TASK C4: Enforce token limits on response
             report = get_token_limiter().truncate_response(report, "Market Analyst")
         else:
-            # PT1: LLM wants to make tool calls - log for parallel visibility
+            # Current response contains tool calls - tools need to be executed first
             logger.info(f"⚡ MARKET_ANALYST: LLM requested {len(result.tool_calls)} tool calls")
             tool_names = [tc.get('name', 'unknown') for tc in result.tool_calls]
             logger.info(f"⚡ MARKET_ANALYST: Tools requested: {tool_names}")
-            report = ""
+            report = ""  # No report yet, tools need to be executed first
 
         # Return updated messages and report
         updated_messages = messages + [result]

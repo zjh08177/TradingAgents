@@ -1,0 +1,26 @@
+{
+  "data": [
+    {
+      "symbol": "TSLA",
+      "year": 2024,
+      "month": 7,
+      "change": 15420,
+      "mspr": 0.0789
+    },
+    {
+      "symbol": "TSLA",
+      "year": 2024,
+      "month": 6,
+      "change": -8950,
+      "mspr": -0.0234
+    },
+    {
+      "symbol": "TSLA",
+      "year": 2024,
+      "month": 5,
+      "change": 23670,
+      "mspr": 0.1256
+    }
+  ],
+  "symbol": "TSLA"
+}

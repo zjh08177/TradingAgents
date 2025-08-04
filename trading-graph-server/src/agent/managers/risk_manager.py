@@ -1,10 +1,11 @@
 import asyncio
 import json
 import logging
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
+from ..utils.safe_state_access import create_safe_state_wrapper
 
 logger = logging.getLogger(__name__)
 
@@ -12,13 +13,16 @@ def create_risk_manager(llm, memory):
     async def risk_manager_node(state) -> dict:
         logger.info("🎯 Risk Manager: Evaluating risk analysis needs")
         
-        # Extract information (simplified - no validation needed)
-        company_name = state.get("company_of_interest", "")
-        risk_debate_state = state.get("risk_debate_state", {})
+        # CRITICAL FIX: Use safe state wrapper to prevent KeyError
+        safe_state = create_safe_state_wrapper(state)
+        
+        # Extract information using safe access
+        company_name = safe_state.get("company_of_interest", "")
+        risk_debate_state = safe_state.get("risk_debate_state", {})
         history = risk_debate_state.get("history", "")
         
         # Check if we need risk analysis or already have it
-        risk_analysis_needed = state.get("risk_analysis_needed", True)
+        risk_analysis_needed = safe_state.get("risk_analysis_needed", True)
         has_risk_analysis = len(history) > 100  # Check if we have substantial risk analysis
         
         if risk_analysis_needed and not has_risk_analysis:
@@ -31,12 +35,12 @@ def create_risk_manager(llm, memory):
         # We have risk analysis - make final decision
         logger.info("🎯 Risk Manager: Making final decision with risk analysis")
         
-        # Get all reports
-        market_research_report = state.get("market_report", "")
-        news_report = state.get("news_report", "")
-        fundamentals_report = state.get("fundamentals_report", "")
-        sentiment_report = state.get("sentiment_report", "")
-        trader_plan = state.get("trader_investment_plan", "") or state.get("investment_plan", "")
+        # Get all reports using safe access
+        market_research_report = safe_state.get("market_report", "")
+        news_report = safe_state.get("news_report", "")
+        fundamentals_report = safe_state.get("fundamentals_report", "")
+        sentiment_report = safe_state.get("sentiment_report", "")
+        trader_plan = safe_state.get("trader_investment_plan", "") or safe_state.get("investment_plan", "")
         
         # Prepare analysis
         curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}"

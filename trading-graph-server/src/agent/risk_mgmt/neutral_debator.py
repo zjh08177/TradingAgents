@@ -1,28 +1,32 @@
 import asyncio
 import json
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
+from ..utils.safe_state_access import create_safe_state_wrapper
 
 
 def create_neutral_debator(llm):
     async def neutral_node(state) -> dict:
+        # CRITICAL FIX: Use safe state wrapper to prevent KeyError
+        safe_state = create_safe_state_wrapper(state)
+        
         # Safe access to risk_debate_state
-        risk_debate_state = state.get("risk_debate_state", {})
+        risk_debate_state = safe_state.get("risk_debate_state", {})
         history = risk_debate_state.get("history", "")
         neutral_history = risk_debate_state.get("neutral_history", "")
 
         current_risky_response = risk_debate_state.get("current_risky_response", "")
         current_safe_response = risk_debate_state.get("current_safe_response", "")
 
-        # Safe access to all report fields
-        market_research_report = state.get("market_report", "")
-        sentiment_report = state.get("sentiment_report", "")
-        news_report = state.get("news_report", "")
-        fundamentals_report = state.get("fundamentals_report", "")
+        # CRITICAL FIX: Safe access to all report fields using safe state wrapper
+        market_research_report = safe_state.get("market_report", "")
+        sentiment_report = safe_state.get("sentiment_report", "")
+        news_report = safe_state.get("news_report", "")
+        fundamentals_report = safe_state.get("fundamentals_report", "")
 
-        trader_decision = state.get("trader_investment_plan", "")
+        trader_decision = safe_state.get("trader_investment_plan", "")
 
         prompt = f"""As the Neutral Risk Analyst, your role is to provide a balanced perspective, weighing both the potential benefits and risks of the trader's decision or plan. You prioritize a well-rounded approach, evaluating the upsides and downsides while factoring in broader market trends, potential economic shifts, and diversification strategies.Here is the trader's decision:
 

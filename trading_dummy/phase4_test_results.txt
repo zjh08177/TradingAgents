@@ -1,0 +1,331 @@
+00:00 +0: loading /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart
+00:00 +0: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector initializes correctly
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +1: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector starts and stops collection correctly
+INFO: [PerformanceMetricsCollector] Starting performance metrics collection
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +2: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector records task start time
+DEBUG: [PerformanceMetricsCollector] Recording task start: test-task-1
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +3: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector records task completion successfully
+DEBUG: [PerformanceMetricsCollector] Recording task start: test-task-1
+DEBUG: [PerformanceMetricsCollector] Task test-task-1 completed in 14ms, success: true
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +4: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector records task completion with error
+DEBUG: [PerformanceMetricsCollector] Recording task start: test-task-error
+DEBUG: [PerformanceMetricsCollector] Task test-task-error completed in 9ms, success: false
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +5: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector handles completion without start time gracefully
+WARNING: [PerformanceMetricsCollector] No start time recorded for task: unknown-task
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +6: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector maintains history size limit
+DEBUG: [PerformanceMetricsCollector] Recording task start: task-0
+DEBUG: [PerformanceMetricsCollector] Task task-0 completed in 13ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: task-1
+DEBUG: [PerformanceMetricsCollector] Task task-1 completed in 15ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: task-2
+DEBUG: [PerformanceMetricsCollector] Task task-2 completed in 15ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: task-3
+DEBUG: [PerformanceMetricsCollector] Task task-3 completed in 16ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: task-4
+DEBUG: [PerformanceMetricsCollector] Task task-4 completed in 18ms, success: true
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +7: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager initializes correctly
+00:00 +7: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+DEBUG: [PerformanceMetricsCollector] Recording task start: task-1
+00:00 +7: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager initializes correctly
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:00 +8: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+DEBUG: [PerformanceMetricsCollector] Task task-1 completed in 69ms, success: true
+00:00 +8: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager starts and stops monitoring correctly
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+00:00 +8: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+DEBUG: [PerformanceMetricsCollector] Recording task start: task-2
+00:00 +8: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager starts and stops monitoring correctly
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:00 +8: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+DEBUG: [PerformanceMetricsCollector] Task task-2 completed in 53ms, success: true
+00:00 +9: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+INFO: [PerformanceMetricsCollector] Starting performance metrics collection
+00:00 +9: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager handles duplicate start/stop calls gracefully
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+WARNING: [AutoScalingManager] Auto-scaling monitoring already active
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:00 +10: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+00:00 +10: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high utilization
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+00:00 +10: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+00:00 +10: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high utilization
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+00:00 +10: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector collects metrics and emits to stream
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:00 +10: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high utilization
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+00:00 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high utilization
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (2/2)
+INFO: [AutoScalingManager] Scaling up from 3 to 5 isolates (utilization: 90.0%, queue: 5)
+00:01 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates performance summary correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: recent-0
+00:01 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high utilization
+INFO: [AutoScalingManager] Scaling event: ScalingAction.scaleUp from 3 to 5 - High CPU utilization (90.0%)
+00:01 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates performance summary correctly
+DEBUG: [PerformanceMetricsCollector] Task recent-0 completed in 18ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: recent-1
+DEBUG: [PerformanceMetricsCollector] Task recent-1 completed in 11ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: recent-2
+DEBUG: [PerformanceMetricsCollector] Task recent-2 completed in 12ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: recent-3
+00:01 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high utilization
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+00:01 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates performance summary correctly
+DEBUG: [PerformanceMetricsCollector] Task recent-3 completed in 41ms, success: true
+00:01 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high utilization
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:01 +11: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates performance summary correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: recent-4
+00:01 +12: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates performance summary correctly
+DEBUG: [PerformanceMetricsCollector] Task recent-4 completed in 21ms, success: true
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +12: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+00:01 +13: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+DEBUG: [AutoScalingManager] Processing metrics: utilization=60.0%, queue=15, success=95.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=60.0%, queue=15, success=95.0%
+00:01 +13: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates alert levels correctly
+INFO: [PerformanceMetricsCollector] Starting performance metrics collection
+00:01 +13: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+DEBUG: [AutoScalingManager] Scale-up condition met (2/2)
+00:01 +13: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates alert levels correctly
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+00:01 +13: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+INFO: [AutoScalingManager] Scaling up from 3 to 5 isolates (utilization: 60.0%, queue: 15)
+00:01 +13: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates alert levels correctly
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +13: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+INFO: [AutoScalingManager] Scaling event: ScalingAction.scaleUp from 3 to 5 - Queue length exceeded (15)
+00:01 +14: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+00:01 +14: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-0
+00:01 +14: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+00:01 +14: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task success-0 completed in 22ms, success: true
+00:01 +14: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on high queue length
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:01 +14: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-1
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task success-1 completed in 37ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-2
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on low success rate
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+DEBUG: [AutoScalingManager] Processing metrics: utilization=60.0%, queue=5, success=85.0%
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task success-2 completed in 35ms, success: true
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on low success rate
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-3
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on low success rate
+DEBUG: [AutoScalingManager] Processing metrics: utilization=60.0%, queue=5, success=85.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (2/2)
+INFO: [AutoScalingManager] Scaling up from 3 to 5 isolates (utilization: 60.0%, queue: 5)
+INFO: [AutoScalingManager] Scaling event: ScalingAction.scaleUp from 3 to 5 - Low success rate (85.0%)
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task success-3 completed in 33ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-4
+DEBUG: [PerformanceMetricsCollector] Task success-4 completed in 16ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-5
+DEBUG: [PerformanceMetricsCollector] Task success-5 completed in 21ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-6
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-up on low success rate
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:01 +15: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task success-6 completed in 19ms, success: true
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: success-7
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-down on low utilization and queue
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+DEBUG: [AutoScalingManager] Processing metrics: utilization=20.0%, queue=1, success=95.0%
+DEBUG: [AutoScalingManager] Scale-down condition met (1/3)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=20.0%, queue=1, success=95.0%
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task success-7 completed in 32ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: failed-0
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-down on low utilization and queue
+DEBUG: [AutoScalingManager] Scale-down condition met (2/3)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=20.0%, queue=1, success=95.0%
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task failed-0 completed in 9ms, success: false
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-down on low utilization and queue
+DEBUG: [AutoScalingManager] Scale-down condition met (3/3)
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: failed-1
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-down on low utilization and queue
+INFO: [AutoScalingManager] Scaling down from 5 to 4 isolates (utilization: 20.0%, queue: 1)
+INFO: [AutoScalingManager] Scaling event: ScalingAction.scaleDown from 5 to 4 - Low utilization and queue length
+00:01 +16: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates recent metrics correctly
+DEBUG: [PerformanceMetricsCollector] Task failed-1 completed in 7ms, success: false
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +17: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-down on low utilization and queue
+00:01 +17: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector handles empty execution history
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +18: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-down on low utilization and queue
+00:01 +18: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates peak throughput correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-0
+DEBUG: [PerformanceMetricsCollector] Task burst-0 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-1
+DEBUG: [PerformanceMetricsCollector] Task burst-1 completed in 8ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-2
+DEBUG: [PerformanceMetricsCollector] Task burst-2 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-3
+00:01 +18: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager triggers scale-down on low utilization and queue
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates peak throughput correctly
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates peak throughput correctly
+DEBUG: [PerformanceMetricsCollector] Task burst-3 completed in 7ms, success: true
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates peak throughput correctly
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-4
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates peak throughput correctly
+DEBUG: [PerformanceMetricsCollector] Task burst-4 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-5
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (2/2)
+INFO: [AutoScalingManager] Scaling up from 3 to 5 isolates (utilization: 90.0%, queue: 5)
+INFO: [AutoScalingManager] Scaling event: ScalingAction.scaleUp from 3 to 5 - High CPU utilization (90.0%)
+00:01 +19: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector calculates peak throughput correctly
+DEBUG: [PerformanceMetricsCollector] Task burst-5 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-6
+DEBUG: [PerformanceMetricsCollector] Task burst-6 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-7
+DEBUG: [PerformanceMetricsCollector] Task burst-7 completed in 6ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-8
+DEBUG: [PerformanceMetricsCollector] Task burst-8 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: burst-9
+DEBUG: [PerformanceMetricsCollector] Task burst-9 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: sparse-0
+DEBUG: [PerformanceMetricsCollector] Task sparse-0 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: sparse-1
+DEBUG: [PerformanceMetricsCollector] Task sparse-1 completed in 7ms, success: true
+DEBUG: [PerformanceMetricsCollector] Recording task start: sparse-2
+DEBUG: [PerformanceMetricsCollector] Task sparse-2 completed in 7ms, success: true
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +20: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+00:01 +20: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector disposes correctly
+INFO: [PerformanceMetricsCollector] Starting performance metrics collection
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+00:01 +20: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+00:01 +20: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector disposes correctly
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +20: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+00:01 +20: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector disposes correctly
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +21: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+00:01 +21: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector PerformanceMetrics equality and hashCode
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +22: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+00:01 +22: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector TaskExecutionMetric equality and hashCode
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +23: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+00:01 +23: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector PerformanceSummary equality and hashCode
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+00:01 +23: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Scale-up condition met (2/2)
+00:01 +23: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector PerformanceSummary equality and hashCode
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +24: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+DEBUG: [AutoScalingManager] Scale-up blocked by cooldown period
+00:01 +24: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/performance_metrics_collector_test.dart: PerformanceMetricsCollector toString methods work correctly
+INFO: [PerformanceMetricsCollector] Disposing PerformanceMetricsCollector
+INFO: [PerformanceMetricsCollector] Stopping performance metrics collection
+00:01 +25: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects scaling cooldown periods
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:01 +26: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager respects min and max isolate limits
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=15, success=95.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=15, success=95.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (2/2)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=10.0%, queue=0, success=95.0%
+DEBUG: [AutoScalingManager] Scale-down condition met (1/3)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=10.0%, queue=0, success=95.0%
+DEBUG: [AutoScalingManager] Scale-down condition met (2/3)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=10.0%, queue=0, success=95.0%
+DEBUG: [AutoScalingManager] Scale-down condition met (3/3)
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:02 +27: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager resets counters when conditions change
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+DEBUG: [AutoScalingManager] Processing metrics: utilization=50.0%, queue=5, success=95.0%
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:02 +28: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager handles metrics stream errors gracefully
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+ERROR: [AutoScalingManager] Metrics stream error
+Error details: Exception: Test error
+DEBUG: [AutoScalingManager] Processing metrics: utilization=50.0%, queue=5, success=95.0%
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:02 +29: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager scaling status provides accurate information
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:02 +30: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager resetState clears all state correctly
+INFO: [AutoScalingManager] Starting auto-scaling monitoring
+DEBUG: [AutoScalingManager] Processing metrics: utilization=90.0%, queue=5, success=95.0%
+DEBUG: [AutoScalingManager] Scale-up condition met (1/2)
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+INFO: [AutoScalingManager] Stopping auto-scaling monitoring
+00:02 +31: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager ScalingConfig equality and hashCode
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:02 +32: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager ScalingEvent equality and hashCode
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:02 +33: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager ScalingStatus equality and hashCode
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:02 +34: /Users/bytedance/Documents/TradingAgents/trading_dummy/test/jobs/infrastructure/services/auto_scaling_manager_test.dart: AutoScalingManager ScalingEvent toString works correctly
+INFO: [AutoScalingManager] Disposing AutoScalingManager
+WARNING: [AutoScalingManager] Auto-scaling monitoring not active
+00:02 +35: All tests passed!

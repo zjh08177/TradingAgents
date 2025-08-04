@@ -7,24 +7,28 @@ import asyncio
 import json
 import logging
 import time
-from agent.utils.connection_retry import safe_llm_invoke
-from agent.utils.agent_prompt_enhancer import enhance_agent_prompt
-from agent.utils.prompt_compressor import get_prompt_compressor, compress_prompt
-from agent.utils.token_limiter import get_token_limiter
+from ..utils.connection_retry import safe_llm_invoke
+from ..utils.agent_prompt_enhancer import enhance_agent_prompt
+from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
+from ..utils.token_limiter import get_token_limiter
+from ..utils.safe_state_access import create_safe_state_wrapper
 
 logger = logging.getLogger(__name__)
 
 def create_bull_researcher(llm, memory):
     async def bull_node(state) -> dict:
-        # Get state data
-        investment_debate_state = state.get("investment_debate_state", {"count": 0, "history": ""})
-        market_research_report = state.get("market_report", "")
-        sentiment_report = state.get("sentiment_report", "")
-        news_report = state.get("news_report", "")
-        fundamentals_report = state.get("fundamentals_report", "")
+        # CRITICAL FIX: Use safe state wrapper to prevent KeyError
+        safe_state = create_safe_state_wrapper(state)
+        
+        # Get state data using safe access
+        investment_debate_state = safe_state.get("investment_debate_state", {"count": 0, "history": ""})
+        market_research_report = safe_state.get("market_report", "")
+        sentiment_report = safe_state.get("sentiment_report", "")
+        news_report = safe_state.get("news_report", "")
+        fundamentals_report = safe_state.get("fundamentals_report", "")
 
-        # Get debate history context
-        research_debate_state = state.get("research_debate_state", {})
+        # Get debate history context using safe access
+        research_debate_state = safe_state.get("research_debate_state", {})
         debate_history = research_debate_state.get("debate_history", [])
         current_round = research_debate_state.get("current_round", 1)
         judge_feedback = research_debate_state.get("judge_feedback", "")

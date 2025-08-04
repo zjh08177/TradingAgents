@@ -1,0 +1,129 @@
+{
+  "metadata": {
+    "trace_id": "1f06fbd6-2577-611a-9991-eb982cd70b30",
+    "analysis_timestamp": "2025-08-02T09:46:28.059924",
+    "analysis_version": "optimized_v1.0",
+    "estimated_size_bytes": 10171955,
+    "optimization_applied": true
+  },
+  "analysis": {
+    "trace_id": "1f06fbd6-2577-611a-9991-eb982cd70b30",
+    "summary": {
+      "name": "trading_agents",
+      "status": "success",
+      "total_runs": 24,
+      "analyzed_runs": 24,
+      "run_types": {
+        "chain": 24
+      },
+      "status_distribution": {
+        "success": 24
+      },
+      "duration_seconds": 443.118296,
+      "duration_formatted": "443.12s",
+      "has_errors": false,
+      "error_count": 0
+    },
+    "performance_metrics": {
+      "total_tokens": 39135,
+      "prompt_tokens": 29389,
+      "completion_tokens": 9746,
+      "token_efficiency": 0.3316206744019871,
+      "child_run_count": 24,
+      "total_run_count": 24,
+      "success_rate": 100.0,
+      "successful_runs": 25,
+      "failed_runs": 0,
+      "avg_run_duration": 22.122409583333333,
+      "min_run_duration": 0.001002,
+      "max_run_duration": 242.121541,
+      "total_run_time": 530.93783,
+      "timing_samples": 24
+    },
+    "error_analysis": {
+      "total_errors": 0,
+      "error_categories": {},
+      "errors": [],
+      "has_critical_errors": false
+    },
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_performance": {},
+      "overall_tool_success_rate": 100.0,
+      "most_used_tool": null,
+      "most_problematic_tool": null
+    },
+    "timing_analysis": {
+      "timing_by_type": {
+        "chain": {
+          "count": 24,
+          "total_time": 530.93783,
+          "avg_time": 22.122409583333333,
+          "max_time": 242.121541,
+          "min_time": 0.001002
+        }
+      },
+      "bottlenecks": [
+        {
+          "type": "chain",
+          "avg_duration": 22.122409583333333,
+          "total_impact": 530.93783
+        }
+      ],
+      "has_bottlenecks": true
+    },
+    "token_analysis": {
+      "total_tokens": 39135,
+      "prompt_tokens": 29389,
+      "completion_tokens": 9746,
+      "prompt_to_completion_ratio": 3.0154935358095627,
+      "tokens_per_second": 88.31727408520275,
+      "target_comparison": {
+        "total_tokens_vs_target": 97.8375,
+        "under_token_target": true,
+        "runtime_vs_target": 369.26524666666666,
+        "under_runtime_target": false
+      },
+      "efficiency_rating": "Needs Improvement"
+    },
+    "quality_metrics": {
+      "success_rate": 100.0,
+      "error_rate": 0.0,
+      "completeness_rate": 100.0,
+      "quality_score": 100.0,
+      "quality_grade": "A+",
+      "total_runs_analyzed": 25
+    },
+    "recommendations": [
+      {
+        "category": "Performance",
+        "priority": "High",
+        "issue": "Runtime exceeds 120s target",
+        "recommendation": "Optimize execution speed and parallel processing",
+        "details": "Runtime is 369.3% of target"
+      },
+      {
+        "category": "Performance",
+        "priority": "Medium",
+        "issue": "Performance bottleneck detected in chain operations",
+        "recommendation": "Optimize slow operations or implement parallel processing",
+        "details": "Average duration: 22.12s"
+      }
+    ],
+    "timestamp": "2025-08-02T09:46:28.059924",
+    "analysis_version": "optimized_v1.0"
+  },
+  "trace_summary": {
+    "id": "1f06fbd6-2577-611a-9991-eb982cd70b30",
+    "name": "trading_agents",
+    "status": "success",
+    "duration": "2025-08-02T16:26:04.982936",
+    "total_tokens": 39135,
+    "child_runs_count": 24,
+    "has_errors": false
+  },
+  "trace_data_note": "Full trace data omitted due to size optimization. Summary available in trace_summary."
+}

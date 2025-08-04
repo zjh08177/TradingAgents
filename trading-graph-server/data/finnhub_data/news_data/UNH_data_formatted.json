@@ -1,0 +1,39 @@
+{
+  "status": "OK",
+  "totalResults": 3,
+  "articles": [
+    {
+      "category": "company",
+      "datetime": 1754154432,
+      "headline": "UNH Reports Strong Quarterly Performance",
+      "id": 1,
+      "image": "https://example.com/unh_image1.jpg",
+      "related": "UNH",
+      "source": "Financial News",
+      "summary": "UNH Corporation reported strong quarterly results with revenue growth driven by market demand.",
+      "url": "https://example.com/unh_news1"
+    },
+    {
+      "category": "company",
+      "datetime": 1754068032,
+      "headline": "UNH Announces Strategic Partnership",
+      "id": 2,
+      "image": "https://example.com/unh_image2.jpg",
+      "related": "UNH",
+      "source": "Tech Daily",
+      "summary": "The company announced new strategic partnerships to expand market reach.",
+      "url": "https://example.com/unh_news2"
+    },
+    {
+      "category": "general",
+      "datetime": 1753981632,
+      "headline": "Industry Outlook Positive for UNH",
+      "id": 3,
+      "image": "https://example.com/unh_image3.jpg",
+      "related": "UNH",
+      "source": "Market Watch",
+      "summary": "Industry analysts project continued growth benefiting companies like UNH.",
+      "url": "https://example.com/unh_news3"
+    }
+  ]
+}
