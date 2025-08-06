@@ -8,6 +8,7 @@ import 'package:trading_dummy/jobs/domain/entities/analysis_job.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_status.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_priority.dart';
 import 'package:trading_dummy/jobs/infrastructure/models/hive_analysis_job.dart';
+import 'package:trading_dummy/jobs/infrastructure/models/hive_analysis_job_adapter.dart';
 import 'package:trading_dummy/jobs/infrastructure/repositories/hive_job_repository.dart';
 import 'package:trading_dummy/jobs/infrastructure/services/job_queue_manager.dart';
 import 'package:trading_dummy/jobs/infrastructure/services/job_notification_service.dart';

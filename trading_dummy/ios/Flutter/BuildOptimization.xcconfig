@@ -1,0 +1,59 @@
+// Build Optimization Settings for Flutter iOS
+// Include this in Debug.xcconfig for faster builds
+
+// Compiler Optimizations
+GCC_OPTIMIZATION_LEVEL = 0
+SWIFT_OPTIMIZATION_LEVEL = -Onone
+SWIFT_WHOLE_MODULE_OPTIMIZATION = NO
+
+// Build Performance
+COMPILER_INDEX_STORE_ENABLE = NO
+SWIFT_COMPILATION_MODE = singlefile
+SWIFT_INDEX_STORE_ENABLE = NO
+
+// Disable unnecessary features for debug builds
+ENABLE_BITCODE = NO
+ENABLE_TESTABILITY = YES
+ENABLE_NS_ASSERTIONS = NO
+VALIDATE_PRODUCT = NO
+DEBUG_INFORMATION_FORMAT = dwarf
+
+// Parallel builds
+CONCURRENT_DESTINATION_COUNT = 8
+
+// Asset catalog
+ASSETCATALOG_COMPILER_OPTIMIZATION = time
+
+// Linker optimizations
+DEAD_CODE_STRIPPING = NO
+PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES
+LD_MAP_FILE_PATH = 
+
+// Skip install
+SKIP_INSTALL = YES
+DEPLOYMENT_POSTPROCESSING = NO
+STRIP_INSTALLED_PRODUCT = NO
+COPY_PHASE_STRIP = NO
+
+// Module optimization
+CLANG_ENABLE_MODULE_DEBUGGING = NO
+CLANG_ENABLE_MODULE_IMPLEMENTATION_OF = YES
+OTHER_SWIFT_FLAGS = $(inherited) -D DEBUG -Onone
+
+// Only build active architecture for debug
+ONLY_ACTIVE_ARCH = YES
+ARCHS = $(ARCHS_STANDARD)
+VALID_ARCHS = arm64 x86_64
+
+// Precompiled headers
+GCC_PRECOMPILE_PREFIX_HEADER = YES
+CLANG_ENABLE_MODULES = YES
+
+// Code signing (skip for simulator)
+CODE_SIGN_IDENTITY = -
+CODE_SIGNING_REQUIRED = NO
+CODE_SIGNING_ALLOWED = NO
+
+// DerivedData optimization
+DERIVED_DATA_PATH = $(HOME)/Library/Developer/Xcode/DerivedData
+MODULE_CACHE_DIR = $(DERIVED_DATA_PATH)/ModuleCache.noindex

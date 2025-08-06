@@ -1,0 +1,24 @@
+# Xcode Build Optimization Settings
+# These environment variables optimize iOS builds without code changes
+
+# Enable parallel builds
+export XCODE_BUILD_PARALLELIZATION=YES
+export XCODE_PARALLEL_BUILD_LIMIT=8
+
+# Build caching
+export XCODE_BUILD_CACHE_ENABLED=YES
+export XCODE_BUILD_CACHE_PATH="$HOME/Library/Caches/XcodeBuildCache"
+
+# Skip unnecessary steps
+export SKIP_INSTALL=YES
+export COPY_PHASE_STRIP=NO
+export STRIP_INSTALLED_PRODUCT=NO
+
+# Optimization flags
+export GCC_OPTIMIZATION_LEVEL=0
+export SWIFT_OPTIMIZATION_LEVEL=-Onone
+export ENABLE_TESTABILITY=YES
+
+# DerivedData optimization
+export DERIVED_DATA_PATH="$HOME/Library/Developer/Xcode/DerivedData"
+export MODULE_CACHE_PATH="$DERIVED_DATA_PATH/ModuleCache"

@@ -1,0 +1,23 @@
+# CocoaPods Optimization Configuration
+# Speed up pod installation and builds
+
+# Skip downloading specs repo updates
+export COCOAPODS_SKIP_UPDATE_MESSAGE=1
+export COCOAPODS_DISABLE_DETERMINISTIC_UUIDS=1
+
+# Use CDN instead of git for specs
+export CP_REPOS_DIR="$HOME/.cocoapods/repos"
+
+# Parallel pod downloads
+export COCOAPODS_PARALLEL_DOWNLOADS=8
+
+# Cache settings
+export CP_CACHE_DIR="$HOME/Library/Caches/CocoaPods"
+export COCOAPODS_CACHE_VERBOSE=false
+
+# Reduce verbosity
+export COCOAPODS_SILENT=1
+
+# Skip unnecessary operations
+export COCOAPODS_SKIP_STATS=1
+export COCOAPODS_SKIP_UPDATE_CHECK=1

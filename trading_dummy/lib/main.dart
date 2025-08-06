@@ -10,12 +10,15 @@ import 'auth/auth_module.dart';
 import 'services/service_provider.dart';
 import 'pages/analysis_page_wrapper.dart';
 import 'history/infrastructure/models/hive_history_entry.dart';
+import 'history/infrastructure/models/hive_history_entry_adapter.dart';
 import 'history/infrastructure/models/hive_analysis_details.dart';
+import 'history/infrastructure/models/hive_analysis_details_adapter.dart';
 import 'history/infrastructure/repositories/hive_history_repository.dart';
 import 'history/presentation/screens/history_screen.dart';
 import 'history/presentation/screens/history_detail_screen.dart';
 // Job system imports for Phase 7 UI testing
 import 'jobs/infrastructure/models/hive_analysis_job.dart';
+import 'jobs/infrastructure/models/hive_analysis_job_adapter.dart';
 import 'jobs/infrastructure/repositories/hive_job_repository.dart';
 import 'jobs/application/use_cases/queue_analysis_use_case.dart';
 import 'jobs/application/use_cases/get_job_status_use_case.dart';
@@ -35,6 +38,7 @@ import 'jobs/infrastructure/services/langgraph_api_service.dart';
 import 'jobs/infrastructure/services/smart_polling_service.dart';
 import 'jobs/infrastructure/services/job_event_bus.dart';
 import 'jobs/infrastructure/services/app_lifecycle_service.dart';
+import 'core/services/in_app_notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -239,12 +243,13 @@ class TradingApp extends StatelessWidget {
               notificationHandler.updateNavigationContext(context);
             });
             
-            return MaterialApp(
-              title: 'Trading Analysis',
-              theme: ThemeData(
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-                useMaterial3: true,
-              ),
+            return InAppNotificationOverlay(
+              child: MaterialApp(
+                title: 'Trading Analysis',
+                theme: ThemeData(
+                  colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+                  useMaterial3: true,
+                ),
               initialRoute: '/',
               routes: {
                 '/': (context) => const SplashScreen(),
@@ -261,7 +266,11 @@ class TradingApp extends StatelessWidget {
                 '/jobs': (context) => const AuthGuard(
                   child: JobTestScreen(),
                 ),
+                '/task5-debug': (context) => const AuthGuard(
+                  child: Task5DebugScreen(),
+                ),
               },
+              ),
             );
           },
         ),

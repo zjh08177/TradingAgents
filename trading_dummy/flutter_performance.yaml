@@ -1,0 +1,91 @@
+# Flutter Performance Configuration
+# This file contains performance optimization settings for the Flutter build process
+
+# Build optimization settings
+build:
+  # Enable incremental builds
+  incremental: true
+  
+  # Use cached builds when possible
+  use_cached_builds: true
+  
+  # Track dependencies for smarter rebuilds
+  track_dependencies: true
+  
+  # Parallel compilation
+  parallel: true
+  
+  # Hot reload optimization
+  hot_reload:
+    # Preserve state during hot reload
+    preserve_state: true
+    # Fast reassemble
+    fast_reassemble: true
+
+# Code generation optimization
+code_generation:
+  # Run build_runner only when needed
+  on_demand: true
+  
+  # Cache generated files
+  cache_generated: true
+  
+  # Watch specific directories only
+  watch_dirs:
+    - lib/history/infrastructure/models
+    - lib/jobs/infrastructure/models
+
+# Development optimizations
+development:
+  # Skip unnecessary checks in debug mode
+  skip_assertions: false
+  
+  # Use lightweight debug builds
+  lightweight_debug: true
+  
+  # Optimize for development speed
+  optimize_for_speed: true
+
+# Platform-specific optimizations
+platforms:
+  android:
+    # Use R8 compiler optimizations
+    enable_r8: true
+    
+    # Multidex optimization
+    multidex_optimization: true
+    
+    # Proguard optimizations
+    proguard_optimizations: true
+    
+  ios:
+    # Use incremental builds
+    incremental_builds: true
+    
+    # Optimize Swift compilation
+    swift_optimization: true
+    
+    # Use precompiled frameworks
+    use_frameworks: true
+
+# Asset optimization
+assets:
+  # Compress images
+  compress_images: true
+  
+  # Optimize asset loading
+  lazy_loading: true
+  
+  # Cache processed assets
+  cache_assets: true
+
+# Dependency optimization
+dependencies:
+  # Check for unused dependencies
+  check_unused: true
+  
+  # Optimize dependency resolution
+  optimize_resolution: true
+  
+  # Use offline mode when possible
+  offline_when_possible: true
