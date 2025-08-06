@@ -83,9 +83,9 @@ class TradingAgentsGraph:
         """Run analysis through the graph with hard timeout"""
         logger.info(f"🚀 Starting analysis for {company_name} on {date}")
         
-        # Get timeout from config or use default 120s
-        timeout_seconds = self.config.get('execution_timeout', 120)
-        logger.warning(f"⏰ HARD TIMEOUT SET: {timeout_seconds}s")
+        # Get timeout from config or use default 1200s (20 minutes)
+        timeout_seconds = self.config.get('execution_timeout', 1200)
+        logger.warning(f"⏰ HARD TIMEOUT SET: {timeout_seconds}s ({timeout_seconds/60:.1f} minutes)")
         
         try:
             # Run with timeout using asyncio

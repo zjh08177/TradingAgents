@@ -66,6 +66,9 @@ Provide your aggressive risk perspective emphasizing:
                 response = await safe_llm_invoke(aggressive_llm, messages)
                 logger.info("🔴 Aggressive Risk Analyst completed")
                 return ("aggressive", response.content)
+            except asyncio.CancelledError:
+                logger.warning("⚠️ Aggressive debator cancelled due to timeout")
+                return ("aggressive", "Analysis cancelled due to timeout - Aggressive risk perspective unavailable")
             except Exception as e:
                 logger.error(f"❌ Aggressive debator failed: {e}")
                 return ("aggressive", f"Error in aggressive analysis: {str(e)}")
@@ -92,6 +95,9 @@ Provide your conservative risk perspective focusing on:
                 response = await safe_llm_invoke(conservative_llm, messages)
                 logger.info("🔵 Conservative Risk Analyst completed")
                 return ("conservative", response.content)
+            except asyncio.CancelledError:
+                logger.warning("⚠️ Conservative debator cancelled due to timeout")
+                return ("conservative", "Analysis cancelled due to timeout - Conservative risk perspective unavailable")
             except Exception as e:
                 logger.error(f"❌ Conservative debator failed: {e}")
                 return ("conservative", f"Error in conservative analysis: {str(e)}")
@@ -118,18 +124,31 @@ Provide your balanced risk perspective including:
                 response = await safe_llm_invoke(neutral_llm, messages)
                 logger.info("⚪ Neutral Risk Analyst completed")
                 return ("neutral", response.content)
+            except asyncio.CancelledError:
+                logger.warning("⚠️ Neutral debator cancelled due to timeout")
+                return ("neutral", "Analysis cancelled due to timeout - Neutral risk perspective unavailable")
             except Exception as e:
                 logger.error(f"❌ Neutral debator failed: {e}")
                 return ("neutral", f"Error in neutral analysis: {str(e)}")
         
-        # Execute all three in parallel
+        # Execute all three in parallel with graceful cancellation handling
         logger.info("🚀 Launching all three risk analysts concurrently...")
-        results = await asyncio.gather(
-            run_aggressive(),
-            run_conservative(),
-            run_neutral(),
-            return_exceptions=True
-        )
+        try:
+            results = await asyncio.gather(
+                run_aggressive(),
+                run_conservative(),
+                run_neutral(),
+                return_exceptions=True
+            )
+        except asyncio.CancelledError:
+            logger.warning("⚠️ PARALLEL RISK DEBATORS: Operation cancelled due to timeout")
+            logger.info("🔄 Providing fallback analysis to maintain system stability")
+            # Provide graceful fallback when cancelled
+            results = [
+                ("aggressive", "Analysis cancelled due to timeout - Aggressive risk perspective unavailable"),
+                ("conservative", "Analysis cancelled due to timeout - Conservative risk perspective unavailable"), 
+                ("neutral", "Analysis cancelled due to timeout - Neutral risk perspective unavailable")
+            ]
         
         # Process results
         updated_state = risk_state.copy()

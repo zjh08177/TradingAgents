@@ -4,7 +4,7 @@
 GRAPH_EXECUTION_CONFIG = {
     # Graph execution limits
     "recursion_limit": 50,  # Increase from default 25 to handle complex debates
-    "execution_timeout": 180,  # 3 minutes timeout for complex executions
+    "execution_timeout": 1200,  # 20 minutes for complex analysis with multiple LLM calls and parallel processing
     
     # Tool enforcement
     "enforce_tool_usage": True,  # Force analysts to use tools
@@ -25,7 +25,7 @@ GRAPH_EXECUTION_CONFIG = {
     # Token and performance targets
     "max_tokens_per_analyst": 4000,
     "max_total_tokens": 40000,
-    "target_runtime_seconds": 120,
+    "target_runtime_seconds": 1200,
 }
 
 # Update existing DEFAULT_CONFIG

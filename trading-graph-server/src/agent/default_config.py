@@ -45,7 +45,7 @@ DEFAULT_CONFIG = {
     
     # Token limits
     "max_tokens_per_analyst": 2000,  # Task C4: Token limit per analyst
-    "execution_timeout": 300,  # Increased from 120s - complex analysis needs more time
+    "execution_timeout": 1200,  # 20 minutes for complex analysis with multiple LLM calls and parallel processing
     
     # Token optimization settings
     "enable_token_optimization": True,  # Enable comprehensive token optimization
