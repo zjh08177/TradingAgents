@@ -20,6 +20,8 @@ import 'history/presentation/screens/history_detail_screen.dart';
 import 'jobs/infrastructure/models/hive_analysis_job.dart';
 import 'jobs/infrastructure/models/hive_analysis_job_adapter.dart';
 import 'jobs/infrastructure/repositories/hive_job_repository.dart';
+import 'jobs/infrastructure/repositories/sqlite_job_repository.dart';
+import 'jobs/domain/repositories/i_job_repository.dart';
 import 'jobs/application/use_cases/queue_analysis_use_case.dart';
 import 'jobs/application/use_cases/get_job_status_use_case.dart';
 import 'jobs/application/use_cases/cancel_job_use_case.dart';
@@ -27,6 +29,10 @@ import 'jobs/presentation/view_models/job_queue_view_model.dart';
 import 'jobs/presentation/view_models/job_list_view_model.dart';
 import 'jobs/presentation/screens/job_test_screen.dart';
 import 'jobs/presentation/screens/task5_debug_screen.dart';
+import 'jobs/presentation/screens/task5_history_screen.dart';
+import 'debug/screens/sqlite_migration_test_screen.dart';
+import 'migration/screens/migration_control_screen.dart';
+import 'migration/services/migration_manager.dart';
 // Phase 8: Notification system imports
 import 'jobs/infrastructure/services/job_notification_handler.dart';
 import 'jobs/infrastructure/services/job_queue_manager.dart';
@@ -63,9 +69,34 @@ void main() async {
     // Open Hive boxes
     await HiveHistoryRepository.openBox();
     
-    // Initialize job repository
-    final jobRepository = HiveJobRepository();
-    await jobRepository.init();
+    // Initialize migration manager for Phase 5
+    AppLogger.info('main', '🔄 Initializing migration manager...');
+    final migrationManager = await MigrationManager.create();
+    
+    // Check if automatic migration should be performed
+    if (migrationManager.isMigrationNeeded() && !migrationManager.isMigrationInProgress()) {
+      AppLogger.info('main', '🔄 Starting automatic database migration...');
+      final migrationResult = await migrationManager.performMigration(validateAfter: true);
+      if (migrationResult.success) {
+        AppLogger.info('main', '✅ Database migration completed successfully');
+      } else {
+        AppLogger.warning('main', '⚠️ Database migration failed: ${migrationResult.message}');
+      }
+    }
+    
+    // Initialize job repository based on migration status and feature flags
+    final shouldUseSQLite = await migrationManager.shouldUseSQLite();
+    final IJobRepository jobRepository;
+    
+    if (shouldUseSQLite) {
+      AppLogger.info('main', 'Using SQLite job repository');
+      jobRepository = SQLiteJobRepository();
+      await (jobRepository as SQLiteJobRepository).init();
+    } else {
+      AppLogger.info('main', 'Using Hive job repository');
+      jobRepository = HiveJobRepository();
+      await (jobRepository as HiveJobRepository).init();
+    }
     
     // Initialize job queue manager for Phase 8
     final jobQueueManager = JobQueueManager(repository: jobRepository);
@@ -160,6 +191,7 @@ void main() async {
       jobQueueManager: jobQueueManager,
       notificationHandler: notificationHandler,
       retryScheduler: retryScheduler,
+      migrationManager: migrationManager,
       // Task 5 services
       analysisDatabase: analysisDatabase,
       langGraphApiService: langGraphApiService,
@@ -177,10 +209,11 @@ void main() async {
 class TradingApp extends StatelessWidget {
   final SimpleLangGraphService langGraphService;
   final AutoTestController autoTest;
-  final HiveJobRepository jobRepository;
+  final IJobRepository jobRepository;
   final JobQueueManager jobQueueManager;
   final JobNotificationHandler notificationHandler;
   final RetryScheduler retryScheduler;
+  final MigrationManager migrationManager;
   // Task 5 services
   final AnalysisDatabase analysisDatabase;
   final LangGraphApiService langGraphApiService;
@@ -196,6 +229,7 @@ class TradingApp extends StatelessWidget {
     required this.jobQueueManager,
     required this.notificationHandler,
     required this.retryScheduler,
+    required this.migrationManager,
     // Task 5 services
     required this.analysisDatabase,
     required this.langGraphApiService,
@@ -209,6 +243,7 @@ class TradingApp extends StatelessWidget {
     return ServiceProvider(
       langGraphService: langGraphService,
       autoTest: autoTest,
+      migrationManager: migrationManager,
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(
@@ -261,13 +296,19 @@ class TradingApp extends StatelessWidget {
                   child: AnalysisPageWrapper(),
                 ),
                 '/history': (context) => const AuthGuard(
-                  child: HistoryScreen(),
+                  child: Task5HistoryScreen(),  // Using Task 5 history for immediate SQLite updates
                 ),
                 '/jobs': (context) => const AuthGuard(
                   child: JobTestScreen(),
                 ),
                 '/task5-debug': (context) => const AuthGuard(
                   child: Task5DebugScreen(),
+                ),
+                '/sqlite-migration-test': (context) => const AuthGuard(
+                  child: SQLiteMigrationTestScreen(),
+                ),
+                '/migration-control': (context) => const AuthGuard(
+                  child: MigrationControlScreen(),
                 ),
               },
               ),

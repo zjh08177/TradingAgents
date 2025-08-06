@@ -49,10 +49,11 @@ VALID_ARCHS = arm64 x86_64
 GCC_PRECOMPILE_PREFIX_HEADER = YES
 CLANG_ENABLE_MODULES = YES
 
-// Code signing (skip for simulator)
-CODE_SIGN_IDENTITY = -
-CODE_SIGNING_REQUIRED = NO
-CODE_SIGNING_ALLOWED = NO
+// Code signing - FIXED: Removed disabling to allow device builds
+// These lines were causing the "No code signature found" error
+// CODE_SIGN_IDENTITY = -
+// CODE_SIGNING_REQUIRED = NO
+// CODE_SIGNING_ALLOWED = NO
 
 // DerivedData optimization
 DERIVED_DATA_PATH = $(HOME)/Library/Developer/Xcode/DerivedData
