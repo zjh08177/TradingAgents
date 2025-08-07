@@ -513,15 +513,19 @@ Output structure:
         
         # Research manager conditional routing (back to controller or forward to risk manager)
         def research_manager_router(state):
-            """Route from research manager based on investment plan status"""
-            if not state.get("investment_plan"):
-                # No investment plan yet, continue debate
-                logger.info("🔄 No investment plan yet - routing back to debate controller")
+            """Route from research manager based on simplified debate logic"""
+            # Check if debate should continue (new simplified logic)
+            if state.get("continue_debate") == True:
+                logger.info("🔄 Continue debate flag set - routing back to debate controller")
                 return "research_debate_controller"
-            else:
-                # Investment plan ready, proceed to risk manager
+            # Check if investment plan exists (debate completed)
+            elif state.get("investment_plan"):
                 logger.info("✅ Investment plan ready - routing to risk manager")
                 return "risk_manager"
+            else:
+                # Fallback to continue debate if no clear direction
+                logger.info("🔄 Fallback - routing back to debate controller")
+                return "research_debate_controller"
         
         graph.add_conditional_edges(
             "research_manager",

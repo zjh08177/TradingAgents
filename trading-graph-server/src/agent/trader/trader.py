@@ -5,6 +5,8 @@ from ..utils.connection_retry import safe_llm_invoke
 from ..utils.agent_prompt_enhancer import enhance_agent_prompt
 from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
 from ..utils.token_limiter import get_token_limiter
+from ..prompts.enhanced_prompts_v4 import get_enhanced_prompt
+from ..default_config import DEFAULT_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -15,16 +17,40 @@ def create_trader(llm, memory):
         investment_plan = state.get("investment_plan", "")
         risk_assessment = state.get("risk_debate_state", {}).get("judge_decision", "")
         
-        # Generate final trading decision
-        prompt = f"""
-        You are a professional trader. Based on the investment plan and risk assessment, 
-        make a final trading decision for {company_name}.
-        
-        Investment Plan: {investment_plan}
-        Risk Assessment: {risk_assessment}
-        
-        Provide a clear decision: BUY, SELL, or HOLD with brief reasoning.
-        """
+        # Use enhanced V4 prompt if enabled
+        if DEFAULT_CONFIG.get("enhanced_prompts_enabled", True):
+            enhanced_prompt = get_enhanced_prompt("trader", company_name)
+            if enhanced_prompt:
+                # Add specific context to enhanced prompt
+                prompt = f"""{enhanced_prompt}
+
+TRADING CONTEXT:
+Investment Plan: {investment_plan}
+Risk Assessment: {risk_assessment}
+
+Execute your final trading decision for {company_name} based on the above analysis."""
+            else:
+                # Fallback to original prompt
+                prompt = f"""
+                You are a professional trader. Based on the investment plan and risk assessment, 
+                make a final trading decision for {company_name}.
+                
+                Investment Plan: {investment_plan}
+                Risk Assessment: {risk_assessment}
+                
+                Provide a clear decision: BUY, SELL, or HOLD with brief reasoning.
+                """
+        else:
+            # Original prompt
+            prompt = f"""
+            You are a professional trader. Based on the investment plan and risk assessment, 
+            make a final trading decision for {company_name}.
+            
+            Investment Plan: {investment_plan}
+            Risk Assessment: {risk_assessment}
+            
+            Provide a clear decision: BUY, SELL, or HOLD with brief reasoning.
+            """
         
         messages = [{"role": "user", "content": prompt}]
         response = await safe_llm_invoke(llm, messages)

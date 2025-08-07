@@ -32,3 +32,11 @@
 - Repeating code is an invitation to problems
 - Keep logic in one place to avoid errors and facilitate maintenance
 - Ensures consistency across the codebase
+
+## Documentation Management Guidelines
+- For trading-graph-server documents, store in `/Users/bytedance/Documents/TradingAgents/trading-graph-server/claude_doc` folder
+- When creating docs, always check if existing docs need organizational restructuring into subfolders
+- Create subfolders as needed to maintain clear and logical document organization
+
+## Execution Guidelines
+- For all bash commands, timeout set to 1200 seconds (20 minutes)

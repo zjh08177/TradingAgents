@@ -1,0 +1,141 @@
+{
+  "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227": {
+    "endpoint": "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227",
+    "description": "Standard thread-run endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.519855"
+  },
+  "/runs/1f073d12-1030-6677-9a30-d739d108e227": {
+    "endpoint": "/runs/1f073d12-1030-6677-9a30-d739d108e227",
+    "description": "Direct run endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.593674"
+  },
+  "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/status": {
+    "endpoint": "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/status",
+    "description": "Run status endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.594924"
+  },
+  "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/state": {
+    "endpoint": "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/state",
+    "description": "Run state endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.595908"
+  },
+  "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/result": {
+    "endpoint": "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/result",
+    "description": "Run result endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.596819"
+  },
+  "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/output": {
+    "endpoint": "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/output",
+    "description": "Run output endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.597943"
+  },
+  "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/stream": {
+    "endpoint": "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/stream",
+    "description": "Stream endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.598799"
+  },
+  "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/messages": {
+    "endpoint": "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/messages",
+    "description": "Messages endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.599837"
+  },
+  "/api/v1/runs/1f073d12-1030-6677-9a30-d739d108e227": {
+    "endpoint": "/api/v1/runs/1f073d12-1030-6677-9a30-d739d108e227",
+    "description": "Alternative API v1 pattern",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.601305"
+  },
+  "/v1/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227": {
+    "endpoint": "/v1/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227",
+    "description": "Alternative v1 pattern",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.602336"
+  },
+  "/": {
+    "endpoint": "/",
+    "description": "Root endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.603629"
+  },
+  "/health": {
+    "endpoint": "/health",
+    "description": "Health check endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.604606"
+  },
+  "/docs": {
+    "endpoint": "/docs",
+    "description": "API documentation endpoint",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.605813"
+  },
+  "SDK_METHOD": {
+    "method": "SDK client.runs.get()",
+    "status": "error",
+    "response": null,
+    "error": "All connection attempts failed",
+    "timestamp": "2025-08-07T14:15:34.606958"
+  },
+  "_SUMMARY": {
+    "total_tests": 14,
+    "successful": 0,
+    "failed": 14,
+    "successful_endpoints": [],
+    "failed_endpoints": [
+      "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227",
+      "/runs/1f073d12-1030-6677-9a30-d739d108e227",
+      "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/status",
+      "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/state",
+      "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/result",
+      "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/output",
+      "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/stream",
+      "/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227/messages",
+      "/api/v1/runs/1f073d12-1030-6677-9a30-d739d108e227",
+      "/v1/threads/e8e9d596-25f6-4d72-af3d-ff13c901aa8f/runs/1f073d12-1030-6677-9a30-d739d108e227",
+      "/",
+      "/health",
+      "/docs",
+      "SDK_METHOD"
+    ],
+    "timestamp": "2025-08-07T14:15:42.119804",
+    "test_data": {
+      "run_id": "1f073d12-1030-6677-9a30-d739d108e227",
+      "thread_id": "e8e9d596-25f6-4d72-af3d-ff13c901aa8f",
+      "base_url": "http://localhost:8124"
+    }
+  }
+}

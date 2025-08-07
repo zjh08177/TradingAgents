@@ -1,15 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:trading_dummy/main.dart' as app;
 import 'package:trading_dummy/jobs/domain/entities/analysis_job.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_status.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_priority.dart';
-import 'package:trading_dummy/jobs/infrastructure/models/hive_analysis_job.dart';
-import 'package:trading_dummy/jobs/infrastructure/models/hive_analysis_job_adapter.dart';
-import 'package:trading_dummy/jobs/infrastructure/repositories/hive_job_repository.dart';
+import 'package:trading_dummy/jobs/infrastructure/repositories/sqlite_job_repository.dart';
 import 'package:trading_dummy/jobs/infrastructure/services/job_queue_manager.dart';
 import 'package:trading_dummy/jobs/infrastructure/services/job_notification_service.dart';
 import 'package:trading_dummy/jobs/infrastructure/services/retry_scheduler.dart';
@@ -23,26 +19,19 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Jobs E2E Tests', () {
-    late Directory tempDir;
-    late HiveJobRepository repository;
+    late SQLiteJobRepository repository;
     late JobQueueManager queueManager;
     late JobNotificationService notificationService;
     late RetryScheduler retryScheduler;
 
     setUpAll(() async {
       // Setup test environment
-      tempDir = await Directory.systemTemp.createTemp('jobs_e2e_test_');
-      await Hive.initFlutter(tempDir.path);
-      
-      // Register Hive adapters if not already registered
-      if (!Hive.isAdapterRegistered(HiveAnalysisJobAdapter().typeId)) {
-        Hive.registerAdapter(HiveAnalysisJobAdapter());
-      }
+      // SQLite will use in-memory database for tests
     });
 
     setUp(() async {
       // Initialize test services
-      repository = HiveJobRepository();
+      repository = SQLiteJobRepository();
       await repository.init();
       
       queueManager = JobQueueManager(repository: repository);
@@ -63,21 +52,11 @@ void main() {
       await retryScheduler.dispose();
       queueManager.dispose();
       
-      // Clear Hive data
-      try {
-        if (Hive.isBoxOpen('analysis_jobs')) {
-          await Hive.box('analysis_jobs').clear();
-        }
-      } catch (e) {
-        // Ignore cleanup errors
-      }
+      // SQLite uses in-memory database for tests, auto-cleared
     });
 
     tearDownAll(() async {
-      // Clean up test directory
-      if (tempDir.existsSync()) {
-        tempDir.deleteSync(recursive: true);
-      }
+      // SQLite cleanup is handled automatically
     });
 
     group('Complete User Journey', () {

@@ -89,6 +89,11 @@ def get_finnhub_news(
         str: dataframe containing the news of the company in the time frame
 
     """
+    # Ensure DATA_DIR is initialized
+    global DATA_DIR
+    if DATA_DIR is None:
+        config = get_config()
+        DATA_DIR = config.get("data_dir", "./data")
 
     start_date = datetime.strptime(curr_date, "%Y-%m-%d")
     before = start_date - relativedelta(days=look_back_days)
@@ -128,6 +133,11 @@ def get_finnhub_company_insider_sentiment(
     Returns:
         str: a report of the sentiment in the past 15 days starting at curr_date
     """
+    # Ensure DATA_DIR is initialized
+    global DATA_DIR
+    if DATA_DIR is None:
+        config = get_config()
+        DATA_DIR = config.get("data_dir", "./data")
 
     date_obj = datetime.strptime(curr_date, "%Y-%m-%d")
     before = date_obj - relativedelta(days=look_back_days)
@@ -169,6 +179,11 @@ def get_finnhub_company_insider_transactions(
     Returns:
         str: a report of the company's insider transaction/trading informtaion in the past 15 days
     """
+    # Ensure DATA_DIR is initialized
+    global DATA_DIR
+    if DATA_DIR is None:
+        config = get_config()
+        DATA_DIR = config.get("data_dir", "./data")
 
     date_obj = datetime.strptime(curr_date, "%Y-%m-%d")
     before = date_obj - relativedelta(days=look_back_days)
@@ -203,6 +218,12 @@ def get_simfin_balance_sheet(
     ],
     curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"],
 ):
+    # Ensure DATA_DIR is initialized
+    global DATA_DIR
+    if DATA_DIR is None:
+        config = get_config()
+        DATA_DIR = config.get("data_dir", "./data")
+    
     data_path = os.path.join(
         DATA_DIR,
         "fundamental_data",
@@ -250,6 +271,12 @@ def get_simfin_cashflow(
     ],
     curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"],
 ):
+    # Ensure DATA_DIR is initialized
+    global DATA_DIR
+    if DATA_DIR is None:
+        config = get_config()
+        DATA_DIR = config.get("data_dir", "./data")
+    
     data_path = os.path.join(
         DATA_DIR,
         "fundamental_data",
@@ -297,6 +324,12 @@ def get_simfin_income_statements(
     ],
     curr_date: Annotated[str, "current date you are trading at, yyyy-mm-dd"],
 ):
+    # Ensure DATA_DIR is initialized
+    global DATA_DIR
+    if DATA_DIR is None:
+        config = get_config()
+        DATA_DIR = config.get("data_dir", "./data")
+    
     data_path = os.path.join(
         DATA_DIR,
         "fundamental_data",

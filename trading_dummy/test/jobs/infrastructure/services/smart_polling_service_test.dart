@@ -478,6 +478,313 @@ void main() {
       });
     });
 
+    group('Enhanced Dual-API Pattern Result Retrieval', () {
+      test('should use enhanced result retrieval when status response lacks result', () async {
+        // Arrange
+        const runId = 'test-run-123';
+        const threadId = 'test-thread-123';
+        
+        // Mock status response with no result
+        final mockStatus = RunStatusResponse(
+          runId: runId,
+          status: 'success',
+          result: null, // No result in status response
+          completedAt: DateTime.now(),
+        );
+        
+        // Mock separate result retrieval success
+        final mockResult = {
+          'final_trade_decision': 'BUY',
+          'confidence': 0.85,
+          'analysis': 'Strong bullish signals detected'
+        };
+        
+        when(() => mockApiService.getRunStatusWithThread(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => mockStatus);
+        
+        when(() => mockApiService.getRunResult(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => mockResult);
+
+        when(() => mockDatabase.updateStatus(
+          any(),
+          status: any(named: 'status'),
+          result: any(named: 'result'),
+          error: any(named: 'error'),
+          completedAt: any(named: 'completedAt'),
+        )).thenAnswer((_) async {});
+
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
+
+        // Act
+        await pollingService.startPollingForRun(runId, threadId);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert
+        verify(() => mockApiService.getRunResult(
+          runId: runId,
+          threadId: threadId,
+        )).called(greaterThan(0));
+        
+        verify(() => mockDatabase.updateStatus(
+          runId,
+          status: 'success',
+          result: mockResult.toString(),
+          completedAt: any(named: 'completedAt'),
+        )).called(greaterThan(0));
+      });
+
+      test('should create fallback result when dual-API retrieval fails completely', () async {
+        // Arrange
+        const runId = 'test-run-123';
+        const threadId = 'test-thread-123';
+        
+        // Mock status response with success but no result
+        final mockStatus = RunStatusResponse(
+          runId: runId,
+          status: 'success',
+          result: null,
+          completedAt: DateTime.now(),
+        );
+        
+        when(() => mockApiService.getRunStatusWithThread(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => mockStatus);
+        
+        // Mock separate result retrieval failure
+        when(() => mockApiService.getRunResult(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => null);
+
+        when(() => mockDatabase.updateStatus(
+          any(),
+          status: any(named: 'status'),
+          result: any(named: 'result'),
+          error: any(named: 'error'),
+          completedAt: any(named: 'completedAt'),
+        )).thenAnswer((_) async {});
+
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
+
+        // Act
+        await pollingService.startPollingForRun(runId, threadId);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - fallback result should be created
+        verify(() => mockDatabase.updateStatus(
+          runId,
+          status: 'success',
+          result: any(named: 'result', that: contains('completed_no_result')),
+          completedAt: any(named: 'completedAt'),
+        )).called(greaterThan(0));
+      });
+
+      test('should create error fallback result when dual-API throws exception', () async {
+        // Arrange
+        const runId = 'test-run-123';
+        const threadId = 'test-thread-123';
+        
+        final mockStatus = RunStatusResponse(
+          runId: runId,
+          status: 'success',
+          result: null,
+          completedAt: DateTime.now(),
+        );
+        
+        when(() => mockApiService.getRunStatusWithThread(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => mockStatus);
+        
+        // Mock separate result retrieval throwing exception
+        when(() => mockApiService.getRunResult(
+          runId: runId,
+          threadId: threadId,
+        )).thenThrow(Exception('Network timeout'));
+
+        when(() => mockDatabase.updateStatus(
+          any(),
+          status: any(named: 'status'),
+          result: any(named: 'result'),
+          error: any(named: 'error'),
+          completedAt: any(named: 'completedAt'),
+        )).thenAnswer((_) async {});
+
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
+
+        // Act
+        await pollingService.startPollingForRun(runId, threadId);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - error fallback result should be created
+        verify(() => mockDatabase.updateStatus(
+          runId,
+          status: 'success',
+          result: any(named: 'result', that: contains('completed_with_error')),
+          completedAt: any(named: 'completedAt'),
+        )).called(greaterThan(0));
+      });
+
+      test('should skip dual-API retrieval when result already exists in status', () async {
+        // Arrange
+        const runId = 'test-run-123';
+        const threadId = 'test-thread-123';
+        
+        // Mock status response with existing result
+        final mockStatus = RunStatusResponse(
+          runId: runId,
+          status: 'success',
+          result: {'final_trade_decision': 'HOLD', 'confidence': 0.75},
+          completedAt: DateTime.now(),
+        );
+        
+        when(() => mockApiService.getRunStatusWithThread(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => mockStatus);
+
+        when(() => mockDatabase.updateStatus(
+          any(),
+          status: any(named: 'status'),
+          result: any(named: 'result'),
+          error: any(named: 'error'),
+          completedAt: any(named: 'completedAt'),
+        )).thenAnswer((_) async {});
+
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
+
+        // Act
+        await pollingService.startPollingForRun(runId, threadId);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - dual-API should NOT be called
+        verifyNever(() => mockApiService.getRunResult(
+          runId: any(named: 'runId'),
+          threadId: any(named: 'threadId'),
+        ));
+        
+        // But status should still be updated with existing result
+        verify(() => mockDatabase.updateStatus(
+          runId,
+          status: 'success',
+          result: any(named: 'result', that: contains('HOLD')),
+          completedAt: any(named: 'completedAt'),
+        )).called(greaterThan(0));
+      });
+
+      test('should publish enhanced event with retrieved result data', () async {
+        // Arrange
+        const runId = 'test-run-123';
+        const threadId = 'test-thread-123';
+        
+        final mockStatus = RunStatusResponse(
+          runId: runId,
+          status: 'success',
+          result: null,
+          completedAt: DateTime.now(),
+        );
+        
+        final enhancedResult = {
+          'final_trade_decision': 'BUY',
+          'confidence': 0.90,
+          'analysis': 'Strong technical indicators'
+        };
+        
+        when(() => mockApiService.getRunStatusWithThread(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => mockStatus);
+        
+        when(() => mockApiService.getRunResult(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => enhancedResult);
+
+        when(() => mockDatabase.updateStatus(
+          any(),
+          status: any(named: 'status'),
+          result: any(named: 'result'),
+          error: any(named: 'error'),
+          completedAt: any(named: 'completedAt'),
+        )).thenAnswer((_) async {});
+
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
+
+        // Act
+        await pollingService.startPollingForRun(runId, threadId);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - event should contain enhanced result data
+        final captured = verify(() => mockEventBus.publish(captureAny<AnalysisStatusUpdatedEvent>())).captured;
+        expect(captured.isNotEmpty, isTrue);
+        
+        final event = captured.first as AnalysisStatusUpdatedEvent;
+        expect(event.result, equals(enhancedResult));
+        expect(event.status, equals('success'));
+        expect(event.isComplete, isTrue);
+      });
+
+      test('should handle empty/null result strings correctly', () async {
+        // Arrange
+        const runId = 'test-run-123';
+        const threadId = 'test-thread-123';
+        
+        // Mock status with empty result string
+        final mockStatus = RunStatusResponse(
+          runId: runId,
+          status: 'success',
+          result: {},  // Empty map
+          completedAt: DateTime.now(),
+        );
+        
+        final enhancedResult = {
+          'final_trade_decision': 'BUY',
+          'confidence': 0.80
+        };
+        
+        when(() => mockApiService.getRunStatusWithThread(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => mockStatus);
+        
+        when(() => mockApiService.getRunResult(
+          runId: runId,
+          threadId: threadId,
+        )).thenAnswer((_) async => enhancedResult);
+
+        when(() => mockDatabase.updateStatus(
+          any(),
+          status: any(named: 'status'),
+          result: any(named: 'result'),
+          error: any(named: 'error'),
+          completedAt: any(named: 'completedAt'),
+        )).thenAnswer((_) async {});
+
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
+
+        // Act
+        await pollingService.startPollingForRun(runId, threadId);
+        await Future.delayed(Duration(milliseconds: 100));
+
+        // Assert - should trigger dual-API retrieval for empty result
+        verify(() => mockApiService.getRunResult(
+          runId: runId,
+          threadId: threadId,
+        )).called(greaterThan(0));
+      });
+    });
+
     group('Resource Management', () {
       test('should dispose properly and clean up all resources', () {
         // Arrange

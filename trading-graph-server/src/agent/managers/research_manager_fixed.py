@@ -62,7 +62,7 @@ def create_research_manager(llm, memory, config: Dict = None):
         investment_state = state.get("investment_debate_state", {})
         
         current_round = debate_state.get("current_round", 1)
-        max_rounds = config.get("max_debate_rounds", 3)  # Configurable max rounds
+        max_rounds = config.get("max_research_debate_rounds", 3)  # Standardized config key
         
         # CRITICAL FIX: Check circuit breaker
         force_consensus = circuit_breaker.check_loop(trace_id)

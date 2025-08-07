@@ -138,7 +138,7 @@ class TradingAgentsGraph:
             # Add research debate state with max rounds
             "research_debate_state": {
                 "current_round": 1,
-                "max_rounds": self.config.get('max_debate_rounds', 3),
+                "max_rounds": self.config.get('max_research_debate_rounds', 3),
                 "consensus_reached": False,
                 "judge_feedback": "",
                 "debate_history": []

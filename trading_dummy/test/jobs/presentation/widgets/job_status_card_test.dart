@@ -324,7 +324,7 @@ void main() {
           );
 
           final decoration = container.decoration as BoxDecoration;
-          expect(decoration.border?.top.color, expectedColor.withOpacity(0.3));
+          expect(decoration.border?.top.color, expectedColor.withValues(alpha: 0.3));
 
           await tester.pumpWidget(Container()); // Clear widget
         }

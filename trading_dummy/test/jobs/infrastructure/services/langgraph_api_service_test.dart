@@ -399,6 +399,305 @@ void main() {
       }, skip: 'Requires dotenv initialization');
     });
     
+    group('getRunResult - Dual-API Pattern', () {
+      test('should successfully retrieve result via Strategy 1 (direct run output)', () async {
+        mockClient = MockClient((request) async {
+          expect(request.url.toString(), '$testBaseUrl/threads/thread-123/runs/run-456');
+          expect(request.method, 'GET');
+          expect(request.headers['X-Api-Key'], testApiKey);
+          
+          return http.Response(
+            jsonEncode({
+              'run_id': 'run-456',
+              'status': 'success',
+              'output': {
+                'final_trade_decision': 'BUY',
+                'confidence': 0.85,
+                'analysis': 'Strong bullish signals detected'
+              },
+            }),
+            200,
+          );
+        });
+        
+        service = LangGraphApiService(
+          baseUrl: testBaseUrl,
+          apiKey: testApiKey,
+          assistantId: testAssistantId,
+          httpClient: mockClient,
+        );
+        
+        final result = await service.getRunResult(
+          runId: 'run-456',
+          threadId: 'thread-123',
+        );
+        
+        expect(result, isNotNull);
+        expect(result!['final_trade_decision'], 'BUY');
+        expect(result['confidence'], 0.85);
+        expect(result['analysis'], 'Strong bullish signals detected');
+      });
+      
+      test('should retrieve result via Strategy 2 (thread state) when direct output fails', () async {
+        int callCount = 0;
+        mockClient = MockClient((request) async {
+          callCount++;
+          
+          // Strategy 1: Direct run output - fails
+          if (callCount == 1) {
+            expect(request.url.toString(), '$testBaseUrl/threads/thread-123/runs/run-456');
+            return http.Response(
+              jsonEncode({
+                'run_id': 'run-456',
+                'status': 'success',
+                // No output field
+              }),
+              200,
+            );
+          }
+          
+          // Strategy 2: Thread state - succeeds
+          if (callCount == 2) {
+            expect(request.url.toString(), '$testBaseUrl/threads/thread-123/state');
+            return http.Response(
+              jsonEncode({
+                'values': {
+                  'final_trade_decision': 'SELL',
+                  'confidence': 0.75,
+                  'risk_level': 'moderate'
+                }
+              }),
+              200,
+            );
+          }
+          
+          return http.Response('Not found', 404);
+        });
+        
+        service = LangGraphApiService(
+          baseUrl: testBaseUrl,
+          apiKey: testApiKey,
+          assistantId: testAssistantId,
+          httpClient: mockClient,
+        );
+        
+        final result = await service.getRunResult(
+          runId: 'run-456',
+          threadId: 'thread-123',
+        );
+        
+        expect(result, isNotNull);
+        expect(result!['final_trade_decision'], 'SELL');
+        expect(result['confidence'], 0.75);
+        expect(result['risk_level'], 'moderate');
+        expect(callCount, 2);
+      });
+      
+      test('should retrieve result via Strategy 3 (thread messages) when state fails', () async {
+        int callCount = 0;
+        mockClient = MockClient((request) async {
+          callCount++;
+          
+          // Strategy 1: Direct run output - fails
+          if (callCount == 1) {
+            return http.Response(jsonEncode({'run_id': 'run-456', 'status': 'success'}), 200);
+          }
+          
+          // Strategy 2: Thread state - fails
+          if (callCount == 2) {
+            return http.Response('Not found', 404);
+          }
+          
+          // Strategy 3: Thread messages - succeeds
+          if (callCount == 3) {
+            expect(request.url.toString(), '$testBaseUrl/threads/thread-123/messages');
+            return http.Response(
+              jsonEncode([
+                {
+                  'role': 'user',
+                  'content': 'Analyze AAPL'
+                },
+                {
+                  'role': 'assistant',
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': '{"final_trade_decision": "HOLD", "confidence": 0.65}'
+                    }
+                  ]
+                }
+              ]),
+              200,
+            );
+          }
+          
+          return http.Response('Not found', 404);
+        });
+        
+        service = LangGraphApiService(
+          baseUrl: testBaseUrl,
+          apiKey: testApiKey,
+          assistantId: testAssistantId,
+          httpClient: mockClient,
+        );
+        
+        final result = await service.getRunResult(
+          runId: 'run-456',
+          threadId: 'thread-123',
+        );
+        
+        expect(result, isNotNull);
+        expect(result!['final_trade_decision'], 'HOLD');
+        expect(result['confidence'], 0.65);
+        expect(callCount, 3);
+      });
+      
+      test('should retrieve result via Strategy 4 (run history) when messages fail', () async {
+        int callCount = 0;
+        mockClient = MockClient((request) async {
+          callCount++;
+          
+          // Strategies 1-3: All fail
+          if (callCount <= 3) {
+            return http.Response('Not found', 404);
+          }
+          
+          // Strategy 4: Run history/events - succeeds
+          if (callCount == 4) {
+            expect(request.url.toString(), '$testBaseUrl/threads/thread-123/runs/run-456/events');
+            return http.Response(
+              jsonEncode([
+                {
+                  'event': 'on_run_start',
+                  'data': {}
+                },
+                {
+                  'event': 'on_run_end',
+                  'data': {
+                    'output': {
+                      'final_trade_decision': 'BUY_STRONG',
+                      'confidence': 0.95,
+                      'urgency': 'high'
+                    }
+                  }
+                }
+              ]),
+              200,
+            );
+          }
+          
+          return http.Response('Not found', 404);
+        });
+        
+        service = LangGraphApiService(
+          baseUrl: testBaseUrl,
+          apiKey: testApiKey,
+          assistantId: testAssistantId,
+          httpClient: mockClient,
+        );
+        
+        final result = await service.getRunResult(
+          runId: 'run-456',
+          threadId: 'thread-123',
+        );
+        
+        expect(result, isNotNull);
+        expect(result!['final_trade_decision'], 'BUY_STRONG');
+        expect(result['confidence'], 0.95);
+        expect(result['urgency'], 'high');
+        expect(callCount, 4);
+      });
+      
+      test('should handle thread messages with text report fallback', () async {
+        int callCount = 0;
+        mockClient = MockClient((request) async {
+          callCount++;
+          
+          // Strategies 1-2: Fail
+          if (callCount <= 2) {
+            return http.Response('Not found', 404);
+          }
+          
+          // Strategy 3: Thread messages with text content (not JSON)
+          if (callCount == 3) {
+            return http.Response(
+              jsonEncode([
+                {
+                  'role': 'assistant',
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': 'Based on technical analysis, AAPL shows strong momentum with RSI at 72. Recommend BUY.'
+                    }
+                  ]
+                }
+              ]),
+              200,
+            );
+          }
+          
+          return http.Response('Not found', 404);
+        });
+        
+        service = LangGraphApiService(
+          baseUrl: testBaseUrl,
+          apiKey: testApiKey,
+          assistantId: testAssistantId,
+          httpClient: mockClient,
+        );
+        
+        final result = await service.getRunResult(
+          runId: 'run-456',
+          threadId: 'thread-123',
+        );
+        
+        expect(result, isNotNull);
+        expect(result!['final_report'], contains('AAPL shows strong momentum'));
+        expect(result['final_report'], contains('Recommend BUY'));
+        expect(callCount, 3);
+      });
+      
+      test('should return null when all strategies fail', () async {
+        mockClient = MockClient((request) async {
+          return http.Response('Not found', 404);
+        });
+        
+        service = LangGraphApiService(
+          baseUrl: testBaseUrl,
+          apiKey: testApiKey,
+          assistantId: testAssistantId,
+          httpClient: mockClient,
+        );
+        
+        final result = await service.getRunResult(
+          runId: 'run-456',
+          threadId: 'thread-123',
+        );
+        
+        expect(result, isNull);
+      });
+      
+      test('should handle network errors gracefully', () async {
+        mockClient = MockClient((request) async {
+          throw Exception('Network timeout');
+        });
+        
+        service = LangGraphApiService(
+          baseUrl: testBaseUrl,
+          apiKey: testApiKey,
+          assistantId: testAssistantId,
+          httpClient: mockClient,
+        );
+        
+        final result = await service.getRunResult(
+          runId: 'run-456',
+          threadId: 'thread-123',
+        );
+        
+        expect(result, isNull);
+      });
+    });
+
     group('deprecated getRunStatus', () {
       test('should throw UnimplementedError', () {
         service = LangGraphApiService(

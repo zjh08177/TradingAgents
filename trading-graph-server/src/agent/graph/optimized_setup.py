@@ -449,12 +449,17 @@ class OptimizedGraphBuilder(IGraphBuilder):
         graph.add_edge("bull_researcher", "research_manager")
         graph.add_edge("bear_researcher", "research_manager")
         
-        # Research manager routing
+        # Research manager routing - updated for simplified logic
         def research_manager_router(state):
-            if not state.get("investment_plan"):
+            # Check if debate should continue (new simplified logic)
+            if state.get("continue_debate") == True:
                 return "research_debate_controller"
-            else:
+            # Check if investment plan exists (debate completed)
+            elif state.get("investment_plan"):
                 return "risk_manager"
+            else:
+                # Fallback to continue debate if no clear direction
+                return "research_debate_controller"
         
         graph.add_conditional_edges(
             "research_manager",

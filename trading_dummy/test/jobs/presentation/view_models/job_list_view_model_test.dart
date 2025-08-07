@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive/hive.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:trading_dummy/jobs/domain/entities/analysis_job.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_status.dart';
@@ -20,11 +16,9 @@ void main() {
     late MockGetJobStatusUseCase mockGetJobStatus;
     late JobEventBus eventBus;
     late JobListViewModel viewModel;
-    late Directory tempDir;
     
     setUpAll(() async {
-      tempDir = await Directory.systemTemp.createTemp('job_list_test_');
-      Hive.init(tempDir.path);
+      // No Hive initialization needed
     });
     
     setUp(() async {
@@ -48,7 +42,7 @@ void main() {
     });
     
     tearDownAll(() async {
-      await tempDir.delete(recursive: true);
+      // Cleanup if needed
     });
     
     AnalysisJob createTestJob({

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'services/langgraph_service.dart';
 import 'services/auto_test.dart';
@@ -9,17 +8,7 @@ import 'core/logging/app_logger.dart';
 import 'auth/auth_module.dart';
 import 'services/service_provider.dart';
 import 'pages/analysis_page_wrapper.dart';
-import 'history/infrastructure/models/hive_history_entry.dart';
-import 'history/infrastructure/models/hive_history_entry_adapter.dart';
-import 'history/infrastructure/models/hive_analysis_details.dart';
-import 'history/infrastructure/models/hive_analysis_details_adapter.dart';
-import 'history/infrastructure/repositories/hive_history_repository.dart';
-import 'history/presentation/screens/history_screen.dart';
-import 'history/presentation/screens/history_detail_screen.dart';
-// Job system imports for Phase 7 UI testing
-import 'jobs/infrastructure/models/hive_analysis_job.dart';
-import 'jobs/infrastructure/models/hive_analysis_job_adapter.dart';
-import 'jobs/infrastructure/repositories/hive_job_repository.dart';
+// Job system imports
 import 'jobs/infrastructure/repositories/sqlite_job_repository.dart';
 import 'jobs/domain/repositories/i_job_repository.dart';
 import 'jobs/application/use_cases/queue_analysis_use_case.dart';
@@ -27,12 +16,6 @@ import 'jobs/application/use_cases/get_job_status_use_case.dart';
 import 'jobs/application/use_cases/cancel_job_use_case.dart';
 import 'jobs/presentation/view_models/job_queue_view_model.dart';
 import 'jobs/presentation/view_models/job_list_view_model.dart';
-import 'jobs/presentation/screens/job_test_screen.dart';
-import 'jobs/presentation/screens/task5_debug_screen.dart';
-import 'jobs/presentation/screens/task5_history_screen.dart';
-import 'debug/screens/sqlite_migration_test_screen.dart';
-import 'migration/screens/migration_control_screen.dart';
-import 'migration/services/migration_manager.dart';
 // Phase 8: Notification system imports
 import 'jobs/infrastructure/services/job_notification_handler.dart';
 import 'jobs/infrastructure/services/job_queue_manager.dart';
@@ -57,46 +40,11 @@ void main() async {
     await dotenv.load(fileName: '.env');
     AppLogger.info('main', '✅ Environment configuration loaded');
     
-    // Initialize Hive
-    AppLogger.info('main', '💾 Initializing Hive database...');
-    await Hive.initFlutter();
-    
-    // Register Hive adapters
-    Hive.registerAdapter(HiveHistoryEntryAdapter());
-    Hive.registerAdapter(HiveAnalysisDetailsAdapter());
-    Hive.registerAdapter(HiveAnalysisJobAdapter());
-    
-    // Open Hive boxes
-    await HiveHistoryRepository.openBox();
-    
-    // Initialize migration manager for Phase 5
-    AppLogger.info('main', '🔄 Initializing migration manager...');
-    final migrationManager = await MigrationManager.create();
-    
-    // Check if automatic migration should be performed
-    if (migrationManager.isMigrationNeeded() && !migrationManager.isMigrationInProgress()) {
-      AppLogger.info('main', '🔄 Starting automatic database migration...');
-      final migrationResult = await migrationManager.performMigration(validateAfter: true);
-      if (migrationResult.success) {
-        AppLogger.info('main', '✅ Database migration completed successfully');
-      } else {
-        AppLogger.warning('main', '⚠️ Database migration failed: ${migrationResult.message}');
-      }
-    }
-    
-    // Initialize job repository based on migration status and feature flags
-    final shouldUseSQLite = await migrationManager.shouldUseSQLite();
-    final IJobRepository jobRepository;
-    
-    if (shouldUseSQLite) {
-      AppLogger.info('main', 'Using SQLite job repository');
-      jobRepository = SQLiteJobRepository();
-      await (jobRepository as SQLiteJobRepository).init();
-    } else {
-      AppLogger.info('main', 'Using Hive job repository');
-      jobRepository = HiveJobRepository();
-      await (jobRepository as HiveJobRepository).init();
-    }
+    // Initialize SQLite job repository
+    AppLogger.info('main', '💾 Initializing SQLite database...');
+    final jobRepository = SQLiteJobRepository();
+    await jobRepository.init();
+    AppLogger.info('main', '✅ SQLite database initialized');
     
     // Initialize job queue manager for Phase 8
     final jobQueueManager = JobQueueManager(repository: jobRepository);
@@ -152,8 +100,6 @@ void main() async {
     
     AppLogger.info('main', '✅ Local-first services initialized and registered');
     
-    AppLogger.info('main', '✅ Hive database initialized');
-    
     // Get LangGraph configuration
     final langGraphUrl = dotenv.env['LANGGRAPH_URL'];
     final langSmithApiKey = dotenv.env['LANGSMITH_API_KEY'];
@@ -191,7 +137,6 @@ void main() async {
       jobQueueManager: jobQueueManager,
       notificationHandler: notificationHandler,
       retryScheduler: retryScheduler,
-      migrationManager: migrationManager,
       // Task 5 services
       analysisDatabase: analysisDatabase,
       langGraphApiService: langGraphApiService,
@@ -213,7 +158,6 @@ class TradingApp extends StatelessWidget {
   final JobQueueManager jobQueueManager;
   final JobNotificationHandler notificationHandler;
   final RetryScheduler retryScheduler;
-  final MigrationManager migrationManager;
   // Task 5 services
   final AnalysisDatabase analysisDatabase;
   final LangGraphApiService langGraphApiService;
@@ -229,7 +173,6 @@ class TradingApp extends StatelessWidget {
     required this.jobQueueManager,
     required this.notificationHandler,
     required this.retryScheduler,
-    required this.migrationManager,
     // Task 5 services
     required this.analysisDatabase,
     required this.langGraphApiService,
@@ -243,7 +186,6 @@ class TradingApp extends StatelessWidget {
     return ServiceProvider(
       langGraphService: langGraphService,
       autoTest: autoTest,
-      migrationManager: migrationManager,
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider(
@@ -294,21 +236,6 @@ class TradingApp extends StatelessWidget {
                 ),
                 '/analysis': (context) => const AuthGuard(
                   child: AnalysisPageWrapper(),
-                ),
-                '/history': (context) => const AuthGuard(
-                  child: Task5HistoryScreen(),  // Using Task 5 history for immediate SQLite updates
-                ),
-                '/jobs': (context) => const AuthGuard(
-                  child: JobTestScreen(),
-                ),
-                '/task5-debug': (context) => const AuthGuard(
-                  child: Task5DebugScreen(),
-                ),
-                '/sqlite-migration-test': (context) => const AuthGuard(
-                  child: SQLiteMigrationTestScreen(),
-                ),
-                '/migration-control': (context) => const AuthGuard(
-                  child: MigrationControlScreen(),
                 ),
               },
               ),

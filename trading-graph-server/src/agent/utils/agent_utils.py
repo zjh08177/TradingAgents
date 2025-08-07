@@ -43,17 +43,24 @@ def create_msg_delete():
 
 
 class Toolkit:
-    _config = DEFAULT_CONFIG.copy()
+    _config = None  # Lazy initialization to prevent blocking I/O at import
+
+    @classmethod
+    def _ensure_config(cls):
+        """Ensure config is initialized (lazy loading)."""
+        if cls._config is None:
+            cls._config = DEFAULT_CONFIG.copy()
+        return cls._config
 
     @classmethod
     def update_config(cls, config):
         """Update the class-level configuration."""
-        cls._config.update(config)
+        cls._ensure_config().update(config)
 
     @property
     def config(self):
         """Access the configuration."""
-        return self._config
+        return self._ensure_config()
 
     def __init__(self, config=None):
         if config:

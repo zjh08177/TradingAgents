@@ -31,11 +31,11 @@ def create_research_debate_controller(config: Dict):
         # Initialize or get debate state
         debate_state = state.get("research_debate_state", {})
         
-        # Initialize fields with defaults
+        # Initialize fields with defaults - start at round 1 consistently
         if "current_round" not in debate_state:
-            debate_state["current_round"] = 0
+            debate_state["current_round"] = 1
         if "max_rounds" not in debate_state:
-            debate_state["max_rounds"] = config.get("max_research_debate_rounds", 1)
+            debate_state["max_rounds"] = config.get("max_research_debate_rounds", 3)
         if "debate_history" not in debate_state:
             debate_state["debate_history"] = []
         if "consensus_reached" not in debate_state:
@@ -44,19 +44,19 @@ def create_research_debate_controller(config: Dict):
         current_round = debate_state["current_round"]
         max_rounds = debate_state["max_rounds"]
         
-        # Increment round for this execution
-        debate_state["current_round"] = current_round + 1
-        
-        logger.info(f"📊 Starting Round {debate_state['current_round']}/{max_rounds}")
+        logger.info(f"📊 Starting Round {current_round}/{max_rounds}")
         logger.info("⚡ Bull and Bear researchers will execute concurrently")
         
         # Log debate status
-        if current_round == 0:
+        if current_round == 1:
             logger.info("🔄 Starting new research debate cycle")
         else:
-            logger.info(f"🔄 Continuing debate - Previous rounds: {current_round}")
+            logger.info(f"🔄 Continuing debate - Previous rounds: {current_round - 1}")
             if debate_state.get("debate_history"):
                 logger.info(f"📚 Debate history: {len(debate_state['debate_history'])} rounds recorded")
+        
+        # Increment round for NEXT execution (after this round completes)
+        debate_state["current_round"] = current_round + 1
         
         return {"research_debate_state": debate_state}
     

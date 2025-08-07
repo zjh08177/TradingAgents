@@ -1,5 +1,6 @@
 # Configuration updates to fix graph execution issues
 # Add these to your default_config.py or config files
+# ASYNC-SAFE: No module-level I/O operations
 
 GRAPH_EXECUTION_CONFIG = {
     # Graph execution limits
@@ -28,11 +29,18 @@ GRAPH_EXECUTION_CONFIG = {
     "target_runtime_seconds": 1200,
 }
 
-# Update existing DEFAULT_CONFIG
-DEFAULT_CONFIG.update(GRAPH_EXECUTION_CONFIG)
+# CRITICAL FIX: Removed module-level DEFAULT_CONFIG.update() to prevent blocking I/O
+# Instead, provide a function that can be called when needed
+def apply_graph_execution_config():
+    """Apply graph execution configuration to DEFAULT_CONFIG when needed."""
+    from .default_config import DEFAULT_CONFIG
+    DEFAULT_CONFIG.update(GRAPH_EXECUTION_CONFIG)
+    return DEFAULT_CONFIG
 
-# Alternative: Merge into existing config
-# DEFAULT_CONFIG = {
-#     **DEFAULT_CONFIG,
-#     **GRAPH_EXECUTION_CONFIG
-# }
+# Alternative: Merge into existing config via function
+# def get_merged_config():
+#     from .default_config import DEFAULT_CONFIG
+#     return {
+#         **DEFAULT_CONFIG,
+#         **GRAPH_EXECUTION_CONFIG
+#     }

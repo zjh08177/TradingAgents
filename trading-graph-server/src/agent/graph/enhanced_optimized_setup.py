@@ -333,10 +333,15 @@ class EnhancedOptimizedGraphBuilder(IGraphBuilder):
         def research_manager_router(state):
             # Convert enhanced state for compatibility
             adapted_state = BackwardCompatibilityAdapter.adapt_state_for_research_manager(state)
-            if not adapted_state.get("investment_plan"):
+            # Check if debate should continue (new simplified logic)
+            if state.get("continue_debate") == True:
                 return "research_debate_controller"
-            else:
+            # Check if investment plan exists (debate completed)
+            elif adapted_state.get("investment_plan"):
                 return "risk_manager"
+            else:
+                # Fallback to continue debate if no clear direction
+                return "research_debate_controller"
         
         graph.add_conditional_edges(
             "research_manager",

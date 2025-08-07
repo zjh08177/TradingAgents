@@ -78,7 +78,7 @@ class MockHistoryRepository implements IHistoryRepository {
   }
 
   @override
-  Future<void> deleteAll() async {
+  Future<void> clear() async {
     if (_errorMessage != null) {
       throw Exception(_errorMessage);
     }

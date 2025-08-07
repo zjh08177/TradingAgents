@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive/hive.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:trading_dummy/jobs/domain/entities/analysis_job.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_status.dart';
@@ -26,11 +24,9 @@ void main() {
     late MockCancelJobUseCase mockCancelJob;
     late JobEventBus eventBus;
     late JobQueueViewModel viewModel;
-    late Directory tempDir;
     
     setUpAll(() async {
-      tempDir = await Directory.systemTemp.createTemp('viewmodel_test_');
-      Hive.init(tempDir.path);
+      // No Hive initialization needed
       
       // Register fallback values for mocktail
       registerFallbackValue(JobPriority.normal);
@@ -61,7 +57,7 @@ void main() {
     });
     
     tearDownAll(() async {
-      await tempDir.delete(recursive: true);
+      // Cleanup if needed
     });
     
     AnalysisJob createTestJob({
