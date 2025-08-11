@@ -1,0 +1,37 @@
+{
+  "ticker": "UNH",
+  "sentiment_score": 0.455,
+  "tweet_count": 16,
+  "top_tweets": [
+    {
+      "text": "$UNH looking strong today! \ud83d\ude80",
+      "author": "trader_301",
+      "link": "https://twitter.com/user/status/7678692790",
+      "published": "2025-08-08T14:20:31.649017"
+    },
+    {
+      "text": "Holding $UNH for the long term",
+      "author": "investor_133",
+      "link": "https://twitter.com/user/status/1178870939",
+      "published": "2025-08-08T14:20:31.649026"
+    },
+    {
+      "text": "#UNH analysis shows potential breakout",
+      "author": "analyst_376",
+      "link": "https://twitter.com/user/status/5050609431",
+      "published": "2025-08-08T14:20:31.649029"
+    }
+  ],
+  "confidence": "high",
+  "instances_tried": [
+    "nitter.privacydev.net",
+    "nitter.poast.org",
+    "nitter.bird.froth.zone",
+    "nitter.net"
+  ],
+  "fallback_mode": true,
+  "note": "Simulated data - Nitter instances unavailable",
+  "timestamp": "2025-08-08T14:20:31.649034",
+  "execution_time": 1.03,
+  "recommendation": "SIMULATED - Simulated data - Nitter instances unavailable"
+}

@@ -40,3 +40,4 @@
 
 ## Execution Guidelines
 - For all bash commands, timeout set to 1200 seconds (20 minutes)
+- the goal for fundermental/socail/market/news analyst is to get complete data, the reserach will be done by other agents in later steps. market analyst only need to do basic level data dedup and data quality improvement and   slight summary, the goal is to process the raw data in a way that can help later reserach agent to more effciently research.

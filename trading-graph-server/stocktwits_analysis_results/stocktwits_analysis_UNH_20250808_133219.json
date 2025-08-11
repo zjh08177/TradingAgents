@@ -1,0 +1,51 @@
+{
+  "ticker": "UNH",
+  "sentiment_score": 0.556,
+  "bullish_percent": 23.3,
+  "bearish_percent": 6.7,
+  "neutral_percent": 70.0,
+  "message_count": 30,
+  "sentiment_labeled_count": 9,
+  "top_messages": [
+    {
+      "body": "$UNH only $27 to go lol",
+      "sentiment": "Neutral",
+      "username": "SeriouslyWhy",
+      "created_at": "2025-08-08T20:31:06Z",
+      "likes": 1
+    },
+    {
+      "body": "$UNH 600 to 250 and some of them think there is more blood to let\u2026lol\u2026pigs get slaughtered",
+      "sentiment": "Neutral",
+      "username": "GoofieBob",
+      "created_at": "2025-08-08T20:30:37Z",
+      "likes": 0
+    },
+    {
+      "body": "$UNH $500 by July 2026.",
+      "sentiment": "Neutral",
+      "username": "robertdollar",
+      "created_at": "2025-08-08T20:28:06Z",
+      "likes": 1
+    },
+    {
+      "body": "FRESH - my latest short video on this week In the degenerate economy \n \nAxon is America&#39;s biggest protector and the stock is a beast, AI is eating CFA&#39;s and boosting Wall Street profits, retai",
+      "sentiment": "Neutral",
+      "username": "howardlindzon",
+      "created_at": "2025-08-08T20:26:32Z",
+      "likes": 4
+    },
+    {
+      "body": "$UNH this company has an international presence for those unawares.",
+      "sentiment": "Neutral",
+      "username": "robertdollar",
+      "created_at": "2025-08-08T20:26:08Z",
+      "likes": 0
+    }
+  ],
+  "confidence": "medium",
+  "symbol_title": "Unitedhealth Group Inc",
+  "timestamp": "2025-08-08T13:32:20.043825",
+  "execution_time": 0.34,
+  "recommendation": "BUY - Bullish StockTwits sentiment"
+}

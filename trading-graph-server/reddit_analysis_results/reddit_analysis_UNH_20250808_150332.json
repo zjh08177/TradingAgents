@@ -1,0 +1,127 @@
+{
+  "ticker": "UNH",
+  "timestamp": "2025-08-08T15:03:32.317373",
+  "analysis": {
+    "day": {
+      "description": "Past 24 hours",
+      "sentiment_score": 0.954,
+      "post_count": 3,
+      "avg_score": 163.33,
+      "avg_comments": 90.0,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 2,
+        "stocks": 1,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 0
+      },
+      "top_posts": [
+        {
+          "title": "I'm from a 3rd world country. It's basically all I have. \"But if you got tremendous conviction on a ",
+          "score": 399,
+          "comments": 170,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mkxj0j/im_from_a_3rd_world_country_its_basically_all_i/"
+        },
+        {
+          "title": "I\u2019m 300 shares deep in UNH at a cost basis of $255",
+          "score": 58,
+          "comments": 77,
+          "subreddit": "stocks",
+          "url": "https://reddit.com/r/stocks/comments/1mksyui/im_300_shares_deep_in_unh_at_a_cost_basis_of_255/"
+        },
+        {
+          "title": "Scalped TSLA puts today",
+          "score": 33,
+          "comments": 23,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mkdhwe/scalped_tsla_puts_today/"
+        }
+      ]
+    },
+    "week": {
+      "description": "Past week",
+      "sentiment_score": 0.986,
+      "post_count": 23,
+      "avg_score": 536.35,
+      "avg_comments": 134.0,
+      "confidence": "high",
+      "subreddit_breakdown": {
+        "wallstreetbets": 18,
+        "stocks": 3,
+        "investing": 1,
+        "StockMarket": 1,
+        "options": 0
+      },
+      "top_posts": [
+        {
+          "title": "Stay strong UNH bagholders",
+          "score": 5084,
+          "comments": 343,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mgpwaq/stay_strong_unh_bagholders/"
+        },
+        {
+          "title": "Bought 16k worth of \u201cMicrosoft\u201d stock in the beginning of the week betting on a good earnings report",
+          "score": 1695,
+          "comments": 148,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1metzi1/bought_16k_worth_of_microsoft_stock_in_the/"
+        },
+        {
+          "title": "What a crazy year so far !! 200% gains YTD",
+          "score": 1347,
+          "comments": 119,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mjr2w7/what_a_crazy_year_so_far_200_gains_ytd/"
+        }
+      ]
+    },
+    "month": {
+      "description": "Past month",
+      "sentiment_score": 0.981,
+      "post_count": 47,
+      "avg_score": 329.72,
+      "avg_comments": 107.06,
+      "confidence": "high",
+      "subreddit_breakdown": {
+        "wallstreetbets": 25,
+        "stocks": 11,
+        "investing": 2,
+        "StockMarket": 6,
+        "options": 3
+      },
+      "top_posts": [
+        {
+          "title": "Stay strong UNH bagholders",
+          "score": 5093,
+          "comments": 343,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mgpwaq/stay_strong_unh_bagholders/"
+        },
+        {
+          "title": "Bought 16k worth of \u201cMicrosoft\u201d stock in the beginning of the week betting on a good earnings report",
+          "score": 1700,
+          "comments": 148,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1metzi1/bought_16k_worth_of_microsoft_stock_in_the/"
+        },
+        {
+          "title": "What a crazy year so far !! 200% gains YTD",
+          "score": 1353,
+          "comments": 119,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mjr2w7/what_a_crazy_year_so_far_200_gains_ytd/"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total_posts_analyzed": 73,
+    "average_sentiment": 0.974,
+    "sentiment_trend": "stable",
+    "recommendation": "BUY - High bullish sentiment",
+    "execution_time": 1.32
+  }
+}

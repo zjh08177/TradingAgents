@@ -10,13 +10,23 @@ class BaseAnalystToolkit(IAnalystToolkit):
     """Base implementation of analyst toolkit with filtered tools"""
     
     def __init__(self, base_toolkit: Toolkit, allowed_tools: List[str]):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         self.config = base_toolkit.config
         self._allowed_tools = allowed_tools
         
         # Copy allowed tools from base toolkit
+        logger.info(f"🔧 BaseAnalystToolkit: Checking {len(allowed_tools)} allowed tools")
+        found_tools = []
         for tool_name in allowed_tools:
             if hasattr(base_toolkit, tool_name):
                 setattr(self, tool_name, getattr(base_toolkit, tool_name))
+                found_tools.append(tool_name)
+                logger.info(f"✅ Found and copied: {tool_name}")
+            else:
+                logger.warning(f"⚠️ Tool not found in base toolkit: {tool_name}")
+        logger.info(f"📊 BaseAnalystToolkit: Found {len(found_tools)}/{len(allowed_tools)} tools: {found_tools}")
     
     def get_available_tools(self) -> List[str]:
         return self._allowed_tools
@@ -63,15 +73,16 @@ class ToolkitFactory:
     
     @staticmethod
     def create_news_toolkit(base_toolkit: Toolkit) -> IAnalystToolkit:
-        """Create news analyst toolkit with comprehensive news sources"""
+        """Create news analyst toolkit with NEWS-ONLY sources (NO social media)"""
         allowed_tools = [
-            # Global news sources
-            "get_global_news_openai", 
+            # Primary news aggregation (4,500+ sources via Google News)
             "get_google_news",
-            "get_reddit_news",
+            # Global news analysis
+            "get_global_news_openai", 
             # Company-specific news
             "get_finnhub_news",
             "get_stock_news_openai"
+            # REMOVED: get_reddit_news (belongs to Social Media Analyst)
         ]
         return BaseAnalystToolkit(base_toolkit, allowed_tools)
     

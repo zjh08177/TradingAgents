@@ -1,0 +1,37 @@
+{
+  "ticker": "ETH",
+  "sentiment_score": 0.611,
+  "tweet_count": 19,
+  "top_tweets": [
+    {
+      "text": "$ETH looking strong today! \ud83d\ude80",
+      "author": "trader_321",
+      "link": "https://twitter.com/user/status/4650634203",
+      "published": "2025-08-08T14:20:23.913398"
+    },
+    {
+      "text": "Holding $ETH for the long term",
+      "author": "investor_293",
+      "link": "https://twitter.com/user/status/1284719095",
+      "published": "2025-08-08T14:20:23.913407"
+    },
+    {
+      "text": "#ETH analysis shows potential breakout",
+      "author": "analyst_382",
+      "link": "https://twitter.com/user/status/5980828578",
+      "published": "2025-08-08T14:20:23.913410"
+    }
+  ],
+  "confidence": "high",
+  "instances_tried": [
+    "nitter.privacydev.net",
+    "nitter.poast.org",
+    "nitter.bird.froth.zone",
+    "nitter.net"
+  ],
+  "fallback_mode": true,
+  "note": "Simulated data - Nitter instances unavailable",
+  "timestamp": "2025-08-08T14:20:23.913415",
+  "execution_time": 1.72,
+  "recommendation": "SIMULATED - Simulated data - Nitter instances unavailable"
+}

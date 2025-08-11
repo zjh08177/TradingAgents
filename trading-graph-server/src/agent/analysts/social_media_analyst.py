@@ -14,6 +14,17 @@ logger = logging.getLogger(__name__)
 
 
 def create_social_media_analyst(llm, toolkit):
+    """
+    Create social media analyst with HARDCODED parallel tool execution.
+    This ensures all 3 tools (Reddit, Twitter, StockTwits) are ALWAYS called.
+    """
+    # Import hardcoded version
+    from .social_media_analyst_hardcoded import create_social_media_analyst_hardcoded
+    return create_social_media_analyst_hardcoded(llm, toolkit)
+
+
+def create_social_media_analyst_old_version(llm, toolkit):
+    """Original LLM-based tool selection version (kept for reference)"""
     @debug_node("Social_Media_Analyst")
     async def social_media_analyst_node(state):
         # Task: Add Execution Timing Logs
@@ -25,40 +36,59 @@ def create_social_media_analyst(llm, toolkit):
         company_name = state["company_of_interest"]
 
         if toolkit.config["online_tools"]:
-            tools = [
-                toolkit.get_stock_news_openai,
-                # toolkit.get_reddit_stock_info,      # DISABLED: Division by zero error
-            ]
-            # Add additional tools if available
+            tools = []
+            # SOCIAL MEDIA TOOLS ONLY - News analysis is handled by News Analyst
+            logger.info(f"🔍 SOCIAL ANALYST: Checking for available tools...")
+            if hasattr(toolkit, 'get_reddit_stock_info'):
+                tools.append(toolkit.get_reddit_stock_info)
+                logger.info(f"✅ SOCIAL ANALYST: Added get_reddit_stock_info")
+            else:
+                logger.warning(f"⚠️ SOCIAL ANALYST: get_reddit_stock_info NOT AVAILABLE")
+            if hasattr(toolkit, 'get_stocktwits_sentiment'):
+                tools.append(toolkit.get_stocktwits_sentiment)
+                logger.info(f"✅ SOCIAL ANALYST: Added get_stocktwits_sentiment")
+            else:
+                logger.warning(f"⚠️ SOCIAL ANALYST: get_stocktwits_sentiment NOT AVAILABLE")
+            if hasattr(toolkit, 'get_twitter_mentions'):
+                tools.append(toolkit.get_twitter_mentions)
+                logger.info(f"✅ SOCIAL ANALYST: Added get_twitter_mentions")
+            else:
+                logger.warning(f"⚠️ SOCIAL ANALYST: get_twitter_mentions NOT AVAILABLE")
+            logger.info(f"📊 SOCIAL ANALYST: Total tools available: {len(tools)}")
+        else:
+            tools = []
+            # Even in offline mode, try to get social tools if available
             if hasattr(toolkit, 'get_stocktwits_sentiment'):
                 tools.append(toolkit.get_stocktwits_sentiment)
             if hasattr(toolkit, 'get_twitter_mentions'):
                 tools.append(toolkit.get_twitter_mentions)
-        else:
-            tools = [
-                # toolkit.get_reddit_stock_info,    # DISABLED: Division by zero error
-            ]
-            # Add fallback tool when Reddit is disabled
-            if hasattr(toolkit, 'get_stock_news_openai'):
-                tools.append(toolkit.get_stock_news_openai)
 
-        system_message = (
-            """Expert social media analyst: sentiment & public perception.
+        system_message = """
+You are a Social Media Sentiment Analyst for {ticker}.
 
-MANDATORY: Use tools→get real social data before analysis.
-Tools: {tool_names}
+YOUR ROLE: Analyze social media discussions (Reddit, Twitter, StockTwits) to gauge retail investor sentiment.
+NOT YOUR ROLE: News analysis (handled by News Analyst).
 
-Workflow: 1)Call tools 2)Get data 3)Analyze 4)Report
+CRITICAL REQUIREMENT - CALL EXACTLY 3 TOOLS IN THIS ORDER:
+1. Call get_reddit_stock_info(ticker="{ticker}", curr_date="{current_date}")
+2. Call get_twitter_mentions(ticker="{ticker}")  
+3. Call get_stocktwits_sentiment(ticker="{ticker}")
 
-After getting real social sentiment data from tools, provide analysis:
-1. Sentiment Score: Quantified sentiment (-100 to +100)
-2. Trend Direction: Rising/Falling/Stable momentum
-3. Trading Signals: BUY/SELL/HOLD based on sentiment
-4. Risk Assessment: Reputation & viral risks
+DO NOT PROCEED WITHOUT CALLING ALL 3 TOOLS ABOVE!
+If any tool fails, still call the remaining tools.
+Your analysis MUST include data from Reddit, Twitter, AND StockTwits.
 
-Focus on actionable trading insights from current social data.
-            """
-        )
+OUTPUT REQUIREMENTS (after calling all 3 tools):
+SENTIMENT SCORE: [-1 to +1] where -1=bearish, 0=neutral, +1=bullish
+CONFIDENCE: [Low/Medium/High] based on data volume and consensus
+TREND: [Rising/Falling/Stable] sentiment momentum
+KEY INSIGHTS: Top 3 findings from social discussions
+SIGNAL: [BUY/SELL/HOLD] with brief rationale
+
+Focus on social sentiment only. Do not analyze news articles.
+Available tools: {tool_names}
+Remember: Call ALL THREE tools - get_twitter_mentions, get_stocktwits_sentiment, AND get_reddit_stock_info
+        """
 
         prompt = ChatPromptTemplate.from_messages(
             [
@@ -77,9 +107,9 @@ Focus on actionable trading insights from current social data.
             ]
         )
 
-        # Format system message with tool names first
+        # Format system message with tool names and ticker
         tool_names_str = ", ".join([tool.name for tool in tools])
-        system_message = system_message.format(tool_names=tool_names_str)
+        system_message = system_message.format(ticker=ticker, tool_names=tool_names_str)
         
         prompt = prompt.partial(system_message=system_message)
         prompt = prompt.partial(tool_names=tool_names_str)

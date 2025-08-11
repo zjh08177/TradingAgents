@@ -1,0 +1,45 @@
+================================================
+BATCH REDDIT SENTIMENT ANALYSIS
+Generated: Fri Aug  8 13:03:46 PDT 2025
+================================================
+
+TICKER: AAPL
+----------------------------------------
+Sentiment Score: 0.987
+Total Posts: 88
+Trend: stable
+Recommendation: BUY - High bullish sentiment
+  Day: 0.984 (6 posts)
+  Week: 0.992 (21 posts)
+  Month: 0.986 (61 posts)
+
+TICKER: TSLA
+----------------------------------------
+Sentiment Score: 0.972
+Total Posts: 92
+Trend: stable
+Recommendation: BUY - High bullish sentiment
+  Day: 0.961 (4 posts)
+  Week: 0.987 (19 posts)
+  Month: 0.968 (69 posts)
+
+TICKER: GME
+----------------------------------------
+Sentiment Score: 0.708
+Total Posts: 11
+Trend: falling
+Recommendation: BUY - High bullish sentiment
+  Day: 0.500 (0 posts)
+  Week: 0.686 (3 posts)
+  Month: 0.939 (8 posts)
+
+TICKER: NVDA
+----------------------------------------
+Sentiment Score: 0.960
+Total Posts: 134
+Trend: stable
+Recommendation: BUY - High bullish sentiment
+  Day: 0.930 (4 posts)
+  Week: 0.975 (29 posts)
+  Month: 0.974 (101 posts)
+

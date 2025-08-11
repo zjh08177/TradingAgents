@@ -1,0 +1,51 @@
+{
+  "ticker": "TSLA",
+  "sentiment_score": 0.833,
+  "bullish_percent": 36.7,
+  "bearish_percent": 3.3,
+  "neutral_percent": 60.0,
+  "message_count": 30,
+  "sentiment_labeled_count": 12,
+  "top_messages": [
+    {
+      "body": "$TSLA my favourite time of year is when the streets are quiet about TSLA, coiling up tight and could get confirmation of a golden cross today (yellow circle). Breakout confirmation over $335. Patience",
+      "sentiment": "Bullish",
+      "username": "StrategicView",
+      "created_at": "2025-08-08T20:28:30Z",
+      "likes": 2
+    },
+    {
+      "body": "$TSLA",
+      "sentiment": "Bullish",
+      "username": "calivegas",
+      "created_at": "2025-08-08T20:28:18Z",
+      "likes": 0
+    },
+    {
+      "body": "$TGNA do we see $25 a share ?!?!! On the \u201cbuyout\u201d \ud83e\udd11\ud83e\udd11\ud83e\udd11 $NXST $SPY $TSLA",
+      "sentiment": "Bullish",
+      "username": "THE_STOCK_LIFE",
+      "created_at": "2025-08-08T20:27:44Z",
+      "likes": 0
+    },
+    {
+      "body": "$TSLA cant help but thinking we are having some false breakouts and a big drop in the market is coming soon",
+      "sentiment": "Neutral",
+      "username": "LAMC1",
+      "created_at": "2025-08-08T20:26:20Z",
+      "likes": 0
+    },
+    {
+      "body": "What You Missed On Wall Street On Friday - $TSLA - https://thefly.com/permalinks/entry.php/TSLAid4180241?1754684729C38",
+      "sentiment": "Neutral",
+      "username": "theflynews",
+      "created_at": "2025-08-08T20:26:06Z",
+      "likes": 0
+    }
+  ],
+  "confidence": "high",
+  "symbol_title": "Tesla Inc",
+  "timestamp": "2025-08-08T13:32:11.280893",
+  "execution_time": 0.28,
+  "recommendation": "BUY - Bullish StockTwits sentiment"
+}

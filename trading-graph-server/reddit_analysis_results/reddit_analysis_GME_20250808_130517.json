@@ -1,0 +1,76 @@
+Reddit API returned status 429 for r/stocks
+Reddit API returned status 429 for r/wallstreetbets
+Reddit API returned status 429 for r/options
+Reddit API returned status 429 for r/StockMarket
+Reddit API returned status 429 for r/investing
+Timeout fetching r/wallstreetbets
+Timeout fetching r/options
+Timeout fetching r/investing
+Timeout fetching r/stocks
+Timeout fetching r/StockMarket
+Timeout fetching r/stocks
+Timeout fetching r/wallstreetbets
+Timeout fetching r/investing
+Timeout fetching r/options
+Timeout fetching r/StockMarket
+{
+  "ticker": "GME",
+  "timestamp": "2025-08-08T13:05:17.684139",
+  "analysis": {
+    "day": {
+      "description": "Past 24 hours",
+      "sentiment_score": 0.5,
+      "post_count": 0,
+      "avg_score": 0,
+      "avg_comments": 0,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 0,
+        "stocks": 0,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 0
+      },
+      "top_posts": []
+    },
+    "week": {
+      "description": "Past week",
+      "sentiment_score": 0.5,
+      "post_count": 0,
+      "avg_score": 0,
+      "avg_comments": 0,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 0,
+        "stocks": 0,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 0
+      },
+      "top_posts": []
+    },
+    "month": {
+      "description": "Past month",
+      "sentiment_score": 0.5,
+      "post_count": 0,
+      "avg_score": 0,
+      "avg_comments": 0,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 0,
+        "stocks": 0,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 0
+      },
+      "top_posts": []
+    }
+  },
+  "summary": {
+    "total_posts_analyzed": 0,
+    "average_sentiment": 0.5,
+    "sentiment_trend": "stable",
+    "recommendation": "INSUFFICIENT_DATA - Too few posts for reliable analysis",
+    "execution_time": 11.21
+  }
+}

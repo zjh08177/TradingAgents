@@ -1,0 +1,9 @@
+{
+  "ticker": "AAPL",
+  "sentiment_score": 0.0,
+  "message_count": 0,
+  "error": "'NoneType' object has no attribute 'get'",
+  "confidence": "low",
+  "execution_time": 0.25,
+  "recommendation": "ERROR - 'NoneType' object has no attribute 'get'"
+}

@@ -1,0 +1,127 @@
+{
+  "ticker": "NVDA",
+  "timestamp": "2025-08-08T13:03:51.083825",
+  "analysis": {
+    "day": {
+      "description": "Past 24 hours",
+      "sentiment_score": 0.93,
+      "post_count": 4,
+      "avg_score": 33.5,
+      "avg_comments": 40.5,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 3,
+        "stocks": 1,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 0
+      },
+      "top_posts": [
+        {
+          "title": "How do 3x shares work, they don't seem to be 3x",
+          "score": 74,
+          "comments": 72,
+          "subreddit": "stocks",
+          "url": "https://reddit.com/r/stocks/comments/1mkxvzn/how_do_3x_shares_work_they_dont_seem_to_be_3x/"
+        },
+        {
+          "title": "TSLA 0DTE won so much I finally lost. We\u2019ll see if NVDA earnings can bring me back to life \ud83d\ude02",
+          "score": 36,
+          "comments": 77,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1ml1cwl/tsla_0dte_won_so_much_i_finally_lost_well_see_if/"
+        },
+        {
+          "title": "Made decent on NVDA, I\u2019m back with HOOD now",
+          "score": 14,
+          "comments": 7,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mkkm5a/made_decent_on_nvda_im_back_with_hood_now/"
+        }
+      ]
+    },
+    "week": {
+      "description": "Past week",
+      "sentiment_score": 0.975,
+      "post_count": 29,
+      "avg_score": 183.76,
+      "avg_comments": 54.1,
+      "confidence": "high",
+      "subreddit_breakdown": {
+        "wallstreetbets": 15,
+        "stocks": 6,
+        "investing": 1,
+        "StockMarket": 4,
+        "options": 3
+      },
+      "top_posts": [
+        {
+          "title": "What a crazy year so far !! 200% gains YTD",
+          "score": 1335,
+          "comments": 118,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mjr2w7/what_a_crazy_year_so_far_200_gains_ytd/"
+        },
+        {
+          "title": "Crossed $1M on robinhood",
+          "score": 1322,
+          "comments": 141,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mez4ao/crossed_1m_on_robinhood/"
+        },
+        {
+          "title": "400K full port puts on SPY, COIN, MSTR, PLTR, AMD, NVDA, GOOG, MARA, HOOD (UPDATED)",
+          "score": 655,
+          "comments": 187,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mgawvy/400k_full_port_puts_on_spy_coin_mstr_pltr_amd/"
+        }
+      ]
+    },
+    "month": {
+      "description": "Past month",
+      "sentiment_score": 0.974,
+      "post_count": 101,
+      "avg_score": 272.21,
+      "avg_comments": 77.69,
+      "confidence": "high",
+      "subreddit_breakdown": {
+        "wallstreetbets": 25,
+        "stocks": 25,
+        "investing": 12,
+        "StockMarket": 18,
+        "options": 21
+      },
+      "top_posts": [
+        {
+          "title": "Today I made $1m gains by selling my entire Nvidia portfolio",
+          "score": 11198,
+          "comments": 1053,
+          "subreddit": "investing",
+          "url": "https://reddit.com/r/investing/comments/1lw0ltf/today_i_made_1m_gains_by_selling_my_entire_nvidia/"
+        },
+        {
+          "title": "If only I bought more...",
+          "score": 2159,
+          "comments": 185,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mdxkfp/if_only_i_bought_more/"
+        },
+        {
+          "title": "What a crazy year so far !! 200% gains YTD",
+          "score": 1335,
+          "comments": 118,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mjr2w7/what_a_crazy_year_so_far_200_gains_ytd/"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total_posts_analyzed": 134,
+    "average_sentiment": 0.96,
+    "sentiment_trend": "stable",
+    "recommendation": "BUY - High bullish sentiment",
+    "execution_time": 1.38
+  }
+}

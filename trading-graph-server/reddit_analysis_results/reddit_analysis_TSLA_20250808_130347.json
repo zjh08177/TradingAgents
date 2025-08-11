@@ -1,0 +1,127 @@
+{
+  "ticker": "TSLA",
+  "timestamp": "2025-08-08T13:03:48.128256",
+  "analysis": {
+    "day": {
+      "description": "Past 24 hours",
+      "sentiment_score": 0.961,
+      "post_count": 4,
+      "avg_score": 22.25,
+      "avg_comments": 27.25,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 3,
+        "stocks": 0,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 1
+      },
+      "top_posts": [
+        {
+          "title": "Scalped TSLA puts today",
+          "score": 39,
+          "comments": 23,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mkdhwe/scalped_tsla_puts_today/"
+        },
+        {
+          "title": "TSLA 0DTE won so much I finally lost. We\u2019ll see if NVDA earnings can bring me back to life \ud83d\ude02",
+          "score": 37,
+          "comments": 77,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1ml1cwl/tsla_0dte_won_so_much_i_finally_lost_well_see_if/"
+        },
+        {
+          "title": "Put half my work check on a 0dte",
+          "score": 11,
+          "comments": 8,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mkvm2s/put_half_my_work_check_on_a_0dte/"
+        }
+      ]
+    },
+    "week": {
+      "description": "Past week",
+      "sentiment_score": 0.987,
+      "post_count": 19,
+      "avg_score": 234.05,
+      "avg_comments": 65.16,
+      "confidence": "medium",
+      "subreddit_breakdown": {
+        "wallstreetbets": 13,
+        "stocks": 2,
+        "investing": 0,
+        "StockMarket": 1,
+        "options": 3
+      },
+      "top_posts": [
+        {
+          "title": "what goes up must come down $100K -&gt; $371K -&gt; $54K",
+          "score": 1558,
+          "comments": 240,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mj7uud/what_goes_up_must_come_down_100k_371k_54k/"
+        },
+        {
+          "title": "Not stopping until we reach half a mili",
+          "score": 999,
+          "comments": 161,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mgzoa6/not_stopping_until_we_reach_half_a_mili/"
+        },
+        {
+          "title": "Lost $83k CAD trying to short Tesla this summer",
+          "score": 674,
+          "comments": 196,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mir6il/lost_83k_cad_trying_to_short_tesla_this_summer/"
+        }
+      ]
+    },
+    "month": {
+      "description": "Past month",
+      "sentiment_score": 0.968,
+      "post_count": 69,
+      "avg_score": 189.45,
+      "avg_comments": 60.99,
+      "confidence": "high",
+      "subreddit_breakdown": {
+        "wallstreetbets": 25,
+        "stocks": 18,
+        "investing": 8,
+        "StockMarket": 7,
+        "options": 11
+      },
+      "top_posts": [
+        {
+          "title": "Tesla falls out of trillion-dollar club after ugly earnings",
+          "score": 2664,
+          "comments": 186,
+          "subreddit": "StockMarket",
+          "url": "https://reddit.com/r/StockMarket/comments/1m8f0mi/tesla_falls_out_of_trilliondollar_club_after_ugly/"
+        },
+        {
+          "title": "what goes up must come down $100K -&gt; $371K -&gt; $54K",
+          "score": 1555,
+          "comments": 240,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mj7uud/what_goes_up_must_come_down_100k_371k_54k/"
+        },
+        {
+          "title": "Tesla's California sales down for seven straight quarters",
+          "score": 1368,
+          "comments": 124,
+          "subreddit": "stocks",
+          "url": "https://reddit.com/r/stocks/comments/1m6ngcw/teslas_california_sales_down_for_seven_straight/"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "total_posts_analyzed": 92,
+    "average_sentiment": 0.972,
+    "sentiment_trend": "stable",
+    "recommendation": "BUY - High bullish sentiment",
+    "execution_time": 1.35
+  }
+}

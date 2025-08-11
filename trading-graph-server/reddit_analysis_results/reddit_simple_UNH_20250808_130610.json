@@ -1,0 +1,13 @@
+{
+  "ticker": "UNH",
+  "sentiment_score": 0.5,
+  "post_count": 0,
+  "avg_score": 0,
+  "avg_comments": 0,
+  "top_posts": [],
+  "subreddit_breakdown": {
+    "stocks": 0
+  },
+  "confidence": "low",
+  "error": "No posts found"
+}

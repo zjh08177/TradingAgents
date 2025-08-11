@@ -1,0 +1,51 @@
+{
+  "ticker": "AAPL",
+  "sentiment_score": 0.833,
+  "bullish_percent": 36.7,
+  "bearish_percent": 3.3,
+  "neutral_percent": 60.0,
+  "message_count": 30,
+  "sentiment_labeled_count": 12,
+  "top_messages": [
+    {
+      "body": "Apple $AAPL stock was up 13% this past week its best week since July 2020",
+      "sentiment": "Bullish",
+      "username": "DavidMacph1",
+      "created_at": "2025-08-08T20:31:49Z",
+      "likes": 0
+    },
+    {
+      "body": "$AAPL $SPY $QQQ lmao",
+      "sentiment": "Neutral",
+      "username": "Trading105",
+      "created_at": "2025-08-08T20:28:55Z",
+      "likes": 0
+    },
+    {
+      "body": "$AAPL $NVDA $PLTR \nYou&#39;re Welcome!",
+      "sentiment": "Neutral",
+      "username": "akroller",
+      "created_at": "2025-08-08T20:23:56Z",
+      "likes": 1
+    },
+    {
+      "body": "$AAPL can we see 9% next week and go green for the year \ud83d\ude31",
+      "sentiment": "Neutral",
+      "username": "SMStocks101",
+      "created_at": "2025-08-08T20:22:59Z",
+      "likes": 0
+    },
+    {
+      "body": "$AAPL are we actually going to start manufacturing phones here?",
+      "sentiment": "Neutral",
+      "username": "FishtailJJ",
+      "created_at": "2025-08-08T20:22:45Z",
+      "likes": 0
+    }
+  ],
+  "confidence": "high",
+  "symbol_title": "Apple Inc",
+  "timestamp": "2025-08-08T13:31:51.302481",
+  "execution_time": 0.39,
+  "recommendation": "BUY - Bullish StockTwits sentiment"
+}

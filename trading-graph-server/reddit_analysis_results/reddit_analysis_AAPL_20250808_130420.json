@@ -1,0 +1,110 @@
+Reddit API returned status 429 for r/StockMarket
+Reddit API returned status 429 for r/stocks
+Reddit API returned status 429 for r/investing
+Reddit API returned status 429 for r/options
+Reddit API returned status 429 for r/wallstreetbets
+{
+  "ticker": "AAPL",
+  "timestamp": "2025-08-08T13:04:21.122465",
+  "analysis": {
+    "day": {
+      "description": "Past 24 hours",
+      "sentiment_score": 0.953,
+      "post_count": 6,
+      "avg_score": 31.17,
+      "avg_comments": 69.17,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 5,
+        "stocks": 1,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 0
+      },
+      "top_posts": [
+        {
+          "title": "Gonna fucking kms",
+          "score": 106,
+          "comments": 102,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mky12b/gonna_fucking_kms/"
+        },
+        {
+          "title": "Thanks Apple",
+          "score": 57,
+          "comments": 11,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1ml0bkl/thanks_apple/"
+        },
+        {
+          "title": "Apple.",
+          "score": 9,
+          "comments": 4,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1ml16qw/apple/"
+        }
+      ]
+    },
+    "week": {
+      "description": "Past week",
+      "sentiment_score": 0.992,
+      "post_count": 21,
+      "avg_score": 162.57,
+      "avg_comments": 99.29,
+      "confidence": "high",
+      "subreddit_breakdown": {
+        "wallstreetbets": 13,
+        "stocks": 3,
+        "investing": 0,
+        "StockMarket": 3,
+        "options": 2
+      },
+      "top_posts": [
+        {
+          "title": "Trump gets a golden tribute from Apple. Does this impact $AAPL\u2019s public image or stock?",
+          "score": 1683,
+          "comments": 480,
+          "subreddit": "StockMarket",
+          "url": "https://reddit.com/r/StockMarket/comments/1mjlf3o/trump_gets_a_golden_tribute_from_apple_does_this/"
+        },
+        {
+          "title": "Wish every day could be like this-appreciate it",
+          "score": 667,
+          "comments": 83,
+          "subreddit": "wallstreetbets",
+          "url": "https://reddit.com/r/wallstreetbets/comments/1mjddnv/wish_every_day_could_be_like_thisappreciate_it/"
+        },
+        {
+          "title": "Is AAPL still a buy?",
+          "score": 222,
+          "comments": 173,
+          "subreddit": "stocks",
+          "url": "https://reddit.com/r/stocks/comments/1mi465p/is_aapl_still_a_buy/"
+        }
+      ]
+    },
+    "month": {
+      "description": "Past month",
+      "sentiment_score": 0.5,
+      "post_count": 0,
+      "avg_score": 0,
+      "avg_comments": 0,
+      "confidence": "low",
+      "subreddit_breakdown": {
+        "wallstreetbets": 0,
+        "stocks": 0,
+        "investing": 0,
+        "StockMarket": 0,
+        "options": 0
+      },
+      "top_posts": []
+    }
+  },
+  "summary": {
+    "total_posts_analyzed": 27,
+    "average_sentiment": 0.815,
+    "sentiment_trend": "stable",
+    "recommendation": "BUY - High bullish sentiment",
+    "execution_time": 1.15
+  }
+}
