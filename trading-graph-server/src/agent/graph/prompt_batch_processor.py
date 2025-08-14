@@ -10,10 +10,11 @@ import time
 from typing import Dict, List, Tuple, Any, Optional
 from dataclasses import dataclass
 
-from ..utils.batch_optimizer import BatchPromptOptimizer, get_batch_optimizer
+# Removed stale imports:
+# - batch_optimizer (deleted - unused)
+# - token_optimizer (to be reviewed for deletion)
 from ..utils.prompt_compressor import get_prompt_compressor
 from ..utils.agent_prompt_enhancer import get_prompt_enhancer
-from ..utils.token_optimizer import get_token_optimizer
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +41,11 @@ class GraphPromptBatchProcessor:
             config: Configuration dictionary
         """
         self.config = config or {}
-        self.batch_optimizer = get_batch_optimizer()
+        # STALE CODE - DISABLED: These optimizers were removed during cleanup
+        # self.batch_optimizer = get_batch_optimizer()
         self.compressor = get_prompt_compressor()
         self.enhancer = get_prompt_enhancer()
-        self.token_optimizer = get_token_optimizer()
+        # self.token_optimizer = get_token_optimizer()
         
         # Cache for processed prompts to avoid reprocessing
         self._prompt_cache: Dict[str, str] = {}
@@ -97,7 +99,7 @@ class GraphPromptBatchProcessor:
             if base_prompt:
                 prompts_to_process.append((base_prompt, agent_type))
                 agent_types.append(agent_type)
-                original_tokens += self.token_optimizer.count_tokens(base_prompt)
+                original_tokens += len(base_prompt) // 4  # Simple token estimate
         
         # If all prompts are cached, return cached results
         if not prompts_to_process:
@@ -118,10 +120,25 @@ class GraphPromptBatchProcessor:
         # Process prompts in parallel
         logger.info(f"⚡ Processing {len(prompts_to_process)} prompts in parallel")
         
-        # Use batch optimizer for parallel processing
-        result = await self.batch_optimizer.process_prompts_parallel(
-            prompts_to_process,
-            max_concurrent=8  # Increased concurrency for analyst prompts
+        # STALE CODE - DISABLED: Batch optimizer was removed, using fallback
+        # result = await self.batch_optimizer.process_prompts_parallel(
+        #     prompts_to_process,
+        #     max_concurrent=8  # Increased concurrency for analyst prompts
+        # )
+        
+        # Simple fallback: return original prompts
+        from dataclasses import dataclass
+        @dataclass
+        class FallbackResult:
+            processed_prompts: List[str]
+            errors: List[None]
+            speedup: float
+        
+        processed_prompts_list = [prompt for prompt, _ in prompts_to_process]
+        result = FallbackResult(
+            processed_prompts=processed_prompts_list,
+            errors=[None] * len(prompts_to_process),
+            speedup=1.0
         )
         
         # Build processed prompts dictionary
@@ -137,14 +154,12 @@ class GraphPromptBatchProcessor:
                 cache_key = f"{agent_type}:{hash(analyst_configs[agent_type].get('base_prompt', ''))}"
                 self._prompt_cache[cache_key] = processed_prompt
                 
-                compressed_tokens += self.token_optimizer.count_tokens(processed_prompt)
+                compressed_tokens += len(processed_prompt) // 4  # Simple token estimate
             else:
                 # Fallback to original prompt on error
                 logger.warning(f"⚠️ Failed to process {agent_type} prompt: {result.errors[i]}")
                 processed_prompts[agent_type] = analyst_configs[agent_type].get('base_prompt', '')
-                compressed_tokens += self.token_optimizer.count_tokens(
-                    analyst_configs[agent_type].get('base_prompt', '')
-                )
+                compressed_tokens += len(analyst_configs[agent_type].get('base_prompt', '')) // 4  # Simple token estimate
         
         # Add cached prompts that weren't reprocessed
         for agent_type in analyst_configs:

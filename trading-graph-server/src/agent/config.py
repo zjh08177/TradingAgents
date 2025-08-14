@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 from pydantic import Field, validator
 from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
+# REMOVED: from dotenv import load_dotenv - causes blocking I/O
 
 
 class TradingConfig(BaseSettings):
@@ -47,17 +47,17 @@ class TradingConfig(BaseSettings):
     api_host: str = Field(default="localhost", env="TRADINGAGENTS_API_HOST")
     api_port: int = Field(default=8000, env="TRADINGAGENTS_API_PORT")
     
-    # === LLM CONFIGURATION (FIXED: now reads from .env properly) ===
-    llm_provider: str = Field(default="openai")
-    # FIX: Field names now match environment variable names for automatic pickup
-    deep_think_model: str = Field(default="o1")  # Automatically reads DEEP_THINK_MODEL from .env 
-    quick_think_model: str = Field(default="gpt-4o")  # Automatically reads QUICK_THINK_MODEL from .env
-    backend_url: str = Field(default="https://api.openai.com/v1")  # Automatically reads BACKEND_URL from .env
+    # === LLM CONFIGURATION (properly reads from .env with explicit env parameter) ===
+    llm_provider: str = Field(default="openai", env="LLM_PROVIDER")
+    # Explicitly map to environment variables using env parameter
+    deep_think_model: str = Field(default="gpt-4o", env="DEEP_THINK_MODEL")  # Reads DEEP_THINK_MODEL from .env
+    quick_think_model: str = Field(default="gpt-4o-mini", env="QUICK_THINK_MODEL")  # Reads QUICK_THINK_MODEL from .env
+    backend_url: str = Field(default="https://api.openai.com/v1", env="BACKEND_URL")  # Reads BACKEND_URL from .env
     
     # === EXECUTION LIMITS (preserved from default_config.py) ===
-    max_debate_rounds: int = Field(default=3, env="MAX_DEBATE_ROUNDS")
+    max_debate_rounds: int = Field(default=1, env="MAX_DEBATE_ROUNDS")
     max_risk_discuss_rounds: int = Field(default=1, env="MAX_RISK_DISCUSS_ROUNDS")
-    max_research_debate_rounds: int = Field(default=3, env="MAX_RESEARCH_DEBATE_ROUNDS")
+    max_research_debate_rounds: int = Field(default=1, env="MAX_RESEARCH_DEBATE_ROUNDS")
     max_recur_limit: int = Field(default=100, env="MAX_RECUR_LIMIT")
     recursion_limit: int = Field(default=50, env="RECURSION_LIMIT")
     execution_timeout: int = Field(default=1200, env="EXECUTION_TIMEOUT")  # 20 minutes
@@ -128,10 +128,12 @@ class TradingConfig(BaseSettings):
             "api_host": self.api_host,
             "api_port": self.api_port,
             
-            # LLM settings (preserve original keys) - FIXED to use .env values
+            # LLM settings (preserve original keys AND provide expected keys)
             "llm_provider": self.llm_provider,
-            "deep_think_llm": self.deep_think_model,  # Maps deep_think_model -> deep_think_llm
-            "quick_think_llm": self.quick_think_model,  # Maps quick_think_model -> quick_think_llm  
+            "deep_think_llm": self.deep_think_model,  # Legacy key for backward compatibility
+            "quick_think_llm": self.quick_think_model,  # Legacy key for backward compatibility
+            "reasoning_model": self.deep_think_model,  # Key expected by trading_graph.py & llm_factory.py
+            "quick_thinking_model": self.quick_think_model,  # Key expected by trading_graph.py & llm_factory.py
             "backend_url": self.backend_url,  # Now reads from BACKEND_URL
             
             # Execution settings (preserve original keys)
@@ -198,37 +200,26 @@ _env_loaded: bool = False
 
 
 def _ensure_env_loaded():
-    """Ensure .env file is loaded in an async-safe way"""
+    """NO-OP: Environment variables should be loaded before the app starts"""
+    # CRITICAL FIX: Remove ALL file I/O operations
+    # Environment variables must be set BEFORE the application starts
+    # Either through:
+    # 1. System environment variables
+    # 2. Docker/Kubernetes env settings
+    # 3. Shell export commands
+    # 4. .env file loaded by the APPLICATION (not the library)
+    #
+    # This library code should NEVER do file I/O to avoid blocking in async context
     global _env_loaded
-    if not _env_loaded:
-        # Check if .env file exists
-        env_path = Path(".env")
-        if env_path.exists():
-            try:
-                # Check if we're in an async context
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    # We're in an async context - use thread to avoid blocking
-                    import concurrent.futures
-                    with concurrent.futures.ThreadPoolExecutor() as executor:
-                        future = executor.submit(load_dotenv, env_path)
-                        # This is still synchronous but happens in a thread
-                        future.result()
-                else:
-                    # Not in async context - safe to load directly
-                    load_dotenv(env_path)
-            except RuntimeError:
-                # No event loop - safe to load directly
-                load_dotenv(env_path)
-        _env_loaded = True
+    _env_loaded = True
 
 
 def get_trading_config() -> TradingConfig:
-    """Get the global trading configuration instance"""
+    """Get the global trading configuration instance - COMPLETELY ASYNC-SAFE"""
     global _config
     if _config is None:
-        # Load .env file in async-safe way before creating config
-        _ensure_env_loaded()
+        # NO FILE I/O: Just read from already-set environment variables
+        # The application should load .env BEFORE importing this module
         _config = TradingConfig()
     return _config
 

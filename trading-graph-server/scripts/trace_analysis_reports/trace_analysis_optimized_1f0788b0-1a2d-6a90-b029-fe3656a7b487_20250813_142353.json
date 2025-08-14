@@ -1,0 +1,1943 @@
+{
+  "metadata": {
+    "trace_id": "1f0788b0-1a2d-6a90-b029-fe3656a7b487",
+    "analysis_timestamp": "2025-08-13T14:23:53.885725",
+    "analysis_version": "optimized_v1.0",
+    "estimated_size_bytes": 85475,
+    "optimization_applied": false
+  },
+  "analysis": {
+    "trace_id": "1f0788b0-1a2d-6a90-b029-fe3656a7b487",
+    "summary": {
+      "name": "trading_agents",
+      "status": "pending",
+      "total_runs": 9,
+      "analyzed_runs": 9,
+      "run_types": {
+        "chain": 9
+      },
+      "status_distribution": {
+        "pending": 2,
+        "success": 7
+      },
+      "duration_seconds": null,
+      "duration_formatted": "Unknown",
+      "has_errors": false,
+      "error_count": 0
+    },
+    "performance_metrics": {
+      "total_tokens": 5278,
+      "prompt_tokens": 4655,
+      "completion_tokens": 623,
+      "token_efficiency": 0.13383458646616542,
+      "child_run_count": 9,
+      "total_run_count": 9,
+      "success_rate": 70.0,
+      "successful_runs": 7,
+      "failed_runs": 3,
+      "avg_run_duration": 2.8804462857142856,
+      "min_run_duration": 0.001084,
+      "max_run_duration": 14.01519,
+      "total_run_time": 20.163124,
+      "timing_samples": 7
+    },
+    "error_analysis": {
+      "total_errors": 0,
+      "error_categories": {},
+      "errors": [],
+      "has_critical_errors": false
+    },
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_performance": {},
+      "overall_tool_success_rate": 100.0,
+      "most_used_tool": null,
+      "most_problematic_tool": null
+    },
+    "timing_analysis": {
+      "timing_by_type": {
+        "chain": {
+          "count": 7,
+          "total_time": 20.163124,
+          "avg_time": 2.8804462857142856,
+          "max_time": 14.01519,
+          "min_time": 0.001084
+        }
+      },
+      "bottlenecks": [],
+      "has_bottlenecks": false
+    },
+    "token_analysis": {
+      "total_tokens": 5278,
+      "prompt_tokens": 4655,
+      "completion_tokens": 623,
+      "prompt_to_completion_ratio": 7.47191011235955,
+      "tokens_per_second": 0,
+      "target_comparison": {
+        "total_tokens_vs_target": 13.195,
+        "under_token_target": true,
+        "runtime_vs_target": 0,
+        "under_runtime_target": false
+      },
+      "efficiency_rating": "Unknown"
+    },
+    "quality_metrics": {
+      "success_rate": 70.0,
+      "error_rate": 0.0,
+      "completeness_rate": 70.0,
+      "quality_score": 79.0,
+      "quality_grade": "C+",
+      "total_runs_analyzed": 10
+    },
+    "recommendations": [
+      {
+        "category": "Quality",
+        "priority": "High",
+        "issue": "Success rate is 70.0% (below 95% target)",
+        "recommendation": "Improve error handling and retry logic",
+        "details": "Quality grade: C+"
+      },
+      {
+        "category": "Performance",
+        "priority": "High",
+        "issue": "Runtime exceeds 120s target",
+        "recommendation": "Optimize execution speed and parallel processing",
+        "details": "Runtime is 0.0% of target"
+      }
+    ],
+    "timestamp": "2025-08-13T14:23:53.885725",
+    "analysis_version": "optimized_v1.0"
+  },
+  "trace_summary": {
+    "id": "1f0788b0-1a2d-6a90-b029-fe3656a7b487",
+    "name": "trading_agents",
+    "status": "pending",
+    "duration": null,
+    "total_tokens": 5278,
+    "child_runs_count": 9,
+    "has_errors": false
+  },
+  "trace_data": {
+    "id": "1f0788b0-1a2d-6a90-b029-fe3656a7b487",
+    "name": "trading_agents",
+    "run_type": "chain",
+    "status": "pending",
+    "start_time": "2025-08-13T21:18:11.513551",
+    "end_time": null,
+    "total_tokens": 5278,
+    "prompt_tokens": 4655,
+    "completion_tokens": 623,
+    "error": null,
+    "inputs_summary": {
+      "company_of_interest": "CRCL",
+      "trade_date": "2025-08-13"
+    },
+    "outputs_summary": {},
+    "child_runs": [
+      {
+        "id": "6841244f-3ebd-4fcf-b691-86414001fdba",
+        "name": "bull_researcher",
+        "run_type": "chain",
+        "status": "pending",
+        "start_time": "2025-08-13T21:18:25.568227",
+        "end_time": null,
+        "total_tokens": 2197,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "step": "aggregation_complete",
+          "market_report": {
+            "text_preview": "Error: Blocking call to io.TextIOWrapper.read\n\nHeads up! LangGraph dev identified a synchronous blocking call in your code. When running in an ASGI web server, blocking calls can degrade performance for everyone since they tie up the event loop.\n\nHere are your options to fix this:\n\n1. Best approach: Convert any blocking code to use async/await patterns\n   For example, use 'await aiohttp.get()' instead of 'requests.get()'\n\n2. Quick fix: Move blocking operations to a separate thread\n   Example: 'a...",
+            "full_length": 916,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "\ud83d\udcf0 NEWS ANALYSIS REPORT - CRCL\nGenerated: 2025-08-13 14:18:15\nTrade Date: 2025-08-13\n\n## \ud83d\udcca DATA SUMMARY\n\n- **Total Articles Analyzed:** 20\n- **Google News (Serper):** 20 articles\n- **Financial News (Finnhub):** 0 articles\n- **Data Sources:** 1/2 successful\n- **Fetch Time:** 3.555 seconds\n\n## \ud83d\udcc8 KEY HEADLINES\n\n**1. Circle Boosts Revenue 53%. How Should You Play CRCL Stock Here?**\n   - Source: Yahoo Finance\n   - Circle shares soar as the fintech firm reports a sharp year-over-year increase in its Q2...",
+            "full_length": 1971,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-...",
+            "full_length": 2638,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: CRCL\n\u26a1 Data fetched in 2.060s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Circle Internet Group Inc\n  Industry: N/A\n  Market Cap: $37,153M\n  Share Outstanding: 223M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 238.6706\n  P/B Ratio: 19.7049\n  EV/EBITDA: N/A\n  ROE: N/A\n  ROA: N/A\n  Debt/Equity: 0.0198\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $0.00\n  Mean Target: $0.00\n  Low Target: $0.00\n  High Target: $0.00\n  Analysts: 0\n\n=====...",
+            "full_length": 675,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-0.5 \\times 30)}{6 + 9 + 30} \n\\]\n\n\\[\n= \\frac{(5.994) + (5.013) + (-15)}{45} = \\frac{-4.993}{45} \\approx -0.111 \n\\]\n\n**2. Confidence Level:**\n- Overall confidence derived from each platform:\n  - Reddit: Medium\n  - Twitter: Low\n  - Stocktwits: High\n\nConsidering the varied confidence levels, with a strong signal from Stocktwits but lower metrics from Twitter, the **overall confidence level is Medium**.\n\n**3. Sentiment Trend:**\nGiven the mixing signals from different platforms:\n- Reddit shows a positive sentiment, suggesting growth.\n- Twitter is neutral.\n- Stocktwits is bearish.\n\nThis sentiment suggests that the overall trend is mixed rather than clear-cut, leaning towards **Stable**, but with caution due to the bearish sentiment from Stocktwits.\n\n**4. Top 3 Key Insights:**\n1. **Polarized Sentiment:** Reddit shows highly positive sentiment while Stocktwits indicates bearish sentiment, reflecting polar opinions towards CRCL.\n2. **High Engagement on Reddit:** The average score of 328.67 and average comments of 434.33 on Reddit show a strong engagement and interest level among users, which could indicate active discussion around CRCL's prospects.\n3. **Bearish Sentiment on Stocktwits:** With 50% of messages categorized as bearish and only 16.7% as bullish, this might signal caution for potential investors regarding immediate future performance.\n\n**5. Trading Signal:**\n**Recommendation: HOLD**\n\n**Rationale:**\nThe overall sentiment is slightly negative due to the strong bearish sentiment on Stocktwits, despite the positive buzz on Reddit. Given the high engagement on Reddit, there is potential for favorable sentiment if the positive discussions translate into action. However, the high level of bearish sentiment in Stocktwits indicates a significant risk, suggesting that now may not be the best time to buy. A hold strategy allows for monitoring how sentiments evolve across these platforms, particularly from Reddit, while avoiding potential losses if bearish trends in Stocktwits persist. \n\nInvestors may want to keep an eye on upcoming news or developments that could shift these sentiments positively or negatively.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--d072d262-2471-4543-adc4-31b49afcbd2a",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 13.86863398551941
+          },
+          "parallel_start_time": 1755119891.5402591,
+          "parallel_end_time": 1755119905.562458,
+          "total_parallel_time": 14.022198915481567,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              "market"
+            ]
+          },
+          "aggregation_status": "success",
+          "successful_analysts_count": 3,
+          "aggregation_ready": true,
+          "parallel_execution_metrics": {
+            "total_time": 14.022198915481567,
+            "successful_analysts": 3,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 13.86863398551941
+            }
+          },
+          "speedup_factor": 1.0,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            },
+            "consensus_reached": false
+          }
+        },
+        "outputs_summary": {}
+      },
+      {
+        "id": "e65d42ad-5c45-42e6-9863-8a14ffdd679f",
+        "name": "bear_researcher",
+        "run_type": "chain",
+        "status": "pending",
+        "start_time": "2025-08-13T21:18:25.567969",
+        "end_time": null,
+        "total_tokens": 2165,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "step": "aggregation_complete",
+          "market_report": {
+            "text_preview": "Error: Blocking call to io.TextIOWrapper.read\n\nHeads up! LangGraph dev identified a synchronous blocking call in your code. When running in an ASGI web server, blocking calls can degrade performance for everyone since they tie up the event loop.\n\nHere are your options to fix this:\n\n1. Best approach: Convert any blocking code to use async/await patterns\n   For example, use 'await aiohttp.get()' instead of 'requests.get()'\n\n2. Quick fix: Move blocking operations to a separate thread\n   Example: 'a...",
+            "full_length": 916,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "\ud83d\udcf0 NEWS ANALYSIS REPORT - CRCL\nGenerated: 2025-08-13 14:18:15\nTrade Date: 2025-08-13\n\n## \ud83d\udcca DATA SUMMARY\n\n- **Total Articles Analyzed:** 20\n- **Google News (Serper):** 20 articles\n- **Financial News (Finnhub):** 0 articles\n- **Data Sources:** 1/2 successful\n- **Fetch Time:** 3.555 seconds\n\n## \ud83d\udcc8 KEY HEADLINES\n\n**1. Circle Boosts Revenue 53%. How Should You Play CRCL Stock Here?**\n   - Source: Yahoo Finance\n   - Circle shares soar as the fintech firm reports a sharp year-over-year increase in its Q2...",
+            "full_length": 1971,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-...",
+            "full_length": 2638,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: CRCL\n\u26a1 Data fetched in 2.060s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Circle Internet Group Inc\n  Industry: N/A\n  Market Cap: $37,153M\n  Share Outstanding: 223M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 238.6706\n  P/B Ratio: 19.7049\n  EV/EBITDA: N/A\n  ROE: N/A\n  ROA: N/A\n  Debt/Equity: 0.0198\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $0.00\n  Mean Target: $0.00\n  Low Target: $0.00\n  High Target: $0.00\n  Analysts: 0\n\n=====...",
+            "full_length": 675,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-0.5 \\times 30)}{6 + 9 + 30} \n\\]\n\n\\[\n= \\frac{(5.994) + (5.013) + (-15)}{45} = \\frac{-4.993}{45} \\approx -0.111 \n\\]\n\n**2. Confidence Level:**\n- Overall confidence derived from each platform:\n  - Reddit: Medium\n  - Twitter: Low\n  - Stocktwits: High\n\nConsidering the varied confidence levels, with a strong signal from Stocktwits but lower metrics from Twitter, the **overall confidence level is Medium**.\n\n**3. Sentiment Trend:**\nGiven the mixing signals from different platforms:\n- Reddit shows a positive sentiment, suggesting growth.\n- Twitter is neutral.\n- Stocktwits is bearish.\n\nThis sentiment suggests that the overall trend is mixed rather than clear-cut, leaning towards **Stable**, but with caution due to the bearish sentiment from Stocktwits.\n\n**4. Top 3 Key Insights:**\n1. **Polarized Sentiment:** Reddit shows highly positive sentiment while Stocktwits indicates bearish sentiment, reflecting polar opinions towards CRCL.\n2. **High Engagement on Reddit:** The average score of 328.67 and average comments of 434.33 on Reddit show a strong engagement and interest level among users, which could indicate active discussion around CRCL's prospects.\n3. **Bearish Sentiment on Stocktwits:** With 50% of messages categorized as bearish and only 16.7% as bullish, this might signal caution for potential investors regarding immediate future performance.\n\n**5. Trading Signal:**\n**Recommendation: HOLD**\n\n**Rationale:**\nThe overall sentiment is slightly negative due to the strong bearish sentiment on Stocktwits, despite the positive buzz on Reddit. Given the high engagement on Reddit, there is potential for favorable sentiment if the positive discussions translate into action. However, the high level of bearish sentiment in Stocktwits indicates a significant risk, suggesting that now may not be the best time to buy. A hold strategy allows for monitoring how sentiments evolve across these platforms, particularly from Reddit, while avoiding potential losses if bearish trends in Stocktwits persist. \n\nInvestors may want to keep an eye on upcoming news or developments that could shift these sentiments positively or negatively.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--d072d262-2471-4543-adc4-31b49afcbd2a",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 13.86863398551941
+          },
+          "parallel_start_time": 1755119891.5402591,
+          "parallel_end_time": 1755119905.562458,
+          "total_parallel_time": 14.022198915481567,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              "market"
+            ]
+          },
+          "aggregation_status": "success",
+          "successful_analysts_count": 3,
+          "aggregation_ready": true,
+          "parallel_execution_metrics": {
+            "total_time": 14.022198915481567,
+            "successful_analysts": 3,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 13.86863398551941
+            }
+          },
+          "speedup_factor": 1.0,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            },
+            "consensus_reached": false
+          }
+        },
+        "outputs_summary": {}
+      },
+      {
+        "id": "703c4ae1-36bb-44ed-a3d5-06b36210a95e",
+        "name": "research_debate_controller",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-13T21:18:25.564954",
+        "end_time": "2025-08-13T21:18:25.566038",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-0.5 \\times 30)}{6 + 9 + 30} \n\\]\n\n\\[\n= \\frac{(5.994) + (5.013) + (-15)}{45} = \\frac{-4.993}{45} \\approx -0.111 \n\\]\n\n**2. Confidence Level:**\n- Overall confidence derived from each platform:\n  - Reddit: Medium\n  - Twitter: Low\n  - Stocktwits: High\n\nConsidering the varied confidence levels, with a strong signal from Stocktwits but lower metrics from Twitter, the **overall confidence level is Medium**.\n\n**3. Sentiment Trend:**\nGiven the mixing signals from different platforms:\n- Reddit shows a positive sentiment, suggesting growth.\n- Twitter is neutral.\n- Stocktwits is bearish.\n\nThis sentiment suggests that the overall trend is mixed rather than clear-cut, leaning towards **Stable**, but with caution due to the bearish sentiment from Stocktwits.\n\n**4. Top 3 Key Insights:**\n1. **Polarized Sentiment:** Reddit shows highly positive sentiment while Stocktwits indicates bearish sentiment, reflecting polar opinions towards CRCL.\n2. **High Engagement on Reddit:** The average score of 328.67 and average comments of 434.33 on Reddit show a strong engagement and interest level among users, which could indicate active discussion around CRCL's prospects.\n3. **Bearish Sentiment on Stocktwits:** With 50% of messages categorized as bearish and only 16.7% as bullish, this might signal caution for potential investors regarding immediate future performance.\n\n**5. Trading Signal:**\n**Recommendation: HOLD**\n\n**Rationale:**\nThe overall sentiment is slightly negative due to the strong bearish sentiment on Stocktwits, despite the positive buzz on Reddit. Given the high engagement on Reddit, there is potential for favorable sentiment if the positive discussions translate into action. However, the high level of bearish sentiment in Stocktwits indicates a significant risk, suggesting that now may not be the best time to buy. A hold strategy allows for monitoring how sentiments evolve across these platforms, particularly from Reddit, while avoiding potential losses if bearish trends in Stocktwits persist. \n\nInvestors may want to keep an eye on upcoming news or developments that could shift these sentiments positively or negatively.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--d072d262-2471-4543-adc4-31b49afcbd2a",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": {
+            "text_preview": "Error: Blocking call to io.TextIOWrapper.read\n\nHeads up! LangGraph dev identified a synchronous blocking call in your code. When running in an ASGI web server, blocking calls can degrade performance for everyone since they tie up the event loop.\n\nHere are your options to fix this:\n\n1. Best approach: Convert any blocking code to use async/await patterns\n   For example, use 'await aiohttp.get()' instead of 'requests.get()'\n\n2. Quick fix: Move blocking operations to a separate thread\n   Example: 'a...",
+            "full_length": 916,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-...",
+            "full_length": 2638,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "\ud83d\udcf0 NEWS ANALYSIS REPORT - CRCL\nGenerated: 2025-08-13 14:18:15\nTrade Date: 2025-08-13\n\n## \ud83d\udcca DATA SUMMARY\n\n- **Total Articles Analyzed:** 20\n- **Google News (Serper):** 20 articles\n- **Financial News (Finnhub):** 0 articles\n- **Data Sources:** 1/2 successful\n- **Fetch Time:** 3.555 seconds\n\n## \ud83d\udcc8 KEY HEADLINES\n\n**1. Circle Boosts Revenue 53%. How Should You Play CRCL Stock Here?**\n   - Source: Yahoo Finance\n   - Circle shares soar as the fintech firm reports a sharp year-over-year increase in its Q2...",
+            "full_length": 1971,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: CRCL\n\u26a1 Data fetched in 2.060s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Circle Internet Group Inc\n  Industry: N/A\n  Market Cap: $37,153M\n  Share Outstanding: 223M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 238.6706\n  P/B Ratio: 19.7049\n  EV/EBITDA: N/A\n  ROE: N/A\n  ROA: N/A\n  Debt/Equity: 0.0198\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $0.00\n  Mean Target: $0.00\n  Low Target: $0.00\n  High Target: $0.00\n  Analysts: 0\n\n=====...",
+            "full_length": 675,
+            "type": "truncated_text"
+          },
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "aggregation_ready": true
+        },
+        "outputs_summary": {
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            },
+            "consensus_reached": false
+          }
+        }
+      },
+      {
+        "id": "9f6abde9-435b-4dc1-b7ea-9492936642c1",
+        "name": "enhanced_aggregator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-13T21:18:25.562009",
+        "end_time": "2025-08-13T21:18:25.563299",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_report": {
+            "text_preview": "Error: Blocking call to io.TextIOWrapper.read\n\nHeads up! LangGraph dev identified a synchronous blocking call in your code. When running in an ASGI web server, blocking calls can degrade performance for everyone since they tie up the event loop.\n\nHere are your options to fix this:\n\n1. Best approach: Convert any blocking code to use async/await patterns\n   For example, use 'await aiohttp.get()' instead of 'requests.get()'\n\n2. Quick fix: Move blocking operations to a separate thread\n   Example: 'a...",
+            "full_length": 916,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "\ud83d\udcf0 NEWS ANALYSIS REPORT - CRCL\nGenerated: 2025-08-13 14:18:15\nTrade Date: 2025-08-13\n\n## \ud83d\udcca DATA SUMMARY\n\n- **Total Articles Analyzed:** 20\n- **Google News (Serper):** 20 articles\n- **Financial News (Finnhub):** 0 articles\n- **Data Sources:** 1/2 successful\n- **Fetch Time:** 3.555 seconds\n\n## \ud83d\udcc8 KEY HEADLINES\n\n**1. Circle Boosts Revenue 53%. How Should You Play CRCL Stock Here?**\n   - Source: Yahoo Finance\n   - Circle shares soar as the fintech firm reports a sharp year-over-year increase in its Q2...",
+            "full_length": 1971,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-...",
+            "full_length": 2638,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: CRCL\n\u26a1 Data fetched in 2.060s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Circle Internet Group Inc\n  Industry: N/A\n  Market Cap: $37,153M\n  Share Outstanding: 223M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 238.6706\n  P/B Ratio: 19.7049\n  EV/EBITDA: N/A\n  ROE: N/A\n  ROA: N/A\n  Debt/Equity: 0.0198\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $0.00\n  Mean Target: $0.00\n  Low Target: $0.00\n  High Target: $0.00\n  Analysts: 0\n\n=====...",
+            "full_length": 675,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-0.5 \\times 30)}{6 + 9 + 30} \n\\]\n\n\\[\n= \\frac{(5.994) + (5.013) + (-15)}{45} = \\frac{-4.993}{45} \\approx -0.111 \n\\]\n\n**2. Confidence Level:**\n- Overall confidence derived from each platform:\n  - Reddit: Medium\n  - Twitter: Low\n  - Stocktwits: High\n\nConsidering the varied confidence levels, with a strong signal from Stocktwits but lower metrics from Twitter, the **overall confidence level is Medium**.\n\n**3. Sentiment Trend:**\nGiven the mixing signals from different platforms:\n- Reddit shows a positive sentiment, suggesting growth.\n- Twitter is neutral.\n- Stocktwits is bearish.\n\nThis sentiment suggests that the overall trend is mixed rather than clear-cut, leaning towards **Stable**, but with caution due to the bearish sentiment from Stocktwits.\n\n**4. Top 3 Key Insights:**\n1. **Polarized Sentiment:** Reddit shows highly positive sentiment while Stocktwits indicates bearish sentiment, reflecting polar opinions towards CRCL.\n2. **High Engagement on Reddit:** The average score of 328.67 and average comments of 434.33 on Reddit show a strong engagement and interest level among users, which could indicate active discussion around CRCL's prospects.\n3. **Bearish Sentiment on Stocktwits:** With 50% of messages categorized as bearish and only 16.7% as bullish, this might signal caution for potential investors regarding immediate future performance.\n\n**5. Trading Signal:**\n**Recommendation: HOLD**\n\n**Rationale:**\nThe overall sentiment is slightly negative due to the strong bearish sentiment on Stocktwits, despite the positive buzz on Reddit. Given the high engagement on Reddit, there is potential for favorable sentiment if the positive discussions translate into action. However, the high level of bearish sentiment in Stocktwits indicates a significant risk, suggesting that now may not be the best time to buy. A hold strategy allows for monitoring how sentiments evolve across these platforms, particularly from Reddit, while avoiding potential losses if bearish trends in Stocktwits persist. \n\nInvestors may want to keep an eye on upcoming news or developments that could shift these sentiments positively or negatively.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--d072d262-2471-4543-adc4-31b49afcbd2a",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 13.86863398551941
+          },
+          "parallel_start_time": 1755119891.5402591,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "parallel_end_time": 1755119905.562458,
+          "total_parallel_time": 14.022198915481567,
+          "aggregation_status": "success",
+          "aggregation_ready": true,
+          "successful_analysts_count": 3,
+          "speedup_factor": 1.0,
+          "step": "aggregation_complete",
+          "parallel_execution_metrics": {
+            "total_time": 14.022198915481567,
+            "successful_analysts": 3,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 13.86863398551941
+            }
+          },
+          "failed_analysts": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              "market"
+            ]
+          },
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          }
+        }
+      },
+      {
+        "id": "aee31804-57ae-4c34-917c-ade9e60136f9",
+        "name": "fundamentals_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-13T21:18:11.545179",
+        "end_time": "2025-08-13T21:18:13.797657",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755119891.5402591,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: CRCL\n\u26a1 Data fetched in 2.060s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Circle Internet Group Inc\n  Industry: N/A\n  Market Cap: $37,153M\n  Share Outstanding: 223M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 238.6706\n  P/B Ratio: 19.7049\n  EV/EBITDA: N/A\n  ROE: N/A\n  ROA: N/A\n  Debt/Equity: 0.0198\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $0.00\n  Mean Target: $0.00\n  Low Target: $0.00\n  High Target: $0.00\n  Analysts: 0\n\n=====...",
+            "full_length": 675,
+            "type": "truncated_text"
+          },
+          "fundamentals_data": {
+            "ticker": "CRCL",
+            "profile": {
+              "country": "US",
+              "currency": "",
+              "estimateCurrency": "",
+              "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+              "finnhubIndustry": "N/A",
+              "ipo": "2025-06-05",
+              "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/950922886856.png",
+              "marketCapitalization": 37153.14186347,
+              "name": "Circle Internet Group Inc",
+              "phone": "14159922720",
+              "shareOutstanding": 222.54,
+              "ticker": "CRCL",
+              "weburl": "https://www.circle.com/"
+            },
+            "metrics": {
+              "metric": {
+                "10DayAverageTradingVolume": 9.63858,
+                "3MonthAverageTradingVolume": 28.58035,
+                "52WeekHigh": 298.99,
+                "52WeekHighDate": "2025-06-23",
+                "52WeekLow": 64,
+                "52WeekLowDate": "2025-06-05",
+                "5DayPriceReturnDaily": 4.7034,
+                "assetTurnoverAnnual": 0.0366,
+                "beta": -5.764077,
+                "cashFlowPerShareAnnual": 1.2902,
+                "cashPerSharePerShareAnnual": 202.1137,
+                "cashPerSharePerShareQuarterly": 275.309,
+                "currentRatioAnnual": 1.0258,
+                "currentRatioQuarterly": 1.0201,
+                "ebitdPerShareAnnual": 1.2242,
+                "epsAnnual": 0.6995,
+                "epsBasicExclExtraItemsAnnual": 0.6995,
+                "epsExclExtraItemsAnnual": 0.6995,
+                "epsInclExtraItemsAnnual": 0.6995,
+                "epsNormalizedAnnual": 0.6995,
+                "longTermDebt/equityAnnual": 0.0238,
+                "longTermDebt/equityQuarterly": 0.0198,
+                "marketCapitalization": 37153.14,
+                "monthToDatePriceReturnDaily": -12.1785,
+                "netProfitMarginAnnual": 9.29,
+                "operatingMarginAnnual": 10.36,
+                "pb": 19.7049,
+                "pcfShareAnnual": 107.8929,
+                "peAnnual": 238.6706,
+                "peNormalizedAnnual": 238.6706,
+                "pfcfShareAnnual": 129.3966,
+                "pretaxMarginAnnual": 13.22,
+                "priceRelativeToS&P5004Week": -19.7033,
+                "priceRelativeToS&P500Ytd": 86.4154,
+                "psAnnual": 22.1644,
+                "quickRatioAnnual": 1.0254,
+                "quickRatioQuarterly": 1.0198,
+                "revenueGrowthQuarterlyYoy": 58.47,
+                "revenuePerShareAnnual": 7.5324,
+                "roaRfy": 0.33999999999999997,
+                "roeRfy": 9.1,
+                "roiAnnual": 8.89,
+                "totalDebt/totalEquityAnnual": 0.0238,
+                "totalDebt/totalEquityQuarterly": 0.0198,
+                "yearToDatePriceReturnDaily": 93.6441
+              },
+              "metricType": "all",
+              "series": {
+                "annual": {
+                  "bookValue": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "cashRatio": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.0211914264794595
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.0226310031722508
+                      }
+                    ]
+                  },
+                  "currentRatio": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.0258
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.0359
+                      }
+                    ]
+                  },
+                  "ebitPerShare": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.7806
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.2467
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.0706
+                      }
+                    ]
+                  },
+                  "eps": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.6995
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.2023
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -3.4549
+                      }
+                    ]
+                  },
+                  "ev": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "fcfMargin": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1713
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0729
+                      }
+                    ]
+                  },
+                  "grossMargin": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "inventoryTurnover": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalAsset": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0009
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0022
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalCapital": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0233
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0382
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalEquity": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0238
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0398
+                      }
+                    ]
+                  },
+                  "netDebtToTotalCapital": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -25.6557
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -16.3038
+                      }
+                    ]
+                  },
+                  "netDebtToTotalEquity": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -26.2664
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -16.9522
+                      }
+                    ]
+                  },
+                  "netMargin": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0929
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.1845
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.9958
+                      }
+                    ]
+                  },
+                  "operatingMargin": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1036
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.1913
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.0204
+                      }
+                    ]
+                  },
+                  "payoutRatio": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pb": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pe": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pfcf": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pretaxMargin": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1322
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.2199
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.9825
+                      }
+                    ]
+                  },
+                  "ps": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "ptbv": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "quickRatio": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.0254
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.0353
+                      }
+                    ]
+                  },
+                  "receivablesTurnover": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "roa": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0034
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0103
+                      }
+                    ]
+                  },
+                  "roe": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.091
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.1819
+                      }
+                    ]
+                  },
+                  "roic": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0889
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.175
+                      }
+                    ]
+                  },
+                  "rotc": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0992
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.1814
+                      }
+                    ]
+                  },
+                  "salesPerShare": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 7.5324
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 6.5178
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 3.4693
+                      }
+                    ]
+                  },
+                  "sgaToSale": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "tangibleBookValue": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "totalDebtToEquity": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0238
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0398
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalAsset": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0009
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0022
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalCapital": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0233
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0382
+                      }
+                    ]
+                  },
+                  "totalRatio": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.0388
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.06
+                      }
+                    ]
+                  }
+                },
+                "quarterly": {
+                  "assetTurnoverTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "bookValue": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "cashRatio": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.0161892288342445
+                      }
+                    ]
+                  },
+                  "currentRatio": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.0201
+                      }
+                    ]
+                  },
+                  "ebitPerShare": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.382
+                      },
+                      {
+                        "period": "2024-03-31",
+                        "v": 0.2727
+                      }
+                    ]
+                  },
+                  "eps": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.2911
+                      },
+                      {
+                        "period": "2024-03-31",
+                        "v": 0.2186
+                      }
+                    ]
+                  },
+                  "ev": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "fcfMargin": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0675
+                      },
+                      {
+                        "period": "2024-03-31",
+                        "v": 0.1863
+                      }
+                    ]
+                  },
+                  "fcfPerShareTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "grossMargin": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "inventoryTurnoverTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalAsset": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0006
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalCapital": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0195
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalEquity": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0198
+                      }
+                    ]
+                  },
+                  "netDebtToTotalCapital": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": -31.8414
+                      }
+                    ]
+                  },
+                  "netDebtToTotalEquity": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": -32.4733
+                      }
+                    ]
+                  },
+                  "netMargin": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.112
+                      },
+                      {
+                        "period": "2024-03-31",
+                        "v": 0.1332
+                      }
+                    ]
+                  },
+                  "operatingMargin": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.1469
+                      },
+                      {
+                        "period": "2024-03-31",
+                        "v": 0.1662
+                      }
+                    ]
+                  },
+                  "payoutRatioTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pb": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "peTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pfcfTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pretaxMargin": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.1553
+                      },
+                      {
+                        "period": "2024-03-31",
+                        "v": 0.1996
+                      }
+                    ]
+                  },
+                  "psTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "ptbv": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "quickRatio": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.0198
+                      }
+                    ]
+                  },
+                  "receivablesTurnoverTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "roaTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "roeTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "roicTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "rotcTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "salesPerShare": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 2.5999
+                      },
+                      {
+                        "period": "2024-03-31",
+                        "v": 1.6406
+                      }
+                    ]
+                  },
+                  "sgaToSale": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "tangibleBookValue": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "totalDebtToEquity": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0198
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalAsset": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0006
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalCapital": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0195
+                      }
+                    ]
+                  },
+                  "totalRatio": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.0312
+                      }
+                    ]
+                  }
+                }
+              },
+              "symbol": "CRCL"
+            },
+            "balance_sheet": {
+              "error": "You don't have access to this resource."
+            },
+            "income_statement": {
+              "error": "You don't have access to this resource."
+            },
+            "cash_flow": {
+              "error": "You don't have access to this resource."
+            },
+            "earnings_history": {
+              "count": 1,
+              "type": "list",
+              "sample": [
+                {
+                  "actual": 1.02,
+                  "estimate": -0.7067,
+                  "period": "2025-06-30",
+                  "quarter": 2,
+                  "surprise": 1.7267,
+                  "surprisePercent": 244.3328,
+                  "symbol": "CRCL",
+                  "year": 2025
+                }
+              ]
+            },
+            "earnings_calendar": {},
+            "revenue_estimates": {
+              "error": "You don't have access to this resource."
+            },
+            "recommendations": {
+              "count": 2,
+              "type": "list",
+              "sample": [
+                {
+                  "buy": 8,
+                  "hold": 6,
+                  "period": "2025-08-01",
+                  "sell": 2,
+                  "strongBuy": 5,
+                  "strongSell": 1,
+                  "symbol": "CRCL"
+                },
+                {
+                  "buy": 5,
+                  "hold": 5,
+                  "period": "2025-07-01",
+                  "sell": 1,
+                  "strongBuy": 4,
+                  "strongSell": 0,
+                  "symbol": "CRCL"
+                }
+              ]
+            },
+            "price_targets": {
+              "lastPrice": 153.16,
+              "targetMean": 168.476,
+              "targetHigh": 183.79200000000003,
+              "targetLow": 153.16,
+              "numberOfAnalysts": 22,
+              "confidence": "MEDIUM",
+              "source": "Analyst Recommendations (Derived)",
+              "lastUpdated": "2025-08-01"
+            },
+            "insider_transactions": {
+              "data": {
+                "count": 21,
+                "type": "list",
+                "sample": [
+                  {
+                    "change": -12388,
+                    "currency": "",
+                    "filingDate": "2025-08-05",
+                    "id": "0001628280-25-037823",
+                    "isDerivative": false,
+                    "name": "Chandhok Nikhil",
+                    "share": 580803,
+                    "source": "sec",
+                    "symbol": "CRCL",
+                    "transactionCode": "F",
+                    "transactionDate": "2025-08-01",
+                    "transactionPrice": 183.52
+                  },
+                  {
+                    "change": -5556,
+                    "currency": "",
+                    "filingDate": "2025-08-05",
+                    "id": "0001628280-25-037821",
+                    "isDerivative": false,
+                    "name": "Tarbert Heath",
+                    "share": 637795,
+                    "source": "sec",
+                    "symbol": "CRCL",
+                    "transactionCode": "F",
+                    "transactionDate": "2025-08-01",
+                    "transactionPrice": 183.52
+                  },
+                  {
+                    "change": -823,
+                    "currency": "",
+                    "filingDate": "2025-08-05",
+                    "id": "0001628280-25-037819",
+                    "isDerivative": false,
+                    "name": "Schulz Tamara L",
+                    "share": 94445,
+                    "source": "sec",
+                    "symbol": "CRCL",
+                    "transactionCode": "F",
+                    "transactionDate": "2025-08-01",
+                    "transactionPrice": 183.52
+                  }
+                ]
+              },
+              "symbol": "CRCL"
+            },
+            "institutional_ownership": {
+              "error": "You don't have access to this resource."
+            },
+            "dividends": {
+              "error": "You don't have access to this resource."
+            },
+            "splits": {
+              "error": "You don't have access to this resource."
+            },
+            "peers": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            },
+            "endpoints_fetched": 10,
+            "endpoints_total": 15,
+            "fetch_time": 1.0448660850524902,
+            "timestamp": "2025-08-13T14:18:13.771813"
+          },
+          "sender": "Fundamentals Analyst CryptoAware",
+          "execution_time": 2.086700677871704,
+          "fetch_time": 2.0599489212036133,
+          "asset_type": "stock"
+        }
+      },
+      {
+        "id": "0b026bfa-b69c-4ae3-818f-0f2a500ee267",
+        "name": "news_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-13T21:18:11.545008",
+        "end_time": "2025-08-13T21:18:15.255149",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755119891.5402591,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "news_report": {
+            "text_preview": "\ud83d\udcf0 NEWS ANALYSIS REPORT - CRCL\nGenerated: 2025-08-13 14:18:15\nTrade Date: 2025-08-13\n\n## \ud83d\udcca DATA SUMMARY\n\n- **Total Articles Analyzed:** 20\n- **Google News (Serper):** 20 articles\n- **Financial News (Finnhub):** 0 articles\n- **Data Sources:** 1/2 successful\n- **Fetch Time:** 3.555 seconds\n\n## \ud83d\udcc8 KEY HEADLINES\n\n**1. Circle Boosts Revenue 53%. How Should You Play CRCL Stock Here?**\n   - Source: Yahoo Finance\n   - Circle shares soar as the fintech firm reports a sharp year-over-year increase in its Q2...",
+            "full_length": 1971,
+            "type": "truncated_text"
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "sender": "News Analyst (Ultra-Fast)"
+        }
+      },
+      {
+        "id": "ae8e4fa8-cb3f-40ff-abf6-4b87d702fbf4",
+        "name": "social_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-13T21:18:11.544835",
+        "end_time": "2025-08-13T21:18:25.560025",
+        "total_tokens": 916,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755119891.5402591,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "social_analyst_status": "completed",
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-...",
+            "full_length": 2638,
+            "type": "truncated_text"
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for CRCL\n\n**1. Overall Sentiment Score:**\nTo calculate the overall sentiment score, we can weight the scores based on the volume of data from each platform.\n\n- **Reddit:**\n   - Sentiment Score: 0.999\n   - Posts Analyzed: 6\n- **Twitter:**\n   - Sentiment Score: 0.557\n   - Mentions: 9\n- **Stocktwits:**\n   - Sentiment Score: -0.5\n   - Messages: 30\n\nOverall sentiment score calculation:\n\\[\n\\text{Overall Sentiment} = \\frac{(0.999 \\times 6) + (0.557 \\times 9) + (-0.5 \\times 30)}{6 + 9 + 30} \n\\]\n\n\\[\n= \\frac{(5.994) + (5.013) + (-15)}{45} = \\frac{-4.993}{45} \\approx -0.111 \n\\]\n\n**2. Confidence Level:**\n- Overall confidence derived from each platform:\n  - Reddit: Medium\n  - Twitter: Low\n  - Stocktwits: High\n\nConsidering the varied confidence levels, with a strong signal from Stocktwits but lower metrics from Twitter, the **overall confidence level is Medium**.\n\n**3. Sentiment Trend:**\nGiven the mixing signals from different platforms:\n- Reddit shows a positive sentiment, suggesting growth.\n- Twitter is neutral.\n- Stocktwits is bearish.\n\nThis sentiment suggests that the overall trend is mixed rather than clear-cut, leaning towards **Stable**, but with caution due to the bearish sentiment from Stocktwits.\n\n**4. Top 3 Key Insights:**\n1. **Polarized Sentiment:** Reddit shows highly positive sentiment while Stocktwits indicates bearish sentiment, reflecting polar opinions towards CRCL.\n2. **High Engagement on Reddit:** The average score of 328.67 and average comments of 434.33 on Reddit show a strong engagement and interest level among users, which could indicate active discussion around CRCL's prospects.\n3. **Bearish Sentiment on Stocktwits:** With 50% of messages categorized as bearish and only 16.7% as bullish, this might signal caution for potential investors regarding immediate future performance.\n\n**5. Trading Signal:**\n**Recommendation: HOLD**\n\n**Rationale:**\nThe overall sentiment is slightly negative due to the strong bearish sentiment on Stocktwits, despite the positive buzz on Reddit. Given the high engagement on Reddit, there is potential for favorable sentiment if the positive discussions translate into action. However, the high level of bearish sentiment in Stocktwits indicates a significant risk, suggesting that now may not be the best time to buy. A hold strategy allows for monitoring how sentiments evolve across these platforms, particularly from Reddit, while avoiding potential losses if bearish trends in Stocktwits persist. \n\nInvestors may want to keep an eye on upcoming news or developments that could shift these sentiments positively or negatively.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--d072d262-2471-4543-adc4-31b49afcbd2a",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 13.86863398551941
+          }
+        }
+      },
+      {
+        "id": "c2c46adf-d61c-47ca-91e4-87d31c3685bd",
+        "name": "market_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-13T21:18:11.544601",
+        "end_time": "2025-08-13T21:18:11.725609",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755119891.5402591,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": {
+            "text_preview": "Error: Blocking call to io.TextIOWrapper.read\n\nHeads up! LangGraph dev identified a synchronous blocking call in your code. When running in an ASGI web server, blocking calls can degrade performance for everyone since they tie up the event loop.\n\nHere are your options to fix this:\n\n1. Best approach: Convert any blocking code to use async/await patterns\n   For example, use 'await aiohttp.get()' instead of 'requests.get()'\n\n2. Quick fix: Move blocking operations to a separate thread\n   Example: 'a...",
+            "full_length": 916,
+            "type": "truncated_text"
+          },
+          "sender": "Market Analyst UltraFast"
+        }
+      },
+      {
+        "id": "a84dd52b-8532-4a4b-b3ca-f786455c0b6b",
+        "name": "dispatcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-13T21:18:11.539726",
+        "end_time": "2025-08-13T21:18:11.541659",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "CRCL",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          }
+        },
+        "outputs_summary": {
+          "parallel_start_time": 1755119891.5402591,
+          "send_api_enabled": true,
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "analyst_execution_times": {},
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "aggregation_ready": false,
+          "successful_analysts_count": 0,
+          "send_api_implementation": "send_api_parallel",
+          "enhanced_monitoring_enabled": true
+        }
+      }
+    ],
+    "child_runs_total": 9,
+    "extra": {
+      "metadata": {
+        "created_by": "system",
+        "graph_id": "trading_agents",
+        "assistant_id": "b07ca2df-7906-5911-85ed-209158e01746",
+        "from_studio": true,
+        "LANGGRAPH_API_URL": "http://127.0.0.1:2024",
+        "thread_id": "ce23a449-09f2-4bad-93f7-61f6f3a98af9",
+        "x-auth-scheme": "langsmith",
+        "x-user-id": "86432c3b-ea5d-49ab-8912-f22cc8317bcf",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+        "x-request-id": "6df186c1-9b66-42c5-bb5d-4eaed4fd7383",
+        "langgraph_auth_user_id": "",
+        "langgraph_request_id": "6df186c1-9b66-42c5-bb5d-4eaed4fd7383",
+        "run_id": "1f0788b0-1a2d-6a90-b029-fe3656a7b487",
+        "user_id": "",
+        "run_attempt": 1,
+        "langgraph_version": "0.6.2",
+        "langgraph_api_version": "0.2.98",
+        "langgraph_plan": "developer",
+        "langgraph_host": "self-hosted",
+        "langgraph_api_url": "http://127.0.0.1:2024",
+        "LANGSMITH_LANGGRAPH_API_VARIANT": "local_dev",
+        "LANGSMITH_PROJECT": "trading-agent-graph",
+        "ls_run_depth": 0
+      }
+    }
+  }
+}

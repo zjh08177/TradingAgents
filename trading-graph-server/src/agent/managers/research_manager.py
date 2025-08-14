@@ -15,6 +15,7 @@ from ..utils.agent_prompt_enhancer import enhance_agent_prompt
 from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
 from ..utils.token_limiter import get_token_limiter
 from ..utils.safe_state_access import create_safe_state_wrapper, get_safe_format_vars
+from ..utils.news_filter import filter_news_for_llm
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +155,9 @@ def create_research_manager(llm, memory, config: Dict = None):
         fundamentals_report = safe_state.get("fundamentals_report", "")
         sentiment_report = safe_state.get("sentiment_report", "")
         
+        # Apply token optimization to news report for research manager
+        filtered_news = filter_news_for_llm(news_report, max_articles=12)
+        
         # Check report quality
         reports_quality = {
             "market": bool(market_research_report and len(market_research_report) > 100),
@@ -180,7 +184,7 @@ Use the final statements from both sides to make your recommendation."""
 
 ANALYST REPORTS:
 Market Analysis: {market_research_report}
-News Analysis: {news_report}
+News Analysis: {filtered_news}
 Fundamentals Analysis: {fundamentals_report}
 Sentiment Analysis: {sentiment_report}
 

@@ -33,11 +33,12 @@ from .nodes.enhanced_parallel_analysts import (
     create_fundamentals_analyst_node
 )
 
-# Phase 1 Optimization Imports (preserved)
-from ..utils.async_token_optimizer import AsyncTokenOptimizer
-from ..utils.ultra_prompt_templates import UltraPromptTemplates
-from ..utils.parallel_execution_manager import ParallelExecutionManager
-from ..utils.phase1_integration import Phase1Optimizer
+# Phase 1 Optimization Imports - CLEANED UP
+# Removed unused optimization imports:
+# - AsyncTokenOptimizer (stale, never properly integrated)
+# - UltraPromptTemplates (stale, unused)
+# - parallel_execution_manager doesn't exist
+# - phase1_integration will be removed
 
 # Original imports (preserved for compatibility)
 from ..interfaces import ILLMProvider, IMemoryProvider, IAnalystToolkit, IGraphBuilder
@@ -47,10 +48,13 @@ from ..factories.toolkit_factory import ToolkitFactory
 from ..dataflows.config import get_config
 
 # Import analyst creation functions
-from ..analysts.market_analyst import create_market_analyst
+from ..analysts.market_analyst_pandas_enabled import create_ultra_fast_market_analyst as create_market_analyst
 from ..analysts.social_media_analyst import create_social_media_analyst  
 from ..analysts.news_analyst import create_news_analyst
-from ..analysts.fundamentals_analyst import create_fundamentals_analyst
+# Crypto-aware implementation enabled (handles both stocks and crypto)
+from ..analysts.fundamentals_analyst_crypto_aware import create_fundamentals_analyst_crypto_aware as create_fundamentals_analyst
+# Ultra-fast (stock only): from ..analysts.fundamentals_analyst_ultra_fast import create_fundamentals_analyst_ultra_fast as create_fundamentals_analyst
+# Original (disabled): from ..analysts.fundamentals_analyst import create_fundamentals_analyst
 
 # Import other node creation functions (preserved)
 from ..researchers.bull_researcher import create_bull_researcher
@@ -98,16 +102,13 @@ class EnhancedOptimizedGraphBuilder(IGraphBuilder):
             logger.warning("⚠️ Send API not available - using fallback strategy")
             self.config['enable_send_api'] = False
         
-        # Initialize Phase 1 components (preserved)
+        # Initialize Phase 1 components - DISABLED (stale code removed)
         if self.config['enable_phase1_optimizations']:
-            self.phase1_optimizer = Phase1Optimizer(self.config)
-            self.async_token_optimizer = AsyncTokenOptimizer(
-                model_name=self.config.get('model_name', 'gpt-4o-mini')
-            )
-            self.parallel_executor = ParallelExecutionManager(
-                max_workers=self.config.get('max_parallel_agents', 4)
-            )
-            logger.info("🚀 Phase 1 Optimizations ENABLED")
+            # These components were removed as they were never properly integrated:
+            # - Phase1Optimizer (unused)
+            # - AsyncTokenOptimizer (stale)
+            # - ParallelExecutionManager (doesn't exist)
+            logger.info("⚠️ Phase 1 Optimizations DISABLED - stale code removed")
         
         # Create base toolkit and factories
         self.base_toolkit = Toolkit(self.config)
@@ -234,15 +235,15 @@ class EnhancedOptimizedGraphBuilder(IGraphBuilder):
             aggregator = await create_robust_aggregator()
             result = await aggregator(state)
             
-            # Add Phase 1 performance metrics if enabled
-            if self.config['enable_phase1_optimizations']:
-                summary = self.phase1_optimizer.get_optimization_summary()
-                if summary.get("total_runs", 0) > 0:
-                    logger.info(
-                        f"⚡ Phase 1 + Send API Metrics: "
-                        f"Token reduction {summary['average_token_reduction']:.1%}, "
-                        f"Runtime reduction {summary['average_runtime_reduction']:.1%}"
-                    )
+            # Phase 1 optimization metrics disabled - stale code removed
+            # if self.config['enable_phase1_optimizations']:
+            #     summary = self.phase1_optimizer.get_optimization_summary()
+            #     if summary.get("total_runs", 0) > 0:
+            #         logger.info(
+            #             f"⚡ Phase 1 + Send API Metrics: "
+            #             f"Token reduction {summary['average_token_reduction']:.1%}, "
+            #             f"Runtime reduction {summary['average_runtime_reduction']:.1%}"
+            #         )
             
             return result
         return enhanced_aggregator_wrapper

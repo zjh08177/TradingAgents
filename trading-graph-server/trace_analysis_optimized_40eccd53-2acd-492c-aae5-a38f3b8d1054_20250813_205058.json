@@ -1,0 +1,3786 @@
+{
+  "metadata": {
+    "trace_id": "40eccd53-2acd-492c-aae5-a38f3b8d1054",
+    "analysis_timestamp": "2025-08-13T20:50:58.106079",
+    "analysis_version": "optimized_v1.0",
+    "estimated_size_bytes": 184829,
+    "optimization_applied": false
+  },
+  "analysis": {
+    "trace_id": "40eccd53-2acd-492c-aae5-a38f3b8d1054",
+    "summary": {
+      "name": "LangGraph",
+      "status": "pending",
+      "total_runs": 13,
+      "analyzed_runs": 13,
+      "run_types": {
+        "chain": 13
+      },
+      "status_distribution": {
+        "pending": 1,
+        "success": 12
+      },
+      "duration_seconds": null,
+      "duration_formatted": "Unknown",
+      "has_errors": false,
+      "error_count": 0
+    },
+    "performance_metrics": {
+      "total_tokens": 150569,
+      "prompt_tokens": 144907,
+      "completion_tokens": 5662,
+      "token_efficiency": 0.03907333669180923,
+      "child_run_count": 13,
+      "total_run_count": 13,
+      "success_rate": 85.71428571428571,
+      "successful_runs": 12,
+      "failed_runs": 2,
+      "avg_run_duration": 6.129294666666667,
+      "min_run_duration": 0.000606,
+      "max_run_duration": 20.051305,
+      "total_run_time": 73.551536,
+      "timing_samples": 12
+    },
+    "error_analysis": {
+      "total_errors": 0,
+      "error_categories": {},
+      "errors": [],
+      "has_critical_errors": false,
+      "has_blocking_io": false,
+      "blocking_io_count": 0,
+      "blocking_io_errors": []
+    },
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_performance": {},
+      "overall_tool_success_rate": 100.0,
+      "most_used_tool": null,
+      "most_problematic_tool": null
+    },
+    "timing_analysis": {
+      "timing_by_type": {
+        "chain": {
+          "count": 12,
+          "total_time": 73.551536,
+          "avg_time": 6.129294666666667,
+          "max_time": 20.051305,
+          "min_time": 0.000606
+        }
+      },
+      "bottlenecks": [],
+      "has_bottlenecks": false
+    },
+    "token_analysis": {
+      "total_tokens": 150569,
+      "prompt_tokens": 144907,
+      "completion_tokens": 5662,
+      "prompt_to_completion_ratio": 25.592900035323208,
+      "tokens_per_second": 0,
+      "target_comparison": {
+        "total_tokens_vs_target": 376.4225,
+        "under_token_target": false,
+        "runtime_vs_target": 0,
+        "under_runtime_target": false
+      },
+      "efficiency_rating": "Unknown"
+    },
+    "quality_metrics": {
+      "success_rate": 85.71428571428571,
+      "error_rate": 0.0,
+      "completeness_rate": 85.71428571428571,
+      "base_quality_score": 90.0,
+      "blocking_io_penalty": 0,
+      "quality_score": 90.0,
+      "quality_grade": "A",
+      "total_runs_analyzed": 14,
+      "has_blocking_io": false,
+      "blocking_io_count": 0
+    },
+    "recommendations": [
+      {
+        "category": "Performance",
+        "priority": "High",
+        "issue": "Runtime exceeds 120s target",
+        "recommendation": "Optimize execution speed and parallel processing",
+        "details": "Runtime is 0.0% of target"
+      },
+      {
+        "category": "Quality",
+        "priority": "Medium",
+        "issue": "Success rate is 85.7% (below 95% target)",
+        "recommendation": "Improve error handling and retry logic",
+        "details": "Quality grade: A"
+      },
+      {
+        "category": "Performance",
+        "priority": "Medium",
+        "issue": "Token usage (150,569) exceeds target (40K)",
+        "recommendation": "Optimize prompts and reduce token consumption",
+        "details": "Current usage is 376.4% of target"
+      }
+    ],
+    "timestamp": "2025-08-13T20:50:58.106079",
+    "analysis_version": "optimized_v1.0"
+  },
+  "trace_summary": {
+    "id": "40eccd53-2acd-492c-aae5-a38f3b8d1054",
+    "name": "LangGraph",
+    "status": "pending",
+    "duration": null,
+    "total_tokens": 150569,
+    "child_runs_count": 13,
+    "has_errors": false
+  },
+  "trace_data": {
+    "id": "40eccd53-2acd-492c-aae5-a38f3b8d1054",
+    "name": "LangGraph",
+    "run_type": "chain",
+    "status": "pending",
+    "start_time": "2025-08-14T03:18:14.832755",
+    "end_time": null,
+    "total_tokens": 150569,
+    "prompt_tokens": 144907,
+    "completion_tokens": 5662,
+    "error": null,
+    "inputs_summary": {
+      "company_of_interest": "UNH",
+      "trade_date": "2025-08-13",
+      "trace_id": "trace_UNH_2025-08-13_1755141494.829947",
+      "market_messages": {
+        "count": 0,
+        "type": "list",
+        "sample": []
+      },
+      "social_messages": {
+        "count": 0,
+        "type": "list",
+        "sample": []
+      },
+      "news_messages": {
+        "count": 0,
+        "type": "list",
+        "sample": []
+      },
+      "fundamentals_messages": {
+        "count": 0,
+        "type": "list",
+        "sample": []
+      },
+      "market_report": "",
+      "sentiment_report": "",
+      "news_report": "",
+      "fundamentals_report": "",
+      "investment_debate_state": {
+        "bull_history": "",
+        "bear_history": "",
+        "history": "",
+        "current_response": "",
+        "judge_decision": "",
+        "count": 0
+      },
+      "risk_debate_state": {
+        "risky_history": "",
+        "safe_history": "",
+        "neutral_history": "",
+        "history": "",
+        "latest_speaker": "",
+        "current_risky_response": "",
+        "current_safe_response": "",
+        "current_neutral_response": "",
+        "judge_decision": "",
+        "count": 0
+      },
+      "investment_plan": "",
+      "research_debate_state": {
+        "current_round": 1,
+        "max_rounds": 1,
+        "consensus_reached": false,
+        "judge_feedback": "",
+        "debate_history": {
+          "count": 0,
+          "type": "list",
+          "sample": []
+        }
+      }
+    },
+    "outputs_summary": {},
+    "child_runs": [
+      {
+        "id": "277d1a82-94d8-4b2f-88a6-9d66319505e1",
+        "name": "parallel_risk_debators",
+        "run_type": "chain",
+        "status": "pending",
+        "start_time": "2025-08-14T03:19:10.124491",
+        "end_time": null,
+        "total_tokens": 77112,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "investment_debate_state": {
+            "history": "",
+            "current_response": {
+              "text_preview": "Bull: Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing ...",
+              "full_length": 4484,
+              "type": "truncated_text"
+            },
+            "judge_decision": "",
+            "bear_history": {
+              "text_preview": "ACTION: HEDGE with a conviction score of 72/100\n\n\u2013\u2013\u2013\u2013\u2013\u2013\u2013\n1. ACCOUNTING ANALYSIS  \n\u2022 Revenue Quality & Earnings Management:  \n\u2003\u2013 Despite a superficially attractive P/E of 11.53 and robust dividend payouts, our forensic review reveals potential over\u2010reliance on \u201cmanaged\u201d revenue streams (e.g., aggressive cost deferrals and reinsurance contract structuring) that may soon unravel as tail risks (scored moderate\u2013red flag level 3/5).  \n\u2022 Balance Sheet Stress & Cash Flow Divergence:  \n\u2003\u2013 A Debt/Equity r...",
+              "full_length": 5706,
+              "type": "truncated_text"
+            },
+            "count": 1,
+            "bull_history": {
+              "text_preview": "Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing incorp...",
+              "full_length": 4478,
+              "type": "truncated_text"
+            }
+          },
+          "risk_debate_state": {
+            "history": "",
+            "current_risky_response": "",
+            "risky_history": "",
+            "latest_speaker": "",
+            "judge_decision": "",
+            "debate_start_time": 115265.19531875,
+            "safe_history": "",
+            "parallel_execution": true,
+            "shared_context": {
+              "investment_plan": {
+                "text_preview": "Below is a detailed, actionable investment plan synthesizing both the bullish and bearish analyses:\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n1. Investment Recommendation  \n\u2003\u2022 Recommendation: BUY  \n\u2003\u2022 Confidence Level: Moderately High (around 80\u201385%), recognizing strong fundamentals, bullish sentiment, and an attractive valuation, while also acknowledging downside risks highlighted by bear arguments.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n2. Position Sizing  \n\u2003\u2022 Core Position: Allocate approximately 2\u20132.5% of ...",
+                "full_length": 5197,
+                "type": "truncated_text"
+              },
+              "trader_decision": "",
+              "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+              "sentiment_report": {
+                "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+                "full_length": 2209,
+                "type": "truncated_text"
+              },
+              "news_report": {
+                "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+                "full_length": 42165,
+                "type": "truncated_text"
+              },
+              "fundamentals_report": {
+                "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+                "full_length": 706,
+                "type": "truncated_text"
+              }
+            },
+            "count": 0,
+            "current_neutral_response": "",
+            "neutral_history": "",
+            "current_safe_response": ""
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 1,
+              "type": "list",
+              "sample": [
+                {
+                  "round": 1,
+                  "bull": "ACTION: STRONG BUY with a conviction score of 85/100, target upside ~20\u201330% (base target ~$326; bull target ~$353), recommended position size 2\u20132.5% of the portfolio, entry zone $265\u2013$270, stop loss ~$260, and staged exits starting at ~$320.",
+                  "bear": "Recommendation: Hedge via put spreads sized to 3\u20135% of your portfolio with predefined stops if Q3 fundamentals improve, capturing a potential downside scenario of 25\u201335% decline (approx. $175\u2013$200 target) in adverse conditions while mitigating short squeeze risk."
+                }
+              ]
+            }
+          },
+          "investment_plan": {
+            "text_preview": "Below is a detailed, actionable investment plan synthesizing both the bullish and bearish analyses:\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n1. Investment Recommendation  \n\u2003\u2022 Recommendation: BUY  \n\u2003\u2022 Confidence Level: Moderately High (around 80\u201385%), recognizing strong fundamentals, bullish sentiment, and an attractive valuation, while also acknowledging downside risks highlighted by bear arguments.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n2. Position Sizing  \n\u2003\u2022 Core Position: Allocate approximately 2\u20132.5% of ...",
+            "full_length": 5197,
+            "type": "truncated_text"
+          },
+          "aggregation_ready": true
+        },
+        "outputs_summary": {}
+      },
+      {
+        "id": "27185695-5195-4cc6-a7dc-9db3c1ad946b",
+        "name": "risk_debate_orchestrator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:19:10.123371",
+        "end_time": "2025-08-14T03:19:10.124043",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "investment_debate_state": {
+            "history": "",
+            "current_response": {
+              "text_preview": "Bull: Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing ...",
+              "full_length": 4484,
+              "type": "truncated_text"
+            },
+            "judge_decision": "",
+            "bear_history": {
+              "text_preview": "ACTION: HEDGE with a conviction score of 72/100\n\n\u2013\u2013\u2013\u2013\u2013\u2013\u2013\n1. ACCOUNTING ANALYSIS  \n\u2022 Revenue Quality & Earnings Management:  \n\u2003\u2013 Despite a superficially attractive P/E of 11.53 and robust dividend payouts, our forensic review reveals potential over\u2010reliance on \u201cmanaged\u201d revenue streams (e.g., aggressive cost deferrals and reinsurance contract structuring) that may soon unravel as tail risks (scored moderate\u2013red flag level 3/5).  \n\u2022 Balance Sheet Stress & Cash Flow Divergence:  \n\u2003\u2013 A Debt/Equity r...",
+              "full_length": 5706,
+              "type": "truncated_text"
+            },
+            "count": 1,
+            "bull_history": {
+              "text_preview": "Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing incorp...",
+              "full_length": 4478,
+              "type": "truncated_text"
+            }
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0,
+            "parallel_execution": true,
+            "debate_start_time": 115265.19531875,
+            "shared_context": {
+              "investment_plan": {
+                "text_preview": "Below is a detailed, actionable investment plan synthesizing both the bullish and bearish analyses:\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n1. Investment Recommendation  \n\u2003\u2022 Recommendation: BUY  \n\u2003\u2022 Confidence Level: Moderately High (around 80\u201385%), recognizing strong fundamentals, bullish sentiment, and an attractive valuation, while also acknowledging downside risks highlighted by bear arguments.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n2. Position Sizing  \n\u2003\u2022 Core Position: Allocate approximately 2\u20132.5% of ...",
+                "full_length": 5197,
+                "type": "truncated_text"
+              },
+              "trader_decision": "",
+              "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+              "sentiment_report": {
+                "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+                "full_length": 2209,
+                "type": "truncated_text"
+              },
+              "news_report": {
+                "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+                "full_length": 42165,
+                "type": "truncated_text"
+              },
+              "fundamentals_report": {
+                "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+                "full_length": 706,
+                "type": "truncated_text"
+              }
+            }
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 1,
+              "type": "list",
+              "sample": [
+                {
+                  "round": 1,
+                  "bull": "ACTION: STRONG BUY with a conviction score of 85/100, target upside ~20\u201330% (base target ~$326; bull target ~$353), recommended position size 2\u20132.5% of the portfolio, entry zone $265\u2013$270, stop loss ~$260, and staged exits starting at ~$320.",
+                  "bear": "Recommendation: Hedge via put spreads sized to 3\u20135% of your portfolio with predefined stops if Q3 fundamentals improve, capturing a potential downside scenario of 25\u201335% decline (approx. $175\u2013$200 target) in adverse conditions while mitigating short squeeze risk."
+                }
+              ]
+            }
+          },
+          "investment_plan": {
+            "text_preview": "Below is a detailed, actionable investment plan synthesizing both the bullish and bearish analyses:\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n1. Investment Recommendation  \n\u2003\u2022 Recommendation: BUY  \n\u2003\u2022 Confidence Level: Moderately High (around 80\u201385%), recognizing strong fundamentals, bullish sentiment, and an attractive valuation, while also acknowledging downside risks highlighted by bear arguments.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n2. Position Sizing  \n\u2003\u2022 Core Position: Allocate approximately 2\u20132.5% of ...",
+            "full_length": 5197,
+            "type": "truncated_text"
+          },
+          "aggregation_ready": true
+        },
+        "outputs_summary": {
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0,
+            "parallel_execution": true,
+            "debate_start_time": 115265.19531875,
+            "shared_context": {
+              "investment_plan": {
+                "text_preview": "Below is a detailed, actionable investment plan synthesizing both the bullish and bearish analyses:\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n1. Investment Recommendation  \n\u2003\u2022 Recommendation: BUY  \n\u2003\u2022 Confidence Level: Moderately High (around 80\u201385%), recognizing strong fundamentals, bullish sentiment, and an attractive valuation, while also acknowledging downside risks highlighted by bear arguments.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n2. Position Sizing  \n\u2003\u2022 Core Position: Allocate approximately 2\u20132.5% of ...",
+                "full_length": 5197,
+                "type": "truncated_text"
+              },
+              "trader_decision": "",
+              "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+              "sentiment_report": {
+                "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+                "full_length": 2209,
+                "type": "truncated_text"
+              },
+              "news_report": {
+                "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+                "full_length": 42165,
+                "type": "truncated_text"
+              },
+              "fundamentals_report": {
+                "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+                "full_length": 706,
+                "type": "truncated_text"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "5c4a525e-64c4-4b3e-9e4b-a54fa45caa98",
+        "name": "risk_manager",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:19:10.121190",
+        "end_time": "2025-08-14T03:19:10.122944",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "aggregation_complete",
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 18.135662078857422
+          },
+          "parallel_start_time": 1755141494.885419,
+          "parallel_end_time": 1755141513.0772328,
+          "total_parallel_time": 18.191813945770264,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "success",
+          "successful_analysts_count": 4,
+          "aggregation_ready": true,
+          "parallel_execution_metrics": {
+            "total_time": 18.191813945770264,
+            "successful_analysts": 4,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 18.135662078857422
+            }
+          },
+          "speedup_factor": 1.0,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "history": "",
+            "current_response": {
+              "text_preview": "Bull: Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing ...",
+              "full_length": 4484,
+              "type": "truncated_text"
+            },
+            "judge_decision": "",
+            "bear_history": {
+              "text_preview": "ACTION: HEDGE with a conviction score of 72/100\n\n\u2013\u2013\u2013\u2013\u2013\u2013\u2013\n1. ACCOUNTING ANALYSIS  \n\u2022 Revenue Quality & Earnings Management:  \n\u2003\u2013 Despite a superficially attractive P/E of 11.53 and robust dividend payouts, our forensic review reveals potential over\u2010reliance on \u201cmanaged\u201d revenue streams (e.g., aggressive cost deferrals and reinsurance contract structuring) that may soon unravel as tail risks (scored moderate\u2013red flag level 3/5).  \n\u2022 Balance Sheet Stress & Cash Flow Divergence:  \n\u2003\u2013 A Debt/Equity r...",
+              "full_length": 5706,
+              "type": "truncated_text"
+            },
+            "count": 1,
+            "bull_history": {
+              "text_preview": "Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing incorp...",
+              "full_length": 4478,
+              "type": "truncated_text"
+            }
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 1,
+              "type": "list",
+              "sample": [
+                {
+                  "round": 1,
+                  "bull": "ACTION: STRONG BUY with a conviction score of 85/100, target upside ~20\u201330% (base target ~$326; bull target ~$353), recommended position size 2\u20132.5% of the portfolio, entry zone $265\u2013$270, stop loss ~$260, and staged exits starting at ~$320.",
+                  "bear": "Recommendation: Hedge via put spreads sized to 3\u20135% of your portfolio with predefined stops if Q3 fundamentals improve, capturing a potential downside scenario of 25\u201335% decline (approx. $175\u2013$200 target) in adverse conditions while mitigating short squeeze risk."
+                }
+              ]
+            }
+          },
+          "investment_plan": {
+            "text_preview": "Below is a detailed, actionable investment plan synthesizing both the bullish and bearish analyses:\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n1. Investment Recommendation  \n\u2003\u2022 Recommendation: BUY  \n\u2003\u2022 Confidence Level: Moderately High (around 80\u201385%), recognizing strong fundamentals, bullish sentiment, and an attractive valuation, while also acknowledging downside risks highlighted by bear arguments.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n2. Position Sizing  \n\u2003\u2022 Core Position: Allocate approximately 2\u20132.5% of ...",
+            "full_length": 5197,
+            "type": "truncated_text"
+          }
+        },
+        "outputs_summary": {
+          "risk_analysis_needed": true
+        }
+      },
+      {
+        "id": "c2a9de2f-0c3a-4fb4-a12d-291c8d4d65e6",
+        "name": "research_manager",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:53.133064",
+        "end_time": "2025-08-14T03:19:10.120679",
+        "total_tokens": 23600,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "investment_debate_state": {
+            "history": "",
+            "current_response": {
+              "text_preview": "Bull: Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing ...",
+              "full_length": 4484,
+              "type": "truncated_text"
+            },
+            "judge_decision": "",
+            "bear_history": {
+              "text_preview": "ACTION: HEDGE with a conviction score of 72/100\n\n\u2013\u2013\u2013\u2013\u2013\u2013\u2013\n1. ACCOUNTING ANALYSIS  \n\u2022 Revenue Quality & Earnings Management:  \n\u2003\u2013 Despite a superficially attractive P/E of 11.53 and robust dividend payouts, our forensic review reveals potential over\u2010reliance on \u201cmanaged\u201d revenue streams (e.g., aggressive cost deferrals and reinsurance contract structuring) that may soon unravel as tail risks (scored moderate\u2013red flag level 3/5).  \n\u2022 Balance Sheet Stress & Cash Flow Divergence:  \n\u2003\u2013 A Debt/Equity r...",
+              "full_length": 5706,
+              "type": "truncated_text"
+            },
+            "count": 1,
+            "bull_history": {
+              "text_preview": "Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing incorp...",
+              "full_length": 4478,
+              "type": "truncated_text"
+            }
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 1,
+              "type": "list",
+              "sample": [
+                {
+                  "round": 1,
+                  "bull": "ACTION: STRONG BUY with a conviction score of 85/100, target upside ~20\u201330% (base target ~$326; bull target ~$353), recommended position size 2\u20132.5% of the portfolio, entry zone $265\u2013$270, stop loss ~$260, and staged exits starting at ~$320.",
+                  "bear": "Recommendation: Hedge via put spreads sized to 3\u20135% of your portfolio with predefined stops if Q3 fundamentals improve, capturing a potential downside scenario of 25\u201335% decline (approx. $175\u2013$200 target) in adverse conditions while mitigating short squeeze risk."
+                }
+              ]
+            }
+          },
+          "investment_plan": "",
+          "aggregation_ready": true
+        },
+        "outputs_summary": {
+          "investment_plan": {
+            "text_preview": "Below is a detailed, actionable investment plan synthesizing both the bullish and bearish analyses:\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n1. Investment Recommendation  \n\u2003\u2022 Recommendation: BUY  \n\u2003\u2022 Confidence Level: Moderately High (around 80\u201385%), recognizing strong fundamentals, bullish sentiment, and an attractive valuation, while also acknowledging downside risks highlighted by bear arguments.\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500  \n2. Position Sizing  \n\u2003\u2022 Core Position: Allocate approximately 2\u20132.5% of ...",
+            "full_length": 5197,
+            "type": "truncated_text"
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 1,
+              "type": "list",
+              "sample": [
+                {
+                  "round": 1,
+                  "bull": "ACTION: STRONG BUY with a conviction score of 85/100, target upside ~20\u201330% (base target ~$326; bull target ~$353), recommended position size 2\u20132.5% of the portfolio, entry zone $265\u2013$270, stop loss ~$260, and staged exits starting at ~$320.",
+                  "bear": "Recommendation: Hedge via put spreads sized to 3\u20135% of your portfolio with predefined stops if Q3 fundamentals improve, capturing a potential downside scenario of 25\u201335% decline (approx. $175\u2013$200 target) in adverse conditions while mitigating short squeeze risk."
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": "7e15be4b-cff8-4428-9d54-676f981379a8",
+        "name": "bull_researcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:33.080554",
+        "end_time": "2025-08-14T03:18:47.238387",
+        "total_tokens": 24252,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "aggregation_complete",
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 18.135662078857422
+          },
+          "parallel_start_time": 1755141494.885419,
+          "parallel_end_time": 1755141513.0772328,
+          "total_parallel_time": 18.191813945770264,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "success",
+          "successful_analysts_count": 4,
+          "aggregation_ready": true,
+          "parallel_execution_metrics": {
+            "total_time": 18.191813945770264,
+            "successful_analysts": 4,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 18.135662078857422
+            }
+          },
+          "speedup_factor": 1.0,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "investment_debate_state": {
+            "bull_history": {
+              "text_preview": "Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing incorp...",
+              "full_length": 4478,
+              "type": "truncated_text"
+            },
+            "bear_history": "",
+            "history": "",
+            "current_response": {
+              "text_preview": "Bull: Building on the bear\u2019s point about recent Q2 margin pressures and the \u201cmuch worse than expected\u201d narrative from Seeking Alpha, our updated analysis shows that even if short\u2010term headwinds temporarily compress margins, UNH\u2019s solid fundamentals, attractive relative multiples, and continued dividend growth create significant margin of safety and asymmetric upside over the coming years. We acknowledge that margin pressures and cyclical headwinds are valid concerns; however, our stress\u2013testing ...",
+              "full_length": 4484,
+              "type": "truncated_text"
+            },
+            "judge_decision": "",
+            "count": 1
+          }
+        }
+      },
+      {
+        "id": "dd7d0eba-c735-4dff-871c-7e42ba6c7dc1",
+        "name": "bear_researcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:33.080262",
+        "end_time": "2025-08-14T03:18:53.131567",
+        "total_tokens": 24735,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "aggregation_complete",
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 18.135662078857422
+          },
+          "parallel_start_time": 1755141494.885419,
+          "parallel_end_time": 1755141513.0772328,
+          "total_parallel_time": 18.191813945770264,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "success",
+          "successful_analysts_count": 4,
+          "aggregation_ready": true,
+          "parallel_execution_metrics": {
+            "total_time": 18.191813945770264,
+            "successful_analysts": 4,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 18.135662078857422
+            }
+          },
+          "speedup_factor": 1.0,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": {
+              "text_preview": "ACTION: HEDGE with a conviction score of 72/100\n\n\u2013\u2013\u2013\u2013\u2013\u2013\u2013\n1. ACCOUNTING ANALYSIS  \n\u2022 Revenue Quality & Earnings Management:  \n\u2003\u2013 Despite a superficially attractive P/E of 11.53 and robust dividend payouts, our forensic review reveals potential over\u2010reliance on \u201cmanaged\u201d revenue streams (e.g., aggressive cost deferrals and reinsurance contract structuring) that may soon unravel as tail risks (scored moderate\u2013red flag level 3/5).  \n\u2022 Balance Sheet Stress & Cash Flow Divergence:  \n\u2003\u2013 A Debt/Equity r...",
+              "full_length": 5706,
+              "type": "truncated_text"
+            },
+            "history": "",
+            "current_response": {
+              "text_preview": "Bear: ACTION: HEDGE with a conviction score of 72/100\n\n\u2013\u2013\u2013\u2013\u2013\u2013\u2013\n1. ACCOUNTING ANALYSIS  \n\u2022 Revenue Quality & Earnings Management:  \n\u2003\u2013 Despite a superficially attractive P/E of 11.53 and robust dividend payouts, our forensic review reveals potential over\u2010reliance on \u201cmanaged\u201d revenue streams (e.g., aggressive cost deferrals and reinsurance contract structuring) that may soon unravel as tail risks (scored moderate\u2013red flag level 3/5).  \n\u2022 Balance Sheet Stress & Cash Flow Divergence:  \n\u2003\u2013 A Debt/Eq...",
+              "full_length": 5712,
+              "type": "truncated_text"
+            },
+            "judge_decision": "",
+            "count": 1
+          }
+        }
+      },
+      {
+        "id": "f9233a43-2002-49dc-858e-be2e2d00a549",
+        "name": "research_debate_controller",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:33.079038",
+        "end_time": "2025-08-14T03:18:33.079644",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": "",
+          "aggregation_ready": true
+        },
+        "outputs_summary": {
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          }
+        }
+      },
+      {
+        "id": "b05a20b8-a004-4952-9062-c5e09c78fbe2",
+        "name": "enhanced_aggregator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:33.076749",
+        "end_time": "2025-08-14T03:18:33.078560",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 18.135662078857422
+          },
+          "parallel_start_time": 1755141494.885419,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 1,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "parallel_end_time": 1755141513.0772328,
+          "total_parallel_time": 18.191813945770264,
+          "aggregation_status": "success",
+          "aggregation_ready": true,
+          "successful_analysts_count": 4,
+          "speedup_factor": 1.0,
+          "step": "aggregation_complete",
+          "parallel_execution_metrics": {
+            "total_time": 18.191813945770264,
+            "successful_analysts": 4,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 18.135662078857422
+            }
+          }
+        }
+      },
+      {
+        "id": "a472f255-d576-4270-b7f6-1d57d76d304b",
+        "name": "fundamentals_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:14.890853",
+        "end_time": "2025-08-14T03:18:16.157751",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_report": "",
+          "news_report": "",
+          "sentiment_report": "",
+          "fundamentals_report": "",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755141494.885419,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 1,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: UNH\n\u26a1 Data fetched in 1.159s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: UnitedHealth Group Inc\n  Industry: Health Care\n  Market Cap: $246,171M\n  Share Outstanding: 907M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 11.5291\n  P/B Ratio: 2.8168\n  EV/FCF: 11.5727\n  ROE: 22.259999999999998%\n  ROA: 7.01%\n  Debt/Equity: 0.7882\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $271.81\n  Mean Target: $326.17\n  Low Target: $298.99\n  High Target...",
+            "full_length": 706,
+            "type": "truncated_text"
+          },
+          "fundamentals_data": {
+            "ticker": "UNH",
+            "profile": {
+              "country": "US",
+              "currency": "USD",
+              "estimateCurrency": "USD",
+              "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+              "finnhubIndustry": "Health Care",
+              "ipo": "1984-10-17",
+              "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/UNH.png",
+              "marketCapitalization": 246171.1603456796,
+              "name": "UnitedHealth Group Inc",
+              "phone": "18003285979",
+              "shareOutstanding": 907.14,
+              "ticker": "UNH",
+              "weburl": "https://www.unitedhealthgroup.com/"
+            },
+            "metrics": {
+              "metric": {
+                "10DayAverageTradingVolume": 22.11793,
+                "13WeekPriceReturnDaily": -34.5429,
+                "26WeekPriceReturnDaily": -53.7318,
+                "3MonthADReturnStd": 58.607166,
+                "3MonthAverageTradingVolume": 17.07228,
+                "52WeekHigh": 630.73,
+                "52WeekHighDate": "2024-11-11",
+                "52WeekLow": 234.6,
+                "52WeekLowDate": "2025-08-01",
+                "52WeekPriceReturnDaily": -55.4306,
+                "5DayPriceReturnDaily": 0.5458,
+                "assetTurnoverAnnual": 1.342,
+                "assetTurnoverTTM": 1.3909,
+                "beta": 0.4476699,
+                "bookValuePerShareAnnual": 101.2656,
+                "bookValuePerShareQuarterly": 110.7536,
+                "bookValueShareGrowth5Y": 10.75,
+                "capexCagr5Y": 11.06,
+                "cashFlowPerShareAnnual": 22.3891,
+                "cashFlowPerShareQuarterly": 27.881,
+                "cashFlowPerShareTTM": 27.99469,
+                "cashPerSharePerShareAnnual": 25.01606,
+                "cashPerSharePerShareQuarterly": 42.07027,
+                "currentDividendYieldTTM": 3.1691,
+                "currentEv/freeCashFlowAnnual": 14.2876,
+                "currentEv/freeCashFlowTTM": 11.5727,
+                "currentRatioAnnual": 0.8822,
+                "currentRatioQuarterly": 0.805,
+                "dividendGrowthRate5Y": 14.73,
+                "dividendPerShareAnnual": 8.1925,
+                "dividendPerShareTTM": 8.5125,
+                "dividendYieldIndicatedAnnual": 3.3795924,
+                "ebitdPerShareAnnual": 30.2217,
+                "ebitdPerShareTTM": 37.9175,
+                "ebitdaCagr5Y": 4.62,
+                "ebitdaInterimCagr5Y": -9.06,
+                "enterpriseValue": 292696.61,
+                "epsAnnual": 15.5059,
+                "epsBasicExclExtraItemsAnnual": 15.5059,
+                "epsBasicExclExtraItemsTTM": 23.0937,
+                "epsExclExtraItemsAnnual": 15.5059,
+                "epsExclExtraItemsTTM": 23.0937,
+                "epsGrowth3Y": -4.99,
+                "epsGrowth5Y": 1.6,
+                "epsGrowthQuarterlyYoy": -17.61,
+                "epsGrowthTTMYoy": 52.85,
+                "epsInclExtraItemsAnnual": 15.5059,
+                "epsInclExtraItemsTTM": 23.0937,
+                "epsNormalizedAnnual": 15.5059,
+                "epsTTM": 23.0937,
+                "focfCagr5Y": 4.56,
+                "forwardPE": 16.522330554932328,
+                "longTermDebt/equityAnnual": 0.7809,
+                "longTermDebt/equityQuarterly": 0.7315,
+                "marketCapitalization": 245523.61,
+                "monthToDatePriceReturnDaily": 1.126,
+                "netIncomeEmployeeAnnual": 0.036,
+                "netIncomeEmployeeTTM": 0.0532,
+                "netInterestCoverageAnnual": 7.4829,
+                "netInterestCoverageTTM": 6.1385,
+                "netMarginGrowth5Y": -8.81,
+                "netProfitMargin5Y": 5.57,
+                "netProfitMarginAnnual": 3.6,
+                "netProfitMarginTTM": 5.04,
+                "operatingMargin5Y": 8.1,
+                "operatingMarginAnnual": 5.99,
+                "operatingMarginTTM": 7.26,
+                "payoutRatioAnnual": 52.29,
+                "payoutRatioTTM": 36.54,
+                "pb": 2.4438,
+                "pbAnnual": 5.0242,
+                "pbQuarterly": 2.8168,
+                "pcfShareAnnual": 10.2365,
+                "pcfShareTTM": 8.4725,
+                "peAnnual": 17.0443,
+                "peBasicExclExtraTTM": 11.5291,
+                "peExclExtraAnnual": 25.83225,
+                "peExclExtraTTM": 11.5291,
+                "peInclExtraTTM": 11.5291,
+                "peNormalizedAnnual": 17.0443,
+                "peTTM": 11.5291,
+                "pegTTM": 0.21518056693645643,
+                "pfcfShareAnnual": 11.9849,
+                "pfcfShareTTM": 9.7076,
+                "pretaxMargin5Y": 7.36,
+                "pretaxMarginAnnual": 5.01,
+                "pretaxMarginTTM": 6.29,
+                "priceRelativeToS&P50013Week": -47.0832,
+                "priceRelativeToS&P50026Week": -59.405,
+                "priceRelativeToS&P5004Week": -15.7009,
+                "priceRelativeToS&P50052Week": -75.2685,
+                "priceRelativeToS&P500Ytd": -58.6147,
+                "psAnnual": 0.6134,
+                "psTTM": 0.5807,
+                "ptbvAnnual": 6.709,
+                "ptbvQuarterly": 6.6455,
+                "quickRatioAnnual": 0.671,
+                "quickRatioQuarterly": 0.5975,
+                "revenueEmployeeAnnual": 1.0007,
+                "revenueEmployeeTTM": 1.057,
+                "revenueGrowth3Y": 11.65,
+                "revenueGrowth5Y": 10.57,
+                "revenueGrowthQuarterlyYoy": 12.91,
+                "revenueGrowthTTMYoy": 9.7,
+                "revenuePerShareAnnual": 430.8698,
+                "revenuePerShareTTM": 464.6352,
+                "revenueShareGrowth5Y": 11.44,
+                "roa5Y": 7.43,
+                "roaRfy": 4.83,
+                "roaTTM": 7.01,
+                "roe5Y": 22.85,
+                "roeRfy": 15.55,
+                "roeTTM": 22.259999999999998,
+                "roi5Y": 13.39,
+                "roiAnnual": 8.5,
+                "roiTTM": 12.2,
+                "tangibleBookValuePerShareAnnual": 75.8361,
+                "tangibleBookValuePerShareQuarterly": 79.2209,
+                "tbvCagr5Y": 7.98,
+                "totalDebt/totalEquityAnnual": 0.83,
+                "totalDebt/totalEquityQuarterly": 0.7882,
+                "yearToDatePriceReturnDaily": -50.1107
+              },
+              "metricType": "all",
+              "series": {
+                "annual": {
+                  "bookValue": {
+                    "count": 26,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 92658
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 88756
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 77772
+                      }
+                    ]
+                  },
+                  "cashRatio": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.6509953191708245
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.7017829542945463
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.7579886455798864
+                      }
+                    ]
+                  },
+                  "currentRatio": {
+                    "count": 22,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.8822
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.6563
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.629
+                      }
+                    ]
+                  },
+                  "ebitPerShare": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 25.8095
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 34.4968
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 29.9316
+                      }
+                    ]
+                  },
+                  "eps": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 15.5059
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 23.8603
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 21.1789
+                      }
+                    ]
+                  },
+                  "ev": {
+                    "count": 26,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 517127.03
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 524055.4
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 529631
+                      }
+                    ]
+                  },
+                  "fcfMargin": {
+                    "count": 37,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0512
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0691
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.0722
+                      }
+                    ]
+                  },
+                  "grossMargin": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "inventoryTurnover": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalAsset": {
+                    "count": 36,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.2426
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.2129
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.2219
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalCapital": {
+                    "count": 36,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.4267
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.3851
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.4026
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalEquity": {
+                    "count": 36,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.7809
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.6564
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.7009
+                      }
+                    ]
+                  },
+                  "netDebtToTotalCapital": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.3043
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.2453
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.253
+                      }
+                    ]
+                  },
+                  "netDebtToTotalEquity": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.5568
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.4181
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.4405
+                      }
+                    ]
+                  },
+                  "netMargin": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.036
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0602
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.0621
+                      }
+                    ]
+                  },
+                  "operatingMargin": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0599
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0871
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.0877
+                      }
+                    ]
+                  },
+                  "payoutRatio": {
+                    "count": 35,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.5229
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.3021
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.2978
+                      }
+                    ]
+                  },
+                  "pb": {
+                    "count": 26,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 5.0242
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 5.4863
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 6.3696
+                      }
+                    ]
+                  },
+                  "pe": {
+                    "count": 26,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 32.3176
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 21.7571
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 24.6209
+                      }
+                    ]
+                  },
+                  "pfcf": {
+                    "count": 26,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 22.7245
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 18.9606
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 21.1662
+                      }
+                    ]
+                  },
+                  "pretaxMargin": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0501
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0783
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.0813
+                      }
+                    ]
+                  },
+                  "ps": {
+                    "count": 26,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.163
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.3103
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 1.5282
+                      }
+                    ]
+                  },
+                  "ptbv": {
+                    "count": 24,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 6.709
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 6.6195
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 7.817
+                      }
+                    ]
+                  },
+                  "quickRatio": {
+                    "count": 22,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.671
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.4884
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.4142
+                      }
+                    ]
+                  },
+                  "receivablesTurnover": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "roa": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0483
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.0818
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.0819
+                      }
+                    ]
+                  },
+                  "roe": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1555
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.2522
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.2587
+                      }
+                    ]
+                  },
+                  "roic": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.085
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.1479
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.1486
+                      }
+                    ]
+                  },
+                  "rotc": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1414
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.2139
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.21
+                      }
+                    ]
+                  },
+                  "salesPerShare": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 430.8698
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 396.1855
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 341.2232
+                      }
+                    ]
+                  },
+                  "sgaToSale": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "tangibleBookValue": {
+                    "count": 24,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 69390
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 73562
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 63371
+                      }
+                    ]
+                  },
+                  "totalDebtToEquity": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.83
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.7046
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.7409
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalAsset": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.2578
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.2285
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.2345
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalCapital": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.4535
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.4134
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.4256
+                      }
+                    ]
+                  },
+                  "totalRatio": {
+                    "count": 38,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.4506
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 1.4799
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 1.4631
+                      }
+                    ]
+                  }
+                },
+                "quarterly": {
+                  "assetTurnoverTTM": {
+                    "count": 139,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 1.3909
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.3744
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.371
+                      }
+                    ]
+                  },
+                  "bookValue": {
+                    "count": 103,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 100469
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 95038
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 92658
+                      }
+                    ]
+                  },
+                  "cashRatio": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 5.61951561951562
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.705294819985305
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.6509953191708245
+                      }
+                    ]
+                  },
+                  "currentRatio": {
+                    "count": 74,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.805
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.8822
+                      },
+                      {
+                        "period": "2024-09-30",
+                        "v": 0.9489
+                      }
+                    ]
+                  },
+                  "ebitPerShare": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 5.6143
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 9.9172
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 8.4168
+                      }
+                    ]
+                  },
+                  "eps": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 3.7429
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 6.854
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 5.986
+                      }
+                    ]
+                  },
+                  "ev": {
+                    "count": 103,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 330173.6
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 529634.6
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 517127.03
+                      }
+                    ]
+                  },
+                  "fcfMargin": {
+                    "count": 132,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0571
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0408
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0148
+                      }
+                    ]
+                  },
+                  "fcfPerShareTTM": {
+                    "count": 139,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 27.881
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 26.9802
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 22.3891
+                      }
+                    ]
+                  },
+                  "grossMargin": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "inventoryTurnoverTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalAsset": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.2382
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.2301
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.2426
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalCapital": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.4091
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.4043
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.4267
+                      }
+                    ]
+                  },
+                  "longtermDebtTotalEquity": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.7315
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.7501
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.7809
+                      }
+                    ]
+                  },
+                  "netDebtToTotalCapital": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.2626
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.2867
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.3043
+                      }
+                    ]
+                  },
+                  "netDebtToTotalEquity": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.4695
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.5319
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.5568
+                      }
+                    ]
+                  },
+                  "netMargin": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0305
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0574
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.055
+                      }
+                    ]
+                  },
+                  "operatingMargin": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0458
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0831
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0773
+                      }
+                    ]
+                  },
+                  "payoutRatioTTM": {
+                    "count": 96,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.3654
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.349
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.367
+                      }
+                    ]
+                  },
+                  "pb": {
+                    "count": 103,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 2.8168
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 5.0409
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 5.0242
+                      }
+                    ]
+                  },
+                  "peTTM": {
+                    "count": 100,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 13.2889
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 21.672
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 32.3176
+                      }
+                    ]
+                  },
+                  "pfcfTTM": {
+                    "count": 94,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 11.1893
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 19.5129
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 22.7245
+                      }
+                    ]
+                  },
+                  "pretaxMargin": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0366
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.074
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0674
+                      }
+                    ]
+                  },
+                  "psTTM": {
+                    "count": 100,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.6693
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.1683
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.163
+                      }
+                    ]
+                  },
+                  "ptbv": {
+                    "count": 102,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 6.6455
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 6.709
+                      },
+                      {
+                        "period": "2024-09-30",
+                        "v": 7.6106
+                      }
+                    ]
+                  },
+                  "quickRatio": {
+                    "count": 74,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.5975
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.671
+                      },
+                      {
+                        "period": "2024-09-30",
+                        "v": 0.7424
+                      }
+                    ]
+                  },
+                  "receivablesTurnoverTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "roaTTM": {
+                    "count": 139,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0701
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0741
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0493
+                      }
+                    ]
+                  },
+                  "roeTTM": {
+                    "count": 139,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.2226
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.238
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1586
+                      }
+                    ]
+                  },
+                  "roicTTM": {
+                    "count": 139,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.122
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.1295
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0864
+                      }
+                    ]
+                  },
+                  "rotcTTM": {
+                    "count": 139,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.1759
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.1888
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1438
+                      }
+                    ]
+                  },
+                  "salesPerShare": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 122.6549
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 119.3627
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 108.8629
+                      }
+                    ]
+                  },
+                  "sgaToSale": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "tangibleBookValue": {
+                    "count": 102,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-03-31",
+                        "v": 72091
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 69390
+                      },
+                      {
+                        "period": "2024-09-30",
+                        "v": 70941
+                      }
+                    ]
+                  },
+                  "totalDebtToEquity": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.7882
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.8551
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.83
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalAsset": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.2566
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.2623
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.2578
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalCapital": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.4408
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.461
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.4535
+                      }
+                    ]
+                  },
+                  "totalRatio": {
+                    "count": 142,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 1.4828
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.4425
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.4506
+                      }
+                    ]
+                  }
+                }
+              },
+              "symbol": "UNH"
+            },
+            "balance_sheet": {
+              "error": "You don't have access to this resource."
+            },
+            "income_statement": {
+              "error": "You don't have access to this resource."
+            },
+            "cash_flow": {
+              "error": "You don't have access to this resource."
+            },
+            "earnings_history": {
+              "count": 4,
+              "type": "list",
+              "sample": [
+                {
+                  "actual": 4.08,
+                  "estimate": 4.5292,
+                  "period": "2025-06-30",
+                  "quarter": 2,
+                  "surprise": -0.4492,
+                  "surprisePercent": -9.9179,
+                  "symbol": "UNH",
+                  "year": 2025
+                },
+                {
+                  "actual": 7.2,
+                  "estimate": 7.3601,
+                  "period": "2025-03-31",
+                  "quarter": 1,
+                  "surprise": -0.1601,
+                  "surprisePercent": -2.1752,
+                  "symbol": "UNH",
+                  "year": 2025
+                },
+                {
+                  "actual": 6.81,
+                  "estimate": 6.79,
+                  "period": "2024-12-31",
+                  "quarter": 4,
+                  "surprise": 0.02,
+                  "surprisePercent": 0.2946,
+                  "symbol": "UNH",
+                  "year": 2024
+                }
+              ]
+            },
+            "earnings_calendar": {},
+            "revenue_estimates": {
+              "error": "You don't have access to this resource."
+            },
+            "recommendations": {
+              "count": 4,
+              "type": "list",
+              "sample": [
+                {
+                  "buy": 15,
+                  "hold": 6,
+                  "period": "2025-08-01",
+                  "sell": 3,
+                  "strongBuy": 7,
+                  "strongSell": 1,
+                  "symbol": "UNH"
+                },
+                {
+                  "buy": 15,
+                  "hold": 7,
+                  "period": "2025-07-01",
+                  "sell": 3,
+                  "strongBuy": 7,
+                  "strongSell": 0,
+                  "symbol": "UNH"
+                },
+                {
+                  "buy": 15,
+                  "hold": 6,
+                  "period": "2025-06-01",
+                  "sell": 3,
+                  "strongBuy": 8,
+                  "strongSell": 0,
+                  "symbol": "UNH"
+                }
+              ]
+            },
+            "price_targets": {
+              "current": 271.81,
+              "mean": 326.17199999999997,
+              "high": 353.353,
+              "low": 298.991,
+              "analysts": 32,
+              "confidence": "MEDIUM",
+              "source": "Analyst Recommendations (Derived)",
+              "lastUpdated": "2025-08-01"
+            },
+            "insider_transactions": {
+              "data": {
+                "count": 184,
+                "type": "list",
+                "sample": [
+                  {
+                    "change": 294,
+                    "currency": "",
+                    "filingDate": "2025-07-02",
+                    "id": "0000731766-25-000216",
+                    "isDerivative": false,
+                    "name": "MCNABB FREDERICK WILLIAM III",
+                    "share": 14003,
+                    "source": "sec",
+                    "symbol": "UNH",
+                    "transactionCode": "A",
+                    "transactionDate": "2025-07-01",
+                    "transactionPrice": 0
+                  },
+                  {
+                    "change": 173,
+                    "currency": "",
+                    "filingDate": "2025-07-02",
+                    "id": "0000731766-25-000211",
+                    "isDerivative": false,
+                    "name": "Gil Kristen",
+                    "share": 1731,
+                    "source": "sec",
+                    "symbol": "UNH",
+                    "transactionCode": "A",
+                    "transactionDate": "2025-07-01",
+                    "transactionPrice": 0
+                  },
+                  {
+                    "change": 288,
+                    "currency": "",
+                    "filingDate": "2025-07-02",
+                    "id": "0000731766-25-000212",
+                    "isDerivative": false,
+                    "name": "MONTGOMERY RICE VALERIE MD",
+                    "share": 6587,
+                    "source": "sec",
+                    "symbol": "UNH",
+                    "transactionCode": "A",
+                    "transactionDate": "2025-07-01",
+                    "transactionPrice": 0
+                  }
+                ]
+              },
+              "symbol": "UNH"
+            },
+            "institutional_ownership": {
+              "error": "You don't have access to this resource."
+            },
+            "dividends": {
+              "error": "You don't have access to this resource."
+            },
+            "splits": {
+              "error": "You don't have access to this resource."
+            },
+            "peers": {
+              "count": 10,
+              "type": "list",
+              "sample": [
+                "UNH",
+                "ELV",
+                "HUM"
+              ]
+            },
+            "endpoints_fetched": 10,
+            "endpoints_total": 15,
+            "fetch_time": 0.5099918842315674,
+            "timestamp": "2025-08-13T20:18:16.118807"
+          },
+          "sender": "Fundamentals Analyst CryptoAware",
+          "execution_time": 1.200463056564331,
+          "fetch_time": 1.1585609912872314,
+          "asset_type": "stock"
+        }
+      },
+      {
+        "id": "6772fdcf-8570-43fd-9d71-5566411d04d5",
+        "name": "news_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:14.890618",
+        "end_time": "2025-08-14T03:18:17.670169",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_report": "",
+          "news_report": "",
+          "sentiment_report": "",
+          "fundamentals_report": "",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755141494.885419,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 1,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - UNH\n\nGenerated: 2025-08-13 20:18:17\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 22 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 2.724s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why UnitedHealth Stock Was Climbing on Wednesday\nSource: The Motley Fool\nDate: 7 hours ago\nURL: https://www.fool.com/inve...",
+            "full_length": 42165,
+            "type": "truncated_text"
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "sender": "News Analyst (Ultra-Fast)"
+        }
+      },
+      {
+        "id": "63812b94-5891-4e75-bee3-5c0efcd88fed",
+        "name": "social_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:14.890382",
+        "end_time": "2025-08-14T03:18:33.076051",
+        "total_tokens": 870,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_report": "",
+          "news_report": "",
+          "sentiment_report": "",
+          "fundamentals_report": "",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755141494.885419,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 1,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "social_analyst_status": "completed",
+          "sentiment_report": {
+            "text_preview": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence...",
+            "full_length": 2209,
+            "type": "truncated_text"
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "Based on the available social media data for UNH, here is the comprehensive analysis:\n\n### 1. Overall Sentiment Score\n- **Calculation**: We average the sentiment scores from Reddit, Twitter, and StockTwits.\n  - Reddit: 0.988\n  - Twitter: 0.934\n  - StockTwits: 0.882\n- **Overall Sentiment Score**: \n  - (0.988 + 0.934 + 0.882) / 3 = 0.9347 (rounded to 0.935)\n\n### 2. Confidence Level\n- **Adjusted Confidence Level**: \nGiven that we have high confidence from both Reddit and StockTwits (high confidence but limited data from Twitter): \n- **Confidence Level**: **Medium** (due to Twitter's lower confidence)\n\n### 3. Sentiment Trend\n- **Sentiment Trend**: \nWith a consistently high sentiment across Reddit (0.988), Twitter (bullish), and StockTwits (0.882), the sentiment can be considered stable.\n- **Sentiment Trend**: **Stable**\n\n### 4. Top 3 Key Insights\n1. **Strong Sentiment on Reddit**: The sentiment score on Reddit (0.988) is extremely high, indicating very positive discussion surrounding UNH.\n2. **Bullish Indicators from Twitter and StockTwits**: Both Twitter and StockTwits show bullish sentiment, with StockTwits ranking bullish responses at 53.3% versus 3.3% bearish, although there are very few mentions on Twitter.\n3. **Limited Data on Twitter**: Only 2 mentions were tracked on Twitter, which may not provide a comprehensive view compared to Reddit and StockTwits. Therefore, the Twitter data is less influential in the overall sentiment assessment.\n\n### 5. Trading Signal\n- **Overall Analysis**: The strong sentiment expressed across platforms indicates confidence in UNH's performance. Considering the bullish perspectives on both StockTwits and Twitter, along with a high sentiment from Reddit, market sentiment looks positive.\n- **Trading Signal**: **BUY** \n- **Rationale**: The consistent bullish sentiment and high overall sentiment score suggest a favorable market position for UNH, making it an appropriate time to consider buying shares.\n\n### Conclusion\nIn summary, the overall sentiment towards UNH is highly positive with a stable trend. Limited Twitter data impacts the overall confidence level slightly, but strong indicators from Reddit and StockTwits support a BUY trading signal.",
+                "additional_kwargs": {
+                  "refusal": null
+                },
+                "response_metadata": {
+                  "token_usage": {
+                    "completion_tokens": 516,
+                    "prompt_tokens": 354,
+                    "total_tokens": 870,
+                    "completion_tokens_details": {
+                      "accepted_prediction_tokens": 0,
+                      "audio_tokens": 0,
+                      "reasoning_tokens": 0,
+                      "rejected_prediction_tokens": 0
+                    },
+                    "prompt_tokens_details": {
+                      "audio_tokens": 0,
+                      "cached_tokens": 0
+                    }
+                  },
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "id": "chatcmpl-C4Ilq1QoZc1YZL0LWAkPsdk7Q4w1Q",
+                  "service_tier": "default",
+                  "finish_reason": "stop",
+                  "logprobs": null
+                },
+                "type": "ai",
+                "id": "run--f1dafd81-b93e-4d34-b90d-edf14728f246-0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": [],
+                "usage_metadata": {
+                  "input_tokens": 354,
+                  "output_tokens": 516,
+                  "total_tokens": 870,
+                  "input_token_details": {
+                    "audio": 0,
+                    "cache_read": 0
+                  },
+                  "output_token_details": {
+                    "audio": 0,
+                    "reasoning": 0
+                  }
+                }
+              }
+            ]
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 18.135662078857422
+          }
+        }
+      },
+      {
+        "id": "147b1697-1dfb-462e-899d-de679dfcfd6a",
+        "name": "market_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:14.889987",
+        "end_time": "2025-08-14T03:18:15.002967",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_report": "",
+          "news_report": "",
+          "sentiment_report": "",
+          "fundamentals_report": "",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755141494.885419,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 1,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: UNH\n\u26a1 Indicators calculated in 0.001s (Async Ultra-Fast Mode)\n============================================================\n\n\ud83d\udcc8 CURRENT PRICE ACTION:\n  Price: $271.81\n  Volume: 19,348,400\n  Day Range: $262.89 - $272.19\n\n============================================================\n\ud83d\udd0d TECHNICAL SIGNAL:\n\ud83d\udfe1 HOLD - Mixed technical signals\n  \u26a0\ufe0f Limited indicator data available\n\n\u26a1 Report generated 2025-08-13 20:18:15\n\ud83d\udcca Total indicators analyzed: 0",
+          "market_data": {
+            "ticker": "UNH",
+            "date": "2025-08-13",
+            "period": "3mo",
+            "ohlcv": {
+              "count": 20,
+              "type": "list",
+              "sample": [
+                {
+                  "date": "2025-07-17",
+                  "open": 292.3299865722656,
+                  "high": 293.0,
+                  "low": 283.8299865722656,
+                  "close": 288.07000732421875,
+                  "volume": 14792700
+                },
+                {
+                  "date": "2025-07-18",
+                  "open": 287.8900146484375,
+                  "high": 288.07000732421875,
+                  "low": 280.80999755859375,
+                  "close": 282.6499938964844,
+                  "volume": 14979700
+                },
+                {
+                  "date": "2025-07-21",
+                  "open": 284.6400146484375,
+                  "high": 286.5,
+                  "low": 281.20001220703125,
+                  "close": 282.1400146484375,
+                  "volume": 10319200
+                }
+              ]
+            },
+            "indicators": {},
+            "metadata": {
+              "indicator_count": 0,
+              "calculation_method": "local",
+              "data_points": 63,
+              "library": "pandas-ta"
+            }
+          },
+          "sender": "Market Analyst UltraFast Async",
+          "execution_time": 0.11075305938720703,
+          "calculation_time": 0.0005238056182861328,
+          "success": true,
+          "validation_passed": true,
+          "indicator_count": 0
+        }
+      },
+      {
+        "id": "1726c58c-bc1a-45c3-8c0b-40f5bbace65f",
+        "name": "dispatcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T03:18:14.883412",
+        "end_time": "2025-08-14T03:18:14.888254",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "UNH",
+          "trade_date": "2025-08-13",
+          "market_report": "",
+          "news_report": "",
+          "sentiment_report": "",
+          "fundamentals_report": "",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 1,
+            "max_rounds": 1,
+            "consensus_reached": false,
+            "judge_feedback": "",
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            }
+          },
+          "investment_plan": ""
+        },
+        "outputs_summary": {
+          "parallel_start_time": 1755141494.885419,
+          "send_api_enabled": true,
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "analyst_execution_times": {},
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "aggregation_ready": false,
+          "successful_analysts_count": 0,
+          "send_api_implementation": "send_api_parallel",
+          "enhanced_monitoring_enabled": true
+        }
+      }
+    ],
+    "child_runs_total": 13,
+    "extra": {
+      "metadata": {
+        "LANGSMITH_PROJECT": "trading-agent-graph",
+        "revision_id": "v0.1.1-152-g9663a72-dirty",
+        "ls_run_depth": 0
+      }
+    }
+  }
+}

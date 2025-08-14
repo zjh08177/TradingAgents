@@ -6,6 +6,7 @@ from ..utils.agent_prompt_enhancer import enhance_agent_prompt
 from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
 from ..utils.token_limiter import get_token_limiter
 from ..utils.safe_state_access import create_safe_state_wrapper
+from ..utils.news_filter import filter_news_for_llm
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +42,12 @@ def create_risk_manager(llm, memory):
         fundamentals_report = safe_state.get("fundamentals_report", "")
         sentiment_report = safe_state.get("sentiment_report", "")
         trader_plan = safe_state.get("trader_investment_plan", "") or safe_state.get("investment_plan", "")
+
+        # Apply token optimization to news report (comprehensive risk oversight)
+        filtered_news = filter_news_for_llm(news_report, max_articles=12)
         
         # Prepare analysis
-        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}"
+        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{filtered_news}\n\n{fundamentals_report}"
         past_memories = memory.get_memories(curr_situation, n_matches=2)
         past_memory_str = "\n\n".join([rec["recommendation"] for rec in past_memories])
 
@@ -52,7 +56,7 @@ def create_risk_manager(llm, memory):
 **Research Reports:**
 - Market Research: {market_research_report}
 - Sentiment Analysis: {sentiment_report}
-- News Analysis: {news_report}
+- News Analysis: {filtered_news}
 - Fundamentals Analysis: {fundamentals_report}
 
 **Trader's Recommendation:** {trader_plan}
@@ -69,19 +73,31 @@ Make your decision now:"""
         messages = [{"role": "user", "content": prompt}]
         response = await safe_llm_invoke(llm, messages)
         
-        logger.info(f"🎯 Risk Manager: Decision: {response.content[:100]}...")
+        # CRITICAL: Apply token limiting to risk manager final decision
+        raw_decision = response.content
+        MAX_RISK_DECISION_TOKENS = 1500  # ~375 words max for final decision
+        MAX_RISK_DECISION_CHARS = MAX_RISK_DECISION_TOKENS * 4
+        
+        if len(raw_decision) > MAX_RISK_DECISION_CHARS:
+            from ..utils.minimalist_logging import minimalist_log
+            minimalist_log("TOKEN_OPT", f"Risk manager truncating decision from {len(raw_decision)} to {MAX_RISK_DECISION_CHARS} chars")
+            # Keep first part of decision
+            truncated_decision = raw_decision[:MAX_RISK_DECISION_CHARS] + "\n\n[Decision truncated for token optimization]"
+            raw_decision = truncated_decision
+        
+        logger.info(f"🎯 Risk Manager: Decision: {raw_decision[:100]}...")
         
         # Update state
         new_risk_debate_state = risk_debate_state.copy()
         new_risk_debate_state.update({
-            "judge_decision": response.content,
+            "judge_decision": raw_decision,
             "latest_speaker": "Risk Manager",
             "count": risk_debate_state.get("count", 0) + 1
         })
         
         return {
             "risk_debate_state": new_risk_debate_state,
-            "final_trade_decision": response.content,
+            "final_trade_decision": raw_decision,  # Use token-limited decision
             "risk_analysis_needed": False  # Mark as complete
         }
 

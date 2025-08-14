@@ -24,10 +24,12 @@ from .prompt_batch_processor import get_graph_prompt_processor, ProcessedPrompts
 from ..utils.prompt_injection import PromptInjectionContext
 
 # Import all analyst creation functions
-from ..analysts.market_analyst import create_market_analyst
+from ..analysts.market_analyst_pandas_enabled import create_ultra_fast_market_analyst as create_market_analyst
 from ..analysts.social_media_analyst import create_social_media_analyst  
 from ..analysts.news_analyst import create_news_analyst
-from ..analysts.fundamentals_analyst import create_fundamentals_analyst
+# Ultra-fast implementation enabled
+from ..analysts.fundamentals_analyst_ultra_fast import create_fundamentals_analyst_ultra_fast as create_fundamentals_analyst
+# Original (disabled): from ..analysts.fundamentals_analyst import create_fundamentals_analyst
 
 # Import other node creation functions
 from ..researchers.bull_researcher import create_bull_researcher
@@ -65,9 +67,11 @@ async def isolated_analyst_execution(analyst_func, state):
         # Return a safe error state with empty results
         error_state = {
             f"{analyst_name}_messages": [],
-            f"{analyst_name}_report": f"Analysis failed due to error: {str(e)[:100]}...",
-            "sender": analyst_name,
-            "error": str(e)
+            f"{analyst_name}_report": f"❌ ANALYSIS ERROR - {analyst_name} analysis failed",
+            "error": True,
+            "error_type": f"{analyst_name}_execution_failure",
+            "error_details": str(e),
+            "sender": analyst_name
         }
         
         # Map to correct report keys based on analyst type

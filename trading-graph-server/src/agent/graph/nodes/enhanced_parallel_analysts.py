@@ -13,8 +13,20 @@ from langchain_core.messages import BaseMessage, HumanMessage, AIMessage, ToolMe
 
 from ...utils.enhanced_agent_states import EnhancedAnalystState, PerformanceMetrics, AnalystExecutionResult
 from ...interfaces import IAnalystToolkit, ILLMProvider
+# Crypto-aware implementation (handles both stocks and crypto)
+from ...analysts.fundamentals_analyst_crypto_aware import create_fundamentals_analyst_crypto_aware as create_fundamentals_analyst_ultra_fast
+# Stock-only ultra-fast: from ...analysts.fundamentals_analyst_ultra_fast import create_fundamentals_analyst_ultra_fast
+from ...analysts.market_analyst_pandas_enabled import create_ultra_fast_market_analyst as create_market_analyst_ultra_fast
+from ...analysts.news_analyst_ultra_fast import create_news_analyst_ultra_fast
 
 logger = logging.getLogger(__name__)
+
+# 🚨 RUNTIME VERIFICATION: Log which analyst versions are imported
+logger.critical("🔥🔥🔥 RUNTIME VERIFICATION: enhanced_parallel_analysts.py MODULE LOADING 🔥🔥🔥")
+logger.critical(f"🔥 IMPORTED: fundamentals_analyst_crypto_aware (ultra-fast)")
+logger.critical(f"🔥 IMPORTED: market_analyst_pandas_enabled (130+ indicators)")
+logger.critical(f"🔥 IMPORTED: news_analyst_ultra_fast (with 15-article limit)")
+logger.critical(f"🔥 Code version timestamp: 2025-01-14 - Enhanced parallel with token limits")
 
 class AnalystPerformanceMonitor:
     """Monitor individual analyst execution performance"""
@@ -177,7 +189,12 @@ class EnhancedAnalystNode:
         }
 
 async def create_market_analyst_node(llm: ILLMProvider, toolkit: IAnalystToolkit) -> Callable:
-    """Create enhanced market analyst node with MANDATORY tool usage"""
+    """Create ultra-fast market analyst node (bypasses LLM for direct calculation)"""
+    # Use ultra-fast implementation
+    return create_market_analyst_ultra_fast(llm, toolkit)
+    
+async def create_market_analyst_node_original(llm: ILLMProvider, toolkit: IAnalystToolkit) -> Callable:
+    """Original enhanced market analyst node with MANDATORY tool usage (disabled - too slow)"""
     
     async def market_analyst_node(state: EnhancedAnalystState) -> EnhancedAnalystState:
         """Enhanced market analyst with MANDATORY tool execution"""
@@ -357,7 +374,10 @@ End with a clear recommendation (BUY/SELL/HOLD) and confidence level based on th
             current_times["market"] = execution_time
             
             return {
-                "market_report": f"Analysis failed: {error_msg}",
+                "market_report": f"❌ ANALYSIS ERROR - Market analysis failed",
+                "error": True,
+                "error_type": "market_analysis_failure",
+                "error_details": error_msg,
                 "market_messages": [],
                 "market_analyst_status": "error",
                 "analyst_errors": current_errors,
@@ -371,7 +391,17 @@ End with a clear recommendation (BUY/SELL/HOLD) and confidence level based on th
 # (Implementation follows same pattern as market analyst above)
 
 async def create_news_analyst_node(llm: ILLMProvider, toolkit: IAnalystToolkit) -> Callable:
-    """Create enhanced news analyst node with MANDATORY tool usage"""
+    """Create ultra-fast news analyst node (bypasses LLM for direct API calls)"""
+    # 🚨 RUNTIME VERIFICATION: Confirm news analyst creation
+    logger.critical("🔥🔥🔥 CREATING NEWS ANALYST NODE 🔥🔥🔥")
+    logger.critical(f"🔥 Using: create_news_analyst_ultra_fast (15-article limit version)")
+    logger.critical(f"🔥 This should enforce MAX_ARTICLES=15 token reduction")
+    
+    # Use ultra-fast implementation
+    return create_news_analyst_ultra_fast(llm, toolkit)
+    
+async def create_news_analyst_node_original(llm: ILLMProvider, toolkit: IAnalystToolkit) -> Callable:
+    """Original enhanced news analyst node with MANDATORY tool usage (disabled - tool calls failing)"""
     
     async def news_analyst_node(state: EnhancedAnalystState) -> EnhancedAnalystState:
         """Enhanced news analyst with MANDATORY tool execution"""
@@ -513,7 +543,10 @@ Do not provide analysis yet - just search for news.
             current_times["news"] = execution_time
             
             return {
-                "news_report": f"Analysis failed: {error_msg}",
+                "news_report": f"❌ ANALYSIS ERROR - News analysis failed",
+                "error": True,
+                "error_type": "news_analysis_failure",
+                "error_details": error_msg,
                 "news_messages": [],
                 "news_analyst_status": "error",
                 "analyst_errors": current_errors,
@@ -622,7 +655,10 @@ Based on the above data from ALL 3 social platforms, provide comprehensive analy
             current_times["social"] = execution_time
             
             return {
-                "sentiment_report": f"Analysis failed: {error_msg}",
+                "sentiment_report": f"❌ ANALYSIS ERROR - Social sentiment analysis failed",
+                "error": True,
+                "error_type": "social_analysis_failure",
+                "error_details": error_msg,
                 "social_messages": [],
                 "social_analyst_status": "error",
                 "analyst_errors": current_errors,
@@ -633,7 +669,12 @@ Based on the above data from ALL 3 social platforms, provide comprehensive analy
     return social_analyst_node
 
 async def create_fundamentals_analyst_node(llm: ILLMProvider, toolkit: IAnalystToolkit) -> Callable:
-    """Create enhanced fundamentals analyst node with MANDATORY tool usage"""
+    """Create ultra-fast fundamentals analyst node (bypasses LLM for direct API)"""
+    # Use ultra-fast implementation
+    return create_fundamentals_analyst_ultra_fast(llm, toolkit)
+    
+async def create_fundamentals_analyst_node_original(llm: ILLMProvider, toolkit: IAnalystToolkit) -> Callable:
+    """Original enhanced fundamentals analyst node with MANDATORY tool usage (disabled)"""
     
     async def fundamentals_analyst_node(state: EnhancedAnalystState) -> EnhancedAnalystState:
         """Enhanced fundamentals analyst with MANDATORY tool execution"""
@@ -787,7 +828,10 @@ End with a clear assessment of the company's fundamental strength (STRONG/MODERA
             current_times["fundamentals"] = execution_time
             
             return {
-                "fundamentals_report": f"Analysis failed: {error_msg}",
+                "fundamentals_report": f"❌ ANALYSIS ERROR - Fundamentals analysis failed",
+                "error": True,
+                "error_type": "fundamentals_analysis_failure",
+                "error_details": error_msg,
                 "fundamentals_messages": [],
                 "fundamentals_analyst_status": "error",
                 "analyst_errors": current_errors,

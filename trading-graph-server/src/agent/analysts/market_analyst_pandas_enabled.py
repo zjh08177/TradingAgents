@@ -1,0 +1,1022 @@
+"""
+Market Analyst - Pandas-Enabled with Smart Environment Detection
+Architecturally sound implementation with maximum indicators when possible
+130+ indicators with pandas-ta or 7 essential indicators with pure Python fallback
+"""
+
+import asyncio
+import httpx
+import logging
+from typing import Dict, List, Optional, Any, TypedDict
+from datetime import datetime
+import sys
+import os
+import time
+
+logger = logging.getLogger(__name__)
+
+# State Definition for LangGraph
+class MarketAnalystState(TypedDict):
+    company_of_interest: str
+    market_data: Optional[Dict[str, Any]]
+    market_report: Optional[str]
+    error: Optional[str]
+
+# Smart Pandas Detection with Comprehensive Checks
+def can_use_pandas() -> bool:
+    """Intelligently detect if pandas can be safely used"""
+    try:
+        # Check for file naming conflicts (common cause of circular imports)
+        for path in sys.path:
+            if not path:
+                continue
+            pandas_file = os.path.join(path, 'pandas.py')
+            if os.path.exists(pandas_file):
+                logger.warning(f"Found conflicting pandas.py file at {pandas_file}")
+                return False
+        
+        # Check for environment-specific restrictions
+        if os.environ.get('FORCE_PURE_PYTHON') == '1':
+            logger.info("FORCE_PURE_PYTHON detected - using pure Python fallback")
+            return False
+        
+        # Test pandas import and basic functionality
+        import pandas as pd
+        import pandas_ta as ta
+        
+        # Verify basic operations work
+        test_data = {'close': [100, 101, 102, 103, 104]}
+        df = pd.DataFrame(test_data)
+        
+        # Test that pandas-ta works
+        rsi = ta.rsi(df['close'], length=4)
+        
+        # Verify no attribute errors
+        _ = df.empty, df.shape, df.columns
+        
+        # Test indicator calculation
+        if len(rsi.dropna()) > 0:
+            logger.info("✅ Pandas-ta engine available - 130+ indicators enabled")
+            return True
+        else:
+            logger.warning("Pandas-ta test failed - using pure Python fallback")
+            return False
+        
+    except ImportError as e:
+        logger.info(f"⚠️ Pandas/pandas-ta not installed ({e}) - using pure Python fallback")
+        return False
+    except Exception as e:
+        logger.info(f"⚠️ Pandas not available ({e}) - using pure Python fallback")
+        return False
+
+# Global state - determined at startup
+print("🔥🔥🔥 STARTUP: Checking pandas availability...")
+PANDAS_AVAILABLE = can_use_pandas()
+print(f"🔥🔥🔥 STARTUP: PANDAS_AVAILABLE = {PANDAS_AVAILABLE}")
+
+# Import pandas conditionally
+if PANDAS_AVAILABLE:
+    import pandas as pd
+    import pandas_ta as ta
+
+# Data Fetching Service
+class MarketDataService:
+    """Single responsibility: Fetch market data from Yahoo Finance"""
+    
+    @staticmethod
+    async def fetch_ohlcv(ticker: str, period: str = "3mo") -> Optional[Dict[str, List[float]]]:
+        """Fetch OHLCV data from Yahoo Finance with comprehensive error handling"""
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
+        params = {"range": period, "interval": "1d"}
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (compatible; MarketAnalyst/1.0)',
+            'Accept': 'application/json',
+            'Accept-Encoding': 'gzip, deflate'
+        }
+        
+        try:
+            async with httpx.AsyncClient(
+                timeout=httpx.Timeout(15.0, connect=10.0),
+                limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
+                follow_redirects=True
+            ) as client:
+                response = await client.get(url, params=params, headers=headers)
+                
+                if response.status_code != 200:
+                    logger.warning(f"HTTP {response.status_code} for {ticker}")
+                    return None
+                
+                data = response.json()
+                result = data.get('chart', {}).get('result', [])
+                
+                if not result:
+                    logger.warning(f"No data in response for {ticker}")
+                    return None
+                
+                chart = result[0]
+                quotes = chart.get('indicators', {}).get('quote', [{}])[0]
+                
+                # Extract and clean data
+                ohlcv = {
+                    'open': [p for p in quotes.get('open', []) if p is not None],
+                    'high': [p for p in quotes.get('high', []) if p is not None],
+                    'low': [p for p in quotes.get('low', []) if p is not None],
+                    'close': [p for p in quotes.get('close', []) if p is not None],
+                    'volume': [v for v in quotes.get('volume', []) if v is not None and v > 0]
+                }
+                
+                # Validate sufficient data
+                if not ohlcv['close'] or len(ohlcv['close']) < 50:
+                    logger.warning(f"Insufficient data for {ticker}: {len(ohlcv.get('close', []))} periods")
+                    return None
+                
+                # Ensure all arrays have same length
+                min_length = min(len(ohlcv[key]) for key in ['open', 'high', 'low', 'close'])
+                for key in ohlcv:
+                    ohlcv[key] = ohlcv[key][:min_length]
+                
+                logger.info(f"✅ Fetched {len(ohlcv['close'])} periods for {ticker}")
+                return ohlcv
+                
+        except asyncio.TimeoutError:
+            logger.error(f"Timeout fetching data for {ticker}")
+            return None
+        except Exception as e:
+            logger.error(f"Failed to fetch {ticker}: {e}")
+            return None
+
+# Pandas-powered Indicator Engine
+class PandasIndicatorEngine:
+    """Calculate 130+ indicators using pandas-ta"""
+    
+    @staticmethod
+    def calculate_all_indicators(ohlcv: Dict[str, List[float]]) -> Dict[str, float]:
+        """Calculate comprehensive technical indicators"""
+        if not PANDAS_AVAILABLE:
+            raise RuntimeError("Pandas not available")
+        
+        # Create DataFrame
+        df = pd.DataFrame(ohlcv)
+        
+        if len(df) < 50:
+            logger.warning("Insufficient data for comprehensive analysis")
+            return {}
+        
+        indicators = {}
+        
+        try:
+            # MOMENTUM INDICATORS (30+)
+            indicators.update(PandasIndicatorEngine._momentum_indicators(df))
+            
+            # OVERLAP INDICATORS (30+)
+            indicators.update(PandasIndicatorEngine._overlap_indicators(df))
+            
+            # VOLATILITY INDICATORS (15+)
+            indicators.update(PandasIndicatorEngine._volatility_indicators(df))
+            
+            # VOLUME INDICATORS (15+)
+            indicators.update(PandasIndicatorEngine._volume_indicators(df))
+            
+            # TREND INDICATORS (20+)
+            indicators.update(PandasIndicatorEngine._trend_indicators(df))
+            
+            # STATISTICS (10+)
+            indicators.update(PandasIndicatorEngine._statistics_indicators(df))
+            
+        except Exception as e:
+            logger.error(f"Error calculating pandas indicators: {e}")
+        
+        # Clean NaN values and convert to native Python types
+        clean_indicators = {}
+        for key, value in indicators.items():
+            if value is not None:
+                try:
+                    # Handle pandas Series objects
+                    if hasattr(value, 'iloc') and len(value) > 0:
+                        # For Series, get the last value and check if it's valid
+                        scalar_value = value.iloc[-1]
+                        if pd.notna(scalar_value):
+                            clean_indicators[key] = float(scalar_value)
+                    # Handle scalar values
+                    elif pd.notna(value):
+                        clean_indicators[key] = float(value.item()) if hasattr(value, 'item') else float(value)
+                except (ValueError, TypeError, IndexError):
+                    # Skip invalid values
+                    continue
+        
+        logger.info(f"✅ Calculated {len(clean_indicators)} indicators using pandas-ta")
+        logger.critical(f"🔥🔥🔥 EXPANDED PANDAS INDICATORS: {len(clean_indicators)} indicators calculated")
+        logger.critical(f"🔥 Sample indicators: {list(clean_indicators.keys())[:10]}")
+        return clean_indicators
+    
+    @staticmethod
+    def _momentum_indicators(df: 'pd.DataFrame') -> Dict[str, float]:
+        """Calculate momentum indicators - EXPANDED TO 30+ INDICATORS"""
+        indicators = {}
+        try:
+            # RSI Family (multiple timeframes)
+            for period in [9, 14, 21, 25]:
+                rsi = ta.rsi(df['close'], length=period)
+                if not rsi.empty:
+                    indicators[f'rsi_{period}'] = rsi.iloc[-1]
+            
+            # MACD Family (multiple configurations)
+            macd_result = ta.macd(df['close'])
+            if macd_result is not None:
+                if 'MACD_12_26_9' in macd_result.columns:
+                    indicators['macd'] = macd_result['MACD_12_26_9'].iloc[-1]
+                if 'MACDs_12_26_9' in macd_result.columns:
+                    indicators['macd_signal'] = macd_result['MACDs_12_26_9'].iloc[-1]
+                if 'MACDh_12_26_9' in macd_result.columns:
+                    indicators['macd_histogram'] = macd_result['MACDh_12_26_9'].iloc[-1]
+            
+            # Alternative MACD
+            macd_alt = ta.macd(df['close'], fast=5, slow=35, signal=5)
+            if macd_alt is not None and 'MACD_5_35_5' in macd_alt.columns:
+                indicators['macd_alt'] = macd_alt['MACD_5_35_5'].iloc[-1]
+            
+            # Stochastic Family
+            stoch = ta.stoch(df['high'], df['low'], df['close'])
+            if stoch is not None:
+                if 'STOCHk_14_3_3' in stoch.columns:
+                    indicators['stoch_k'] = stoch['STOCHk_14_3_3'].iloc[-1]
+                if 'STOCHd_14_3_3' in stoch.columns:
+                    indicators['stoch_d'] = stoch['STOCHd_14_3_3'].iloc[-1]
+            
+            # Stochastic RSI
+            stochrsi = ta.stochrsi(df['close'])
+            if stochrsi is not None:
+                if 'STOCHRSIk_14_14_3_3' in stochrsi.columns:
+                    indicators['stochrsi_k'] = stochrsi['STOCHRSIk_14_14_3_3'].iloc[-1]
+                if 'STOCHRSId_14_14_3_3' in stochrsi.columns:
+                    indicators['stochrsi_d'] = stochrsi['STOCHRSId_14_14_3_3'].iloc[-1]
+            
+            # Williams %R (multiple periods)
+            for period in [14, 21]:
+                williams_r = ta.willr(df['high'], df['low'], df['close'], length=period)
+                if not williams_r.empty:
+                    indicators[f'williams_r_{period}'] = williams_r.iloc[-1]
+                    
+            # CCI (multiple periods)
+            for period in [14, 20]:
+                cci = ta.cci(df['high'], df['low'], df['close'], length=period)
+                if not cci.empty:
+                    indicators[f'cci_{period}'] = cci.iloc[-1]
+                    
+            # Rate of Change (multiple periods)
+            for period in [9, 14, 21]:
+                roc = ta.roc(df['close'], length=period)
+                if not roc.empty:
+                    indicators[f'roc_{period}'] = roc.iloc[-1]
+                    
+            # Momentum (multiple periods)
+            for period in [10, 14]:
+                momentum = ta.mom(df['close'], length=period)
+                if not momentum.empty:
+                    indicators[f'momentum_{period}'] = momentum.iloc[-1]
+            
+            # True Strength Index
+            tsi = ta.tsi(df['close'])
+            if tsi is not None and 'TSI_13_25_13' in tsi.columns:
+                indicators['tsi'] = tsi['TSI_13_25_13'].iloc[-1]
+                
+            # Ultimate Oscillator
+            uo = ta.uo(df['high'], df['low'], df['close'])
+            if not uo.empty:
+                indicators['ultimate_osc'] = uo.iloc[-1]
+                
+            # Awesome Oscillator
+            ao = ta.ao(df['high'], df['low'])
+            if not ao.empty:
+                indicators['awesome_osc'] = ao.iloc[-1]
+            
+            # Commodity Channel Index variants
+            cmo = ta.cmo(df['close'])
+            if not cmo.empty:
+                indicators['cmo'] = cmo.iloc[-1]
+            
+            # Fisher Transform
+            fisher = ta.fisher(df['high'], df['low'])
+            if fisher is not None and 'FISHER_9_1' in fisher.columns:
+                indicators['fisher'] = fisher['FISHER_9_1'].iloc[-1]
+            
+            # Relative Vigor Index
+            rvgi = ta.rvgi(df['open'], df['high'], df['low'], df['close'])
+            if rvgi is not None and 'RVGI_14_4' in rvgi.columns:
+                indicators['rvgi'] = rvgi['RVGI_14_4'].iloc[-1]
+            
+            # Percentage Price Oscillator
+            ppo = ta.ppo(df['close'])
+            if not ppo.empty:
+                indicators['ppo'] = ppo.iloc[-1]
+            
+        except Exception as e:
+            logger.warning(f"Error calculating momentum indicators: {e}")
+        
+        return indicators
+    
+    @staticmethod
+    def _overlap_indicators(df: 'pd.DataFrame') -> Dict[str, float]:
+        """Calculate moving averages and overlays - EXPANDED TO 40+ INDICATORS"""
+        indicators = {}
+        try:
+            # Simple Moving Averages (comprehensive periods)
+            for period in [3, 5, 8, 10, 13, 15, 20, 21, 25, 30, 34, 50, 55, 100, 144, 200]:
+                if len(df) >= period:
+                    sma = ta.sma(df['close'], length=period)
+                    if not sma.empty:
+                        indicators[f'sma_{period}'] = sma.iloc[-1]
+            
+            # Exponential Moving Averages (comprehensive periods)  
+            for period in [3, 5, 8, 9, 10, 12, 13, 15, 20, 21, 26, 30, 34, 50, 55, 100]:
+                if len(df) >= period:
+                    ema = ta.ema(df['close'], length=period)
+                    if not ema.empty:
+                        indicators[f'ema_{period}'] = ema.iloc[-1]
+            
+            # Weighted Moving Averages (multiple periods)
+            for period in [10, 14, 20, 30]:
+                if len(df) >= period:
+                    wma = ta.wma(df['close'], length=period)
+                    if not wma.empty:
+                        indicators[f'wma_{period}'] = wma.iloc[-1]
+            
+            # Hull Moving Averages (multiple periods)
+            for period in [9, 14, 20, 30]:
+                if len(df) >= period:
+                    hma = ta.hma(df['close'], length=period)
+                    if not hma.empty:
+                        indicators[f'hma_{period}'] = hma.iloc[-1]
+            
+            # Kaufman's Adaptive Moving Average (multiple periods)
+            for period in [10, 20, 30]:
+                kama = ta.kama(df['close'], length=period)
+                if not kama.empty:
+                    indicators[f'kama_{period}'] = kama.iloc[-1]
+                
+            # Triple EMA (multiple periods)
+            for period in [14, 20, 30]:
+                tema = ta.tema(df['close'], length=period)
+                if not tema.empty:
+                    indicators[f'tema_{period}'] = tema.iloc[-1]
+                
+            # Triangular Moving Average (multiple periods)
+            for period in [14, 20, 30]:
+                trima = ta.trima(df['close'], length=period)
+                if not trima.empty:
+                    indicators[f'trima_{period}'] = trima.iloc[-1]
+            
+            # Double EMA (DEMA)
+            for period in [14, 20, 30]:
+                dema = ta.dema(df['close'], length=period)
+                if not dema.empty:
+                    indicators[f'dema_{period}'] = dema.iloc[-1]
+            
+            # Zero Lag EMA
+            for period in [14, 20]:
+                zlma = ta.zlma(df['close'], length=period)
+                if not zlma.empty:
+                    indicators[f'zlma_{period}'] = zlma.iloc[-1]
+            
+            # T3 Moving Average
+            for period in [14, 20]:
+                t3 = ta.t3(df['close'], length=period)
+                if not t3.empty:
+                    indicators[f't3_{period}'] = t3.iloc[-1]
+            
+            # Tilson T3
+            for period in [14, 20]:
+                tilson = ta.t3(df['close'], length=period, a=0.7)
+                if not tilson.empty:
+                    indicators[f'tilson_t3_{period}'] = tilson.iloc[-1]
+            
+            # VWAP and variants
+            vwap = ta.vwap(df['high'], df['low'], df['close'], df['volume'])
+            if not vwap.empty:
+                indicators['vwap'] = vwap.iloc[-1]
+            
+            # McGinley Dynamic
+            mcginley = ta.mcgd(df['close'])
+            if not mcginley.empty:
+                indicators['mcginley'] = mcginley.iloc[-1]
+            
+            # Jurik Moving Average
+            jma = ta.jma(df['close'])
+            if not jma.empty:
+                indicators['jma'] = jma.iloc[-1]
+            
+            # ALMA - Arnaud Legoux Moving Average
+            alma = ta.alma(df['close'])
+            if not alma.empty:
+                indicators['alma'] = alma.iloc[-1]
+            
+            # FWMA - Fibonacci Weighted Moving Average
+            fwma = ta.fwma(df['close'])
+            if not fwma.empty:
+                indicators['fwma'] = fwma.iloc[-1]
+            
+            # LINREG - Linear Regression
+            for period in [14, 20]:
+                linreg = ta.linreg(df['close'], length=period)
+                if not linreg.empty:
+                    indicators[f'linreg_{period}'] = linreg.iloc[-1]
+            
+            # MIDPOINT
+            for period in [14, 20]:
+                midpoint = ta.midpoint(df['close'], length=period)
+                if not midpoint.empty:
+                    indicators[f'midpoint_{period}'] = midpoint.iloc[-1]
+            
+            # MIDPRICE
+            for period in [14, 20]:
+                midprice = ta.midprice(df['high'], df['low'], length=period)
+                if not midprice.empty:
+                    indicators[f'midprice_{period}'] = midprice.iloc[-1]
+            
+        except Exception as e:
+            logger.warning(f"Error calculating overlap indicators: {e}")
+        
+        return indicators
+    
+    @staticmethod
+    def _volatility_indicators(df: 'pd.DataFrame') -> Dict[str, float]:
+        """Calculate volatility indicators - EXPANDED TO 25+ INDICATORS"""
+        indicators = {}
+        try:
+            # Bollinger Bands (multiple configurations)
+            for length, std_dev in [(10, 1.5), (20, 2.0), (20, 2.5), (50, 2.0)]:
+                bbands = ta.bbands(df['close'], length=length, std=std_dev)
+                if bbands is not None:
+                    prefix = f'bb_{length}_{std_dev}'
+                    for col in bbands.columns:
+                        if 'BBU' in col:
+                            indicators[f'{prefix}_upper'] = bbands[col].iloc[-1]
+                        elif 'BBL' in col:
+                            indicators[f'{prefix}_lower'] = bbands[col].iloc[-1]
+                        elif 'BBM' in col:
+                            indicators[f'{prefix}_middle'] = bbands[col].iloc[-1]
+                        elif 'BBB' in col:
+                            indicators[f'{prefix}_bandwidth'] = bbands[col].iloc[-1]
+                        elif 'BBP' in col:
+                            indicators[f'{prefix}_percent'] = bbands[col].iloc[-1]
+            
+            # Average True Range (multiple periods)
+            for period in [7, 14, 21, 28]:
+                atr = ta.atr(df['high'], df['low'], df['close'], length=period)
+                if not atr.empty:
+                    indicators[f'atr_{period}'] = atr.iloc[-1]
+                    
+                natr = ta.natr(df['high'], df['low'], df['close'], length=period)
+                if not natr.empty:
+                    indicators[f'natr_{period}'] = natr.iloc[-1]
+            
+            # True Range
+            tr = ta.true_range(df['high'], df['low'], df['close'])
+            if not tr.empty:
+                indicators['true_range'] = tr.iloc[-1]
+            
+            # Keltner Channels (multiple configurations)
+            for length, scalar in [(10, 1.5), (20, 2.0), (20, 2.5)]:
+                kc = ta.kc(df['high'], df['low'], df['close'], length=length, scalar=scalar)
+                if kc is not None:
+                    prefix = f'kc_{length}_{scalar}'
+                    for col in kc.columns:
+                        if 'KCUe' in col:
+                            indicators[f'{prefix}_upper'] = kc[col].iloc[-1]
+                        elif 'KCLe' in col:
+                            indicators[f'{prefix}_lower'] = kc[col].iloc[-1]
+                        elif 'KCBe' in col:
+                            indicators[f'{prefix}_bandwidth'] = kc[col].iloc[-1]
+            
+            # Donchian Channels (multiple periods)
+            for period in [10, 20, 55]:
+                dc = ta.donchian(df['high'], df['low'], lower_length=period, upper_length=period)
+                if dc is not None:
+                    prefix = f'donchian_{period}'
+                    for col in dc.columns:
+                        if f'DCU_{period}' in col:
+                            indicators[f'{prefix}_upper'] = dc[col].iloc[-1]
+                        elif f'DCL_{period}' in col:
+                            indicators[f'{prefix}_lower'] = dc[col].iloc[-1]
+                        elif f'DCM_{period}' in col:
+                            indicators[f'{prefix}_middle'] = dc[col].iloc[-1]
+            
+            # Chaikin Volatility
+            for period in [10, 14]:
+                chaikin_vol = ta.accbands(df['high'], df['low'], df['close'], length=period)
+                if chaikin_vol is not None and f'ACCBL_{period}_4' in chaikin_vol.columns:
+                    indicators[f'chaikin_vol_{period}'] = chaikin_vol[f'ACCBL_{period}_4'].iloc[-1]
+            
+            # Mass Index
+            mass_idx = ta.massi(df['high'], df['low'])
+            if not mass_idx.empty:
+                indicators['mass_index'] = mass_idx.iloc[-1]
+            
+            # Relative Volatility Index
+            for period in [10, 14]:
+                rvi = ta.rvi(df['close'], length=period)
+                if not rvi.empty:
+                    indicators[f'rvi_{period}'] = rvi.iloc[-1]
+            
+            # Volatility System
+            for period in [10, 14]:
+                volat_sys = ta.pvt(df['close'], df['volume'])
+                if not volat_sys.empty:
+                    indicators[f'volatility_system_{period}'] = volat_sys.iloc[-1]
+            
+            # Standard Deviation (multiple periods)
+            for period in [10, 14, 20]:
+                stdev = ta.stdev(df['close'], length=period)
+                if not stdev.empty:
+                    indicators[f'stdev_{period}'] = stdev.iloc[-1]
+            
+            # Variance (multiple periods)  
+            for period in [10, 14, 20]:
+                variance = ta.variance(df['close'], length=period)
+                if not variance.empty:
+                    indicators[f'variance_{period}'] = variance.iloc[-1]
+            
+            # Range indicators
+            for period in [10, 14]:
+                high_low_range = ta.roc(df['high'] - df['low'], length=period)
+                if not high_low_range.empty:
+                    indicators[f'hl_range_{period}'] = high_low_range.iloc[-1]
+            
+        except Exception as e:
+            logger.warning(f"Error calculating volatility indicators: {e}")
+        
+        return indicators
+    
+    @staticmethod
+    def _volume_indicators(df: 'pd.DataFrame') -> Dict[str, float]:
+        """Calculate volume-based indicators"""
+        indicators = {}
+        try:
+            # Core volume indicators
+            obv = ta.obv(df['close'], df['volume'])
+            if not obv.empty:
+                indicators['obv'] = obv.iloc[-1]
+                
+            mfi = ta.mfi(df['high'], df['low'], df['close'], df['volume'])
+            if not mfi.empty:
+                indicators['mfi'] = mfi.iloc[-1]
+                
+            ad = ta.ad(df['high'], df['low'], df['close'], df['volume'])
+            if not ad.empty:
+                indicators['ad'] = ad.iloc[-1]
+                
+            adosc = ta.adosc(df['high'], df['low'], df['close'], df['volume'])
+            if not adosc.empty:
+                indicators['adosc'] = adosc.iloc[-1]
+            
+            # Advanced volume indicators
+            cmf = ta.cmf(df['high'], df['low'], df['close'], df['volume'])
+            if not cmf.empty:
+                indicators['cmf'] = cmf.iloc[-1]
+                
+            efi = ta.efi(df['close'], df['volume'])
+            if not efi.empty:
+                indicators['efi'] = efi.iloc[-1]
+                
+            eom = ta.eom(df['high'], df['low'], df['volume'])
+            if not eom.empty:
+                indicators['eom'] = eom.iloc[-1]
+            
+        except Exception as e:
+            logger.warning(f"Error calculating volume indicators: {e}")
+        
+        return indicators
+    
+    @staticmethod
+    def _trend_indicators(df: 'pd.DataFrame') -> Dict[str, float]:
+        """Calculate trend indicators"""
+        indicators = {}
+        try:
+            # ADX
+            adx_result = ta.adx(df['high'], df['low'], df['close'])
+            if adx_result is not None:
+                if 'ADX_14' in adx_result.columns:
+                    indicators['adx'] = adx_result['ADX_14'].iloc[-1]
+                if 'DMP_14' in adx_result.columns:
+                    indicators['dmp'] = adx_result['DMP_14'].iloc[-1]
+                if 'DMN_14' in adx_result.columns:
+                    indicators['dmn'] = adx_result['DMN_14'].iloc[-1]
+            
+            # Aroon
+            aroon = ta.aroon(df['high'], df['low'])
+            if aroon is not None:
+                if 'AROONU_25' in aroon.columns:
+                    indicators['aroon_up'] = aroon['AROONU_25'].iloc[-1]
+                if 'AROOND_25' in aroon.columns:
+                    indicators['aroon_down'] = aroon['AROOND_25'].iloc[-1]
+                if 'AROONOSC_25' in aroon.columns:
+                    indicators['aroon_osc'] = aroon['AROONOSC_25'].iloc[-1]
+            
+            # Parabolic SAR
+            psar = ta.psar(df['high'], df['low'], df['close'])
+            if psar is not None:
+                if 'PSARl_0.02_0.2' in psar.columns:
+                    long_val = psar['PSARl_0.02_0.2'].iloc[-1]
+                    if pd.notna(long_val):
+                        indicators['psar_long'] = long_val
+                if 'PSARs_0.02_0.2' in psar.columns:
+                    short_val = psar['PSARs_0.02_0.2'].iloc[-1]
+                    if pd.notna(short_val):
+                        indicators['psar_short'] = short_val
+            
+        except Exception as e:
+            logger.warning(f"Error calculating trend indicators: {e}")
+        
+        return indicators
+    
+    @staticmethod
+    def _statistics_indicators(df: 'pd.DataFrame') -> Dict[str, float]:
+        """Calculate statistical indicators"""
+        indicators = {}
+        try:
+            stdev = ta.stdev(df['close'])
+            if not stdev.empty:
+                indicators['stdev'] = stdev.iloc[-1]
+                
+            variance = ta.variance(df['close'])
+            if not variance.empty:
+                indicators['variance'] = variance.iloc[-1]
+                
+            mad = ta.mad(df['close'])
+            if not mad.empty:
+                indicators['mad'] = mad.iloc[-1]
+                
+            skew = ta.skew(df['close'])
+            if not skew.empty:
+                indicators['skew'] = skew.iloc[-1]
+                
+            kurtosis = ta.kurtosis(df['close'])
+            if not kurtosis.empty:
+                indicators['kurtosis'] = kurtosis.iloc[-1]
+            
+        except Exception as e:
+            logger.warning(f"Error calculating statistics indicators: {e}")
+        
+        return indicators
+
+# Pure Python Fallback Engine
+class PurePythonIndicatorEngine:
+    """Essential indicators using pure Python"""
+    
+    @staticmethod
+    def calculate_essential_indicators(ohlcv: Dict[str, List[float]]) -> Dict[str, float]:
+        """Calculate 7 essential indicators in pure Python"""
+        close = ohlcv['close']
+        high = ohlcv['high']
+        low = ohlcv['low']
+        volume = ohlcv['volume']
+        
+        if len(close) < 50:
+            return {}
+        
+        indicators = {}
+        
+        try:
+            # SMA
+            indicators['sma_20'] = sum(close[-20:]) / 20
+            indicators['sma_50'] = sum(close[-50:]) / 50
+            
+            # RSI
+            changes = [close[i] - close[i-1] for i in range(1, len(close))]
+            gains = [c if c > 0 else 0 for c in changes[-14:]]
+            losses = [abs(c) if c < 0 else 0 for c in changes[-14:]]
+            
+            avg_gain = sum(gains) / 14
+            avg_loss = sum(losses) / 14
+            rsi = 100 - (100 / (1 + (avg_gain / avg_loss))) if avg_loss > 0 else 100.0
+            indicators['rsi_14'] = rsi
+            
+            # MACD (simplified)
+            ema_12 = PurePythonIndicatorEngine._ema(close, 12)
+            ema_26 = PurePythonIndicatorEngine._ema(close, 26)
+            indicators['macd'] = ema_12 - ema_26
+            
+            # Bollinger Bands
+            sma_20 = indicators['sma_20']
+            squared_diff = [(p - sma_20) ** 2 for p in close[-20:]]
+            std_dev = (sum(squared_diff) / 20) ** 0.5
+            indicators['bb_upper'] = sma_20 + (2 * std_dev)
+            indicators['bb_lower'] = sma_20 - (2 * std_dev)
+            
+            # ATR
+            if len(close) > 14:
+                true_ranges = []
+                for i in range(1, min(15, len(close))):
+                    tr = max(
+                        high[i] - low[i],
+                        abs(high[i] - close[i-1]),
+                        abs(low[i] - close[i-1])
+                    )
+                    true_ranges.append(tr)
+                
+                if true_ranges:
+                    indicators['atr'] = sum(true_ranges) / len(true_ranges)
+            
+            # Volume Average
+            indicators['volume_avg'] = sum(volume[-20:]) / 20 if volume else 0
+            
+        except Exception as e:
+            logger.error(f"Error calculating pure Python indicators: {e}")
+        
+        logger.info(f"✅ Calculated {len(indicators)} essential indicators using pure Python")
+        return indicators
+    
+    @staticmethod
+    def _ema(data: List[float], period: int) -> float:
+        """Calculate EMA"""
+        if len(data) < period:
+            return data[-1]
+        multiplier = 2 / (period + 1)
+        ema = sum(data[:period]) / period
+        for price in data[period:]:
+            ema = (price * multiplier) + (ema * (1 - multiplier))
+        return ema
+
+# Unified Indicator Service
+class IndicatorService:
+    """Orchestrate indicator calculation with intelligent engine selection"""
+    
+    @staticmethod
+    def calculate_indicators(ohlcv: Dict[str, List[float]]) -> Dict[str, float]:
+        """Calculate indicators using best available engine"""
+        if PANDAS_AVAILABLE:
+            return PandasIndicatorEngine.calculate_all_indicators(ohlcv)
+        else:
+            return PurePythonIndicatorEngine.calculate_essential_indicators(ohlcv)
+
+# Signal Generation Service
+class SignalService:
+    """Generate trading signals from indicators"""
+    
+    @staticmethod
+    def generate_signal(indicators: Dict[str, float], current_price: float) -> str:
+        """Generate trading signal from available indicators"""
+        signals = []
+        
+        # RSI signals
+        rsi = indicators.get('rsi_14')
+        if rsi:
+            if rsi < 30:
+                signals.append('oversold')
+            elif rsi > 70:
+                signals.append('overbought')
+        
+        # Trend signals
+        sma_20 = indicators.get('sma_20')
+        sma_50 = indicators.get('sma_50')
+        if sma_20 and sma_50:
+            if current_price > sma_20 > sma_50:
+                signals.append('bullish_trend')
+            elif current_price < sma_20 < sma_50:
+                signals.append('bearish_trend')
+        
+        # MACD signals
+        macd = indicators.get('macd')
+        if macd and macd > 0:
+            signals.append('macd_positive')
+        
+        # Volume confirmation (if available)
+        if PANDAS_AVAILABLE:
+            mfi = indicators.get('mfi')
+            if mfi:
+                if mfi > 80:
+                    signals.append('volume_overbought')
+                elif mfi < 20:
+                    signals.append('volume_oversold')
+        
+        # Volatility signals
+        bb_upper = indicators.get('bb_upper')
+        bb_lower = indicators.get('bb_lower')
+        if bb_upper and bb_lower:
+            if current_price >= bb_upper:
+                signals.append('bb_overbought')
+            elif current_price <= bb_lower:
+                signals.append('bb_oversold')
+        
+        # Aggregate signals
+        bullish_signals = ['oversold', 'bullish_trend', 'macd_positive', 'volume_oversold', 'bb_oversold']
+        bearish_signals = ['overbought', 'bearish_trend', 'volume_overbought', 'bb_overbought']
+        
+        bullish_count = sum(1 for s in signals if s in bullish_signals)
+        bearish_count = sum(1 for s in signals if s in bearish_signals)
+        
+        if bullish_count > bearish_count:
+            return 'BUY'
+        elif bearish_count > bullish_count:
+            return 'SELL'
+        else:
+            return 'HOLD'
+
+# Main Market Analyst Service
+class MarketAnalystService:
+    """Orchestrate complete market analysis"""
+    
+    def __init__(self):
+        self.data_service = MarketDataService()
+        self.indicator_service = IndicatorService()
+        self.signal_service = SignalService()
+    
+    async def analyze(self, ticker: str) -> Dict[str, Any]:
+        """Complete market analysis"""
+        # Fetch OHLCV data
+        ohlcv = await self.data_service.fetch_ohlcv(ticker)
+        if not ohlcv:
+            return {"error": f"Failed to fetch data for {ticker}"}
+        
+        # Calculate indicators
+        indicators = self.indicator_service.calculate_indicators(ohlcv)
+        if not indicators:
+            return {"error": f"Failed to calculate indicators for {ticker}"}
+        
+        # Generate signal
+        current_price = ohlcv['close'][-1]
+        signal = self.signal_service.generate_signal(indicators, current_price)
+        
+        # Calculate price change
+        change_pct = ((ohlcv['close'][-1] - ohlcv['close'][-2]) / ohlcv['close'][-2] * 100) if len(ohlcv['close']) > 1 else 0
+        
+        return {
+            'ticker': ticker,
+            'price': current_price,
+            'change_pct': change_pct,
+            'volume': ohlcv['volume'][-1] if ohlcv['volume'] else 0,
+            'indicators': indicators,
+            'indicator_count': len(indicators),
+            'signal': signal,
+            'engine': 'pandas-ta' if PANDAS_AVAILABLE else 'pure-python',
+            'timestamp': datetime.now().isoformat(),
+            'data_points': len(ohlcv['close'])
+        }
+
+# Helper function for formatting indicators
+def _format_indicator(value: Any, decimal_places: int) -> str:
+    """Format indicator value with proper decimal places or N/A"""
+    if value is None or (isinstance(value, float) and (value != value)):  # Check for NaN
+        return 'N/A'
+    if isinstance(value, (int, float)):
+        return f"{value:.{decimal_places}f}"
+    return 'N/A'
+
+# Report Generation
+def generate_report(data: Dict[str, Any]) -> str:
+    """Generate human-readable market report"""
+    logger.critical(f"🔥🔥🔥 GENERATE_REPORT CALLED WITH {len(data.get('indicators', {}))} INDICATORS 🔥🔥🔥")
+    ticker = data['ticker']
+    price = data['price']
+    change_pct = data['change_pct']
+    signal = data['signal']
+    indicators = data['indicators']
+    engine = data['engine']
+    indicator_count = data['indicator_count']
+    logger.critical(f"🔥 REPORT: {indicator_count} indicators, engine: {engine}")
+    logger.critical(f"🔥 Sample indicators: {list(indicators.keys())[:10]}")
+    
+    # Generate comprehensive indicator display
+    indicator_sections = []
+    
+    # Group indicators by category for organized display
+    momentum_indicators = {k: v for k, v in indicators.items() if k.startswith(('rsi', 'macd', 'stoch', 'williams', 'cci', 'roc', 'momentum', 'tsi', 'ultimate', 'awesome'))}
+    overlap_indicators = {k: v for k, v in indicators.items() if k.startswith(('sma', 'ema', 'wma', 'hma', 'kama', 'tema', 'trima', 'vwap'))}
+    volatility_indicators = {k: v for k, v in indicators.items() if k.startswith(('bb', 'atr', 'natr', 'kc', 'donchian'))}
+    volume_indicators = {k: v for k, v in indicators.items() if k.startswith(('obv', 'mfi', 'ad', 'cmf', 'efi', 'eom'))}
+    trend_indicators = {k: v for k, v in indicators.items() if k.startswith(('adx', 'dmp', 'dmn', 'aroon', 'psar'))}
+    stats_indicators = {k: v for k, v in indicators.items() if k.startswith(('stdev', 'variance', 'mad', 'skew', 'kurtosis'))}
+    
+    # Add sections only if they have indicators
+    if momentum_indicators:
+        momentum_section = "MOMENTUM INDICATORS:\n" + "\n".join([f"• {k.upper()}: {_format_indicator(v, 3)}" for k, v in momentum_indicators.items()])
+        indicator_sections.append(momentum_section)
+    
+    if overlap_indicators:
+        overlap_section = "MOVING AVERAGES:\n" + "\n".join([f"• {k.upper()}: ${_format_indicator(v, 2)}" for k, v in overlap_indicators.items()])
+        indicator_sections.append(overlap_section)
+    
+    if volatility_indicators:
+        volatility_section = "VOLATILITY INDICATORS:\n" + "\n".join([f"• {k.upper()}: {_format_indicator(v, 3) if not k.startswith('bb') else '$' + _format_indicator(v, 2)}" for k, v in volatility_indicators.items()])
+        indicator_sections.append(volatility_section)
+    
+    if volume_indicators:
+        volume_section = "VOLUME INDICATORS:\n" + "\n".join([f"• {k.upper()}: {_format_indicator(v, 1)}" for k, v in volume_indicators.items()])
+        indicator_sections.append(volume_section)
+    
+    if trend_indicators:
+        trend_section = "TREND INDICATORS:\n" + "\n".join([f"• {k.upper()}: {_format_indicator(v, 3)}" for k, v in trend_indicators.items()])
+        indicator_sections.append(trend_section)
+    
+    if stats_indicators:
+        stats_section = "STATISTICAL INDICATORS:\n" + "\n".join([f"• {k.upper()}: {_format_indicator(v, 4)}" for k, v in stats_indicators.items()])
+        indicator_sections.append(stats_section)
+    
+    # Join all sections
+    all_indicators_text = "\n\n".join(indicator_sections)
+    
+    return f"""📊 MARKET ANALYSIS: {ticker}
+{'='*40}
+
+PRICE ACTION:
+• Current: ${price:.2f}
+• Change: {change_pct:+.2f}%
+• Signal: {signal}
+
+COMPREHENSIVE TECHNICAL ANALYSIS ({indicator_count} indicators calculated):
+{all_indicators_text}
+
+VOLUME DATA:
+• Current Volume: {data.get('volume', 0):,.0f}
+• Average Volume: {_format_indicator(indicators.get('volume_avg'), 0)}
+
+ENGINE: {engine.upper()}
+DATA POINTS: {data.get('data_points', 0)}
+Generated: {data['timestamp']}
+"""
+
+# LangGraph Node Interface
+async def market_analyst_node(state: MarketAnalystState) -> Dict[str, Any]:
+    """LangGraph-compatible async node for market analysis"""
+    logger.critical(f"🔥🔥🔥 MARKET ANALYST PANDAS NODE EXECUTING 🔥🔥🔥")
+    logger.critical(f"🔥 PANDAS_AVAILABLE: {PANDAS_AVAILABLE}")
+    logger.critical(f"🔥 Engine: {'pandas-ta' if PANDAS_AVAILABLE else 'pure-python'}")
+    logger.info(f"📊 Market Analyst Node - Engine: {'pandas-ta' if PANDAS_AVAILABLE else 'pure-python'}")
+    
+    start_time = time.time()
+    ticker = state.get('company_of_interest', '').upper()
+    
+    if not ticker:
+        return {
+            'market_data': None,
+            'market_report': '❌ No ticker provided',
+            'error': 'Missing ticker symbol'
+        }
+    
+    service = MarketAnalystService()
+    
+    try:
+        result = await service.analyze(ticker)
+        
+        if 'error' in result:
+            return {
+                'market_data': None,
+                'market_report': f"⚠️ {result['error']}",
+                'error': result['error']
+            }
+        
+        # Generate report
+        report = generate_report(result)
+        
+        duration = time.time() - start_time
+        logger.info(f"✅ Market analysis completed for {ticker} in {duration:.2f}s")
+        logger.info(f"📊 Engine: {result['engine']}, Indicators: {result['indicator_count']}")
+        
+        return {
+            'market_data': result,
+            'market_report': report,
+            'error': None
+        }
+        
+    except Exception as e:
+        logger.error(f"Market analysis failed for {ticker}: {e}")
+        return {
+            'market_data': None,
+            'market_report': f"❌ Analysis failed for {ticker}: {str(e)}",
+            'error': str(e)
+        }
+
+# Legacy Integration Function
+def create_ultra_fast_market_analyst(llm=None, toolkit=None):
+    """Create market analyst compatible with existing LangGraph integration"""
+    logger.critical(f"🔥🔥🔥 CREATE_ULTRA_FAST_MARKET_ANALYST CALLED 🔥🔥🔥")
+    logger.critical(f"🔥 PANDAS_AVAILABLE in factory: {PANDAS_AVAILABLE}")
+    async def ultra_fast_market_analyst_node(state):
+        """LangGraph node compatible with existing state structure"""
+        # Extract ticker from state
+        ticker = state.get("company_of_interest", "")
+        
+        # Use our new implementation
+        analyst_state = {"company_of_interest": ticker}
+        result = await market_analyst_node(analyst_state)
+        
+        # Format for existing system
+        return {
+            "market_data": result.get("market_data"),
+            "market_report": result.get("market_report"),
+            "sender": "Ultra Fast Market Analyst"
+        }
+    
+    return ultra_fast_market_analyst_node
+
+# Testing
+if __name__ == "__main__":
+    async def test():
+        print(f"Pandas available: {PANDAS_AVAILABLE}")
+        state = {"company_of_interest": "AAPL"}
+        result = await market_analyst_node(state)
+        print(result['market_report'])
+        print(f"\nEngine: {result.get('market_data', {}).get('engine', 'unknown')}")
+        print(f"Indicators: {result.get('market_data', {}).get('indicator_count', 0)}")
+    
+    asyncio.run(test())

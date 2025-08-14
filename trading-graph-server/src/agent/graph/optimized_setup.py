@@ -16,11 +16,12 @@ from ..utils.agent_states import AgentState
 from ..utils.agent_utils import Toolkit
 from ..utils.tool_monitoring import get_tool_monitor
 
-# Phase 1 Optimization Imports
-from ..utils.async_token_optimizer import AsyncTokenOptimizer
-from ..utils.ultra_prompt_templates import UltraPromptTemplates
-from ..utils.parallel_execution_manager import ParallelExecutionManager
-from ..utils.phase1_integration import Phase1Optimizer
+# Phase 1 Optimization Imports - CLEANED UP
+# Removed unused optimization imports:
+# - AsyncTokenOptimizer (stale, never properly integrated)
+# - UltraPromptTemplates (stale, unused)
+# - parallel_execution_manager doesn't exist
+# - phase1_integration will be removed
 
 # Original imports
 from ..interfaces import ILLMProvider, IMemoryProvider, IAnalystToolkit, IGraphBuilder
@@ -30,10 +31,13 @@ from ..factories.toolkit_factory import ToolkitFactory
 from ..dataflows.config import get_config
 
 # Import analyst creation functions
-from ..analysts.market_analyst import create_market_analyst
+from ..analysts.market_analyst_pandas_enabled import create_ultra_fast_market_analyst as create_market_analyst
 from ..analysts.social_media_analyst import create_social_media_analyst  
 from ..analysts.news_analyst import create_news_analyst
-from ..analysts.fundamentals_analyst import create_fundamentals_analyst
+# Crypto-aware implementation enabled (handles both stocks and crypto)
+from ..analysts.fundamentals_analyst_crypto_aware import create_fundamentals_analyst_crypto_aware as create_fundamentals_analyst
+# Ultra-fast (stock only): from ..analysts.fundamentals_analyst_ultra_fast import create_fundamentals_analyst_ultra_fast as create_fundamentals_analyst
+# Original (disabled): from ..analysts.fundamentals_analyst import create_fundamentals_analyst
 
 # Import other node creation functions
 from ..researchers.bull_researcher import create_bull_researcher
@@ -71,16 +75,13 @@ class OptimizedGraphBuilder(IGraphBuilder):
         self.config['enable_ultra_prompts'] = self.config.get('enable_ultra_prompts', True)
         self.config['enable_parallel_execution'] = self.config.get('enable_parallel_execution', True)
         
-        # Initialize Phase 1 components
+        # Initialize Phase 1 components - DISABLED (stale code removed)
         if self.config['enable_phase1_optimizations']:
-            self.phase1_optimizer = Phase1Optimizer(self.config)
-            self.async_token_optimizer = AsyncTokenOptimizer(
-                model_name=self.config.get('model_name', 'gpt-4o-mini')
-            )
-            self.parallel_executor = ParallelExecutionManager(
-                max_workers=self.config.get('max_parallel_agents', 4)
-            )
-            logger.info("🚀 Phase 1 Optimizations ENABLED")
+            # These components were removed as they were never properly integrated:
+            # - Phase1Optimizer (unused)
+            # - AsyncTokenOptimizer (stale)
+            # - ParallelExecutionManager (doesn't exist)
+            logger.info("⚠️ Phase 1 Optimizations DISABLED - stale code removed")
         else:
             logger.info("⚠️ Phase 1 Optimizations DISABLED")
         
@@ -222,11 +223,9 @@ class OptimizedGraphBuilder(IGraphBuilder):
     def _create_optimized_analyst(self, original_analyst: Callable, analyst_type: str) -> Callable:
         """Wrap analyst with ultra-compressed prompt injection"""
         async def optimized_analyst(state: AgentState) -> AgentState:
-            # Get ultra-compressed prompt
-            compressed_prompt = UltraPromptTemplates.format_prompt(
-                analyst_type,
-                ticker=state.get("company_of_interest", "UNKNOWN")
-            )
+            # Ultra-compressed prompt removed (stale code)
+            # UltraPromptTemplates was never properly integrated
+            compressed_prompt = f"Analyze {state.get('company_of_interest', 'UNKNOWN')}"
             
             # Inject compressed prompt into analyst's system message
             # This is a simplified version - in production, would modify the LLM's system prompt
@@ -351,15 +350,15 @@ class OptimizedGraphBuilder(IGraphBuilder):
                 state["low_quality_reports"] = True
                 state["empty_reports"] = empty_reports
             
-            # Log Phase 1 performance metrics
-            if self.config['enable_phase1_optimizations']:
-                summary = self.phase1_optimizer.get_optimization_summary()
-                if summary.get("total_runs", 0) > 0:
-                    logger.info(
-                        f"⚡ Phase 1 Metrics: "
-                        f"Token reduction {summary['average_token_reduction']:.1%}, "
-                        f"Runtime reduction {summary['average_runtime_reduction']:.1%}"
-                    )
+            # Phase 1 optimization metrics disabled - stale code removed
+            # if self.config['enable_phase1_optimizations']:
+            #     summary = self.phase1_optimizer.get_optimization_summary()
+            #     if summary.get("total_runs", 0) > 0:
+            #         logger.info(
+            #             f"⚡ Phase 1 Metrics: "
+            #             f"Token reduction {summary['average_token_reduction']:.1%}, "
+            #             f"Runtime reduction {summary['average_runtime_reduction']:.1%}"
+            #         )
             
             # Initialize debate states
             if "investment_debate_state" not in state:

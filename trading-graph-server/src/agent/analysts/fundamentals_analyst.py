@@ -91,19 +91,11 @@ Focus on actionable investment insights from current financial data.
         messages = clean_messages_for_llm(messages)
         
         # TASK 4.2: Add LLM interaction logging
-        # TASK 6.2: Enhanced LLM interaction tracking with token optimization
-        from ..utils.token_optimizer import get_token_optimizer, track_llm_usage
-        
-        # CRITICAL FIX: Use async tokenizer initialization to prevent blocking calls
-        optimizer = get_token_optimizer()
+        # TASK 6.2: Token optimization disabled - stale code removed
+        # The token_optimizer module was removed due to broken dependencies
+        # Using simple fallback for now
         prompt_text = f"System: {system_message}\nUser: {current_date}, {ticker}"
-        
-        # Use async-safe token counting to prevent os.getcwd() blocking calls
-        try:
-            prompt_tokens = await asyncio.to_thread(optimizer.count_tokens, prompt_text)
-        except Exception as e:
-            logger.warning(f"Token counting failed: {e}, using fallback")
-            prompt_tokens = len(prompt_text) // 4  # Rough estimate fallback
+        prompt_tokens = len(prompt_text) // 4  # Simple estimate: 1 token ≈ 4 chars
         
         llm_start = time.time()
         # PT1: Log start of LLM invocation for parallel execution visibility
@@ -119,13 +111,8 @@ Focus on actionable investment insights from current financial data.
             logger.warning(f"Completion token counting failed: {e}, using fallback")
             completion_tokens = len(result.content) // 4 if hasattr(result, 'content') else 0
         
-        # Track token usage for optimization analysis
-        track_llm_usage(
-            analyst_type="fundamentals",
-            prompt_tokens=prompt_tokens,
-            completion_tokens=completion_tokens,
-            execution_time=llm_time
-        )
+        # Token tracking disabled - optimizer removed
+        logger.debug(f"Estimated tokens - Prompt: {prompt_tokens}, Completion: {completion_tokens}")
         
         log_llm_interaction(
             model="fundamentals_analyst_llm",

@@ -1,6 +1,6 @@
 [project]
 name = "agent"
-version = "0.1.6"
+version = "0.1.21"
 description = ""
 authors = [
     { name = "William Fu-Hinthorn", email = "13333726+hinthornw@users.noreply.github.com" },
@@ -16,6 +16,8 @@ dependencies = [
     "langgraph>=0.3.27,<1.0.0",
     "python-dotenv==1.0.1",
     "httpx>=0.25.0",  # For async HTTP requests
+    "aioredis>=2.0.0",  # For Redis async caching support
+    "h2>=4.0.0",  # For HTTP/2 protocol support
     "beautifulsoup4",
     "tenacity",
     "yfinance",
@@ -36,10 +38,46 @@ requires = ["setuptools>=73.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["langgraph.templates.agent", "agent"]
+packages = [
+    "agent",
+    "agent.analysts",
+    "agent.controllers", 
+    "agent.dataflows",
+    "agent.factories",
+    "agent.graph",
+    "agent.graph.nodes",
+    "agent.interfaces",
+    "agent.judges",
+    "agent.managers",
+    "agent.monitoring",
+    "agent.orchestrators",
+    "agent.prompts",
+    "agent.researchers",
+    "agent.risk_mgmt",
+    "agent.trader",
+    "agent.utils",
+    "langgraph.templates.agent"
+]
+
 [tool.setuptools.package-dir]
 "langgraph.templates.agent" = "src/agent"
 "agent" = "src/agent"
+"agent.analysts" = "src/agent/analysts"
+"agent.controllers" = "src/agent/controllers"
+"agent.dataflows" = "src/agent/dataflows"
+"agent.factories" = "src/agent/factories"
+"agent.graph" = "src/agent/graph"
+"agent.graph.nodes" = "src/agent/graph/nodes"
+"agent.interfaces" = "src/agent/interfaces"
+"agent.judges" = "src/agent/judges"
+"agent.managers" = "src/agent/managers"
+"agent.monitoring" = "src/agent/monitoring"
+"agent.orchestrators" = "src/agent/orchestrators"
+"agent.prompts" = "src/agent/prompts"
+"agent.researchers" = "src/agent/researchers"
+"agent.risk_mgmt" = "src/agent/risk_mgmt"
+"agent.trader" = "src/agent/trader"
+"agent.utils" = "src/agent/utils"
 
 
 [tool.setuptools.package-data]

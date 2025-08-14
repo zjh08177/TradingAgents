@@ -88,22 +88,18 @@ async def get_stocktwits_fast(
                     
     except asyncio.TimeoutError:
         logger.error(f"Timeout fetching StockTwits data for {ticker}")
-        return {
-            "ticker": ticker,
-            "sentiment_score": 0.0,
-            "message_count": 0,
-            "error": "Request timeout",
-            "confidence": "low"
-        }
+        from .empty_response_handler import create_empty_stocktwits_response
+        return create_empty_stocktwits_response(
+            ticker=ticker,
+            reason="StockTwits API request timeout"
+        )
     except Exception as e:
         logger.error(f"Error fetching StockTwits data: {str(e)}")
-        return {
-            "ticker": ticker,
-            "sentiment_score": 0.0,
-            "message_count": 0,
-            "error": str(e),
-            "confidence": "low"
-        }
+        from .empty_response_handler import create_empty_stocktwits_response
+        return create_empty_stocktwits_response(
+            ticker=ticker,
+            reason=f"StockTwits API error: {str(e)}"
+        )
 
 
 def process_stocktwits_data(ticker: str, data: Dict) -> Dict[str, Any]:
@@ -119,26 +115,20 @@ def process_stocktwits_data(ticker: str, data: Dict) -> Dict[str, Any]:
     """
     
     if data is None:
-        return {
-            "ticker": ticker,
-            "sentiment_score": 0.0,
-            "message_count": 0,
-            "error": "No data received from API",
-            "confidence": "low"
-        }
+        from .empty_response_handler import create_empty_stocktwits_response
+        return create_empty_stocktwits_response(
+            ticker=ticker,
+            reason="No data received from StockTwits API"
+        )
     
     messages = data.get("messages", [])
     
     if not messages:
-        return {
-            "ticker": ticker,
-            "sentiment_score": 0.0,
-            "bullish_percent": 0.0,
-            "bearish_percent": 0.0,
-            "message_count": 0,
-            "confidence": "low",
-            "error": "No messages found"
-        }
+        from .empty_response_handler import create_empty_stocktwits_response
+        return create_empty_stocktwits_response(
+            ticker=ticker,
+            reason="No messages found on StockTwits"
+        )
     
     # Count sentiment
     bullish = 0

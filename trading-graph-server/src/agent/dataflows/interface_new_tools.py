@@ -60,8 +60,8 @@ async def get_twitter_mentions(ticker: str) -> Dict[str, Any]:
     logger.info(f"🔧 get_twitter_mentions called for {ticker}")
     
     try:
-        # Import the real Twitter implementation
-        from .twitter_simple import get_twitter_fast
+        # Import the enhanced multi-source Twitter implementation
+        from .twitter_multi_source import get_twitter_multi_source as get_twitter_fast
         
         # Get real Twitter data
         result = await get_twitter_fast(ticker)

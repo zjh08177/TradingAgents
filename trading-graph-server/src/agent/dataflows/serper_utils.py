@@ -151,32 +151,17 @@ async def getNewsDataSerperAPIWithPagination(query_or_company: str, start_date: 
             
             # Log the paginated data fetch operation
             execution_time = time.time() - start_time
-            log_data_fetch(
-                source="serper_api_paginated",
-                query=f"{search_query} ({max_pages} pages)",
-                results_count=len(all_articles),
-                execution_time=execution_time
-            )
+            log_data_fetch("serper_api_paginated", all_articles, logger)
             
             return all_articles
             
     except httpx.HTTPError as e:
         execution_time = time.time() - start_time
-        log_data_fetch(
-            source="serper_api_paginated",
-            query=f"{query_or_company} (HTTP ERROR)",
-            results_count=len(all_articles),
-            execution_time=execution_time
-        )
+        log_data_fetch("serper_api_paginated", all_articles, logger)
         logger.error(f"HTTP error occurred: {e}")
         return all_articles
     except Exception as e:
         execution_time = time.time() - start_time
-        log_data_fetch(
-            source="serper_api_paginated",
-            query=f"{query_or_company} (ERROR)", 
-            results_count=len(all_articles),
-            execution_time=execution_time
-        )
+        log_data_fetch("serper_api_paginated", all_articles, logger)
         logger.error(f"An error occurred: {e}")
         return all_articles 

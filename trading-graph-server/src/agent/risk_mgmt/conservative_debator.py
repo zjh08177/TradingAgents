@@ -6,10 +6,18 @@ from ..utils.agent_prompt_enhancer import enhance_agent_prompt
 from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
 from ..utils.token_limiter import get_token_limiter
 from ..utils.safe_state_access import create_safe_state_wrapper
+from ..utils.news_filter import filter_news_for_llm
 
 
 def create_safe_debator(llm):
     async def safe_node(state) -> dict:
+        # 🚨 RUNTIME VERIFICATION: Confirm conservative debator version is running
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.critical("🔥🔥🔥 RUNTIME VERIFICATION: conservative_debator.py VERSION ACTIVE 🔥🔥🔥")
+        logger.critical(f"🔥 TOKEN REDUCTION ENABLED: MAX_RISK_RESPONSE_TOKENS=2000 limit is ACTIVE")
+        logger.critical(f"🔥 Code version timestamp: 2025-01-14 - Conservative with token limits")
+        
         # CRITICAL FIX: Use safe state wrapper to prevent KeyError
         safe_state = create_safe_state_wrapper(state)
         
@@ -27,6 +35,9 @@ def create_safe_debator(llm):
         news_report = safe_state.get("news_report", "")
         fundamentals_report = safe_state.get("fundamentals_report", "")
 
+        # Apply token optimization to news report (conservative risk focus)
+        filtered_news = filter_news_for_llm(news_report, max_articles=10)
+
         trader_decision = safe_state.get("trader_investment_plan", "")
 
         prompt = f"""As the Safe/Conservative Risk Analyst, your primary objective is to protect assets, minimize volatility, and ensure steady, reliable growth. You prioritize stability, security, and risk mitigation, carefully assessing potential losses, economic downturns, and market volatility. When evaluating the trader's decision or plan, critically examine high-risk elements, pointing out where the decision may expose the firm to undue risk and where more cautious alternatives could secure long-term gains. Here is the trader's decision:
@@ -37,7 +48,7 @@ Your task is to actively counter the arguments of the Risky and Neutral Analysts
 
 Market Research Report: {market_research_report}
 Social Media Sentiment Report: {sentiment_report}
-Latest World Affairs Report: {news_report}
+Latest World Affairs Report: {filtered_news}
 Company Fundamentals Report: {fundamentals_report}
 
 Here is the current conversation history: {history}
@@ -51,7 +62,28 @@ Provide a conservative perspective that emphasizes risk mitigation and stability
         messages = [{"role": "user", "content": prompt}]
         response = await safe_llm_invoke(llm, messages)
 
-        argument = f"Safe Analyst: {response.content}"
+        # CRITICAL: Apply token limiting to prevent massive debate responses
+        raw_content = response.content
+        MAX_RISK_RESPONSE_TOKENS = 2000  # ~500 words max for risk analysis
+        MAX_RISK_RESPONSE_CHARS = MAX_RISK_RESPONSE_TOKENS * 4
+        
+        # 🚨 RUNTIME VERIFICATION: Log token limiting behavior
+        logger.critical(f"🔥🔥🔥 CONSERVATIVE RISK TOKEN LIMIT VERIFICATION 🔥🔥🔥")
+        logger.critical(f"🔥 Response length before truncation: {len(raw_content)} chars")
+        logger.critical(f"🔥 MAX_RISK_RESPONSE_CHARS limit: {MAX_RISK_RESPONSE_CHARS}")
+        
+        if len(raw_content) > MAX_RISK_RESPONSE_CHARS:
+            logger.critical(f"🔥 TRUNCATING CONSERVATIVE RESPONSE: {len(raw_content)} > {MAX_RISK_RESPONSE_CHARS}")
+            from ..utils.minimalist_logging import minimalist_log
+            minimalist_log("TOKEN_OPT", f"Conservative analyst truncating from {len(raw_content)} to {MAX_RISK_RESPONSE_CHARS} chars")
+            # Keep first part of analysis
+            truncated_content = raw_content[:MAX_RISK_RESPONSE_CHARS] + "\n\n[Analysis truncated for token optimization]"
+            raw_content = truncated_content
+            logger.critical(f"✅ Conservative response truncated to: {len(raw_content)} chars")
+        else:
+            logger.critical(f"✅ No truncation needed for conservative: {len(raw_content)} ≤ {MAX_RISK_RESPONSE_CHARS}")
+
+        argument = f"Safe Analyst: {raw_content}"
 
         new_risk_debate_state = {
             "history": history + "\n" + argument,

@@ -74,20 +74,38 @@ class YFinanceUtils:
     ) -> "DataFrame":  # FIXED: Use string literal to prevent NameError
         """retrieve stock price data for designated ticker symbol"""
         ticker = symbol
-        # add one day to the end_date so that the data range is inclusive
-        end_date = _get_pandas().to_datetime(end_date) + _get_pandas().DateOffset(days=1)
-        end_date = end_date.strftime("%Y-%m-%d")
-        stock_data = ticker.history(start=start_date, end=end_date)
-        # save_output(stock_data, f"Stock data for {ticker.ticker}", save_path)
-        return stock_data
+        try:
+            # add one day to the end_date so that the data range is inclusive
+            end_date = _get_pandas().to_datetime(end_date) + _get_pandas().DateOffset(days=1)
+            end_date = end_date.strftime("%Y-%m-%d")
+            stock_data = ticker.history(start=start_date, end=end_date)
+            if stock_data is None or (hasattr(stock_data, 'empty') and stock_data.empty):
+                raise AttributeError("ticker.history returned None or empty data")
+            # save_output(stock_data, f"Stock data for {ticker.ticker}", save_path)
+            return stock_data
+        except AttributeError as e:
+            from .empty_response_handler import create_empty_market_data_response
+            error_msg = f"AttributeError accessing stock data: {str(e)}"
+            # Return empty DataFrame with error info
+            pd = _get_pandas()
+            empty_df = pd.DataFrame()
+            empty_df.attrs['error'] = create_empty_market_data_response(symbol, error_msg)
+            return empty_df
 
     def get_stock_info(
         symbol: Annotated[str, "ticker symbol"],
     ) -> dict:
         """Fetches and returns latest stock information."""
         ticker = symbol
-        stock_info = ticker.info
-        return stock_info
+        try:
+            stock_info = ticker.info
+            if stock_info is None:
+                raise AttributeError("ticker.info returned None")
+            return stock_info
+        except AttributeError as e:
+            from .empty_response_handler import create_empty_market_data_response
+            error_msg = f"AttributeError accessing stock info: {str(e)}"
+            return {"error": create_empty_market_data_response(symbol, error_msg)}
 
     def get_company_info(
         symbol: Annotated[str, "ticker symbol"],

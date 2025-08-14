@@ -18,15 +18,22 @@ from tqdm import tqdm
 from openai import OpenAI
 from .config import get_config, set_config, DATA_DIR
 from ..default_config import DEFAULT_CONFIG
-from dotenv import load_dotenv
+# REMOVED: from dotenv import load_dotenv - causes blocking I/O
 import asyncio
 import logging
-import numpy as np
+# NUMPY LAZY LOADING: Moved numpy import to prevent circular imports
+# import numpy as np  # <- REMOVED to prevent circular import
 from datetime import date, timedelta, datetime
 import json
 # PANDAS LAZY LOADING: Moved pandas import to prevent circular imports
 # import pandas as pd  # <- REMOVED
 import asyncio
+
+# Lazy loader for numpy to prevent circular import issues
+def _get_numpy():
+    """Lazy load numpy to avoid circular import issues in LangGraph dev"""
+    import numpy as np
+    return np
 from concurrent.futures import ThreadPoolExecutor
 import typing
 import logging
@@ -57,17 +64,11 @@ def _get_yfinance():
 _dotenv_loaded = False
 
 async def _ensure_dotenv_loaded():
-    """Lazy loader for .env file to prevent blocking I/O during module import"""
+    """NO-OP: Environment should be loaded by application at startup, not by library code"""
     global _dotenv_loaded
-    if not _dotenv_loaded:
-        # FIXED: Move os.path.abspath to async context to prevent blocking during import
-        project_root_task = asyncio.to_thread(
-            lambda: os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        )
-        project_root = await project_root_task
-        # Use asyncio.to_thread to run synchronous code in thread pool
-        await asyncio.to_thread(load_dotenv, os.path.join(project_root, ".env"))
-        _dotenv_loaded = True
+    # CRITICAL: Do NOT load .env file here - causes blocking I/O
+    # Environment variables must be set BEFORE the application starts
+    _dotenv_loaded = True
 
 
 def get_finnhub_news(
@@ -824,6 +825,15 @@ def get_YFin_data_online(
         logger.info(f"📝 TOOL OUTPUT LENGTH: {len(result)} characters")
         logger.debug(f"📝 TOOL OUTPUT PREVIEW (first 500 chars):\n{result[:500]}...")  # Downgraded to DEBUG
         return result
+        
+    except AttributeError as e:
+        # Handle AttributeError specifically - return empty response instead of raising
+        duration = time.time() - start_time
+        logger.error(f"❌ TOOL ATTRIBUTE ERROR: get_YFin_data_online | Duration: {duration:.2f}s")
+        logger.error(f"🚨 ATTRIBUTE ERROR: {str(e)}")
+        from .empty_response_handler import create_empty_market_data_response
+        error_msg = f"AttributeError in YFin data fetching: {str(e)}"
+        return create_empty_market_data_response(symbol, error_msg)
         
     except Exception as e:
         # Enhanced logging - Error (for comparison)

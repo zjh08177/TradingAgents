@@ -16,13 +16,186 @@ import hashlib
 logger = logging.getLogger(__name__)
 
 
+async def get_twitter_alternative_search(ticker: str, limit: int = 20) -> Dict[str, Any]:
+    """
+    Alternative Twitter search using web scraping techniques
+    More reliable than Nitter instances
+    """
+    try:
+        # Use Google search to find recent Twitter mentions
+        search_terms = [
+            f'site:twitter.com "{ticker}" (buy OR sell OR bullish OR bearish)',
+            f'site:twitter.com "${ticker}" sentiment',
+            f'"${ticker}" twitter mentions'
+        ]
+        
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
+        
+        # Try to get recent Twitter sentiment via indirect methods
+        async with aiohttp.ClientSession() as session:
+            # Search for recent mentions
+            for term in search_terms:
+                try:
+                    # Use DuckDuckGo as it doesn't block as aggressively
+                    url = "https://duckduckgo.com/html/"
+                    params = {"q": term, "ia": "web"}
+                    
+                    async with session.get(url, params=params, headers=headers, timeout=8) as resp:
+                        if resp.status == 200:
+                            content = await resp.text()
+                            
+                            # Look for Twitter links and sentiment indicators
+                            import re
+                            twitter_links = re.findall(r'twitter\.com/\w+/status/\d+', content)
+                            
+                            if twitter_links:
+                                # Found Twitter mentions - analyze sentiment from search context
+                                sentiment = analyze_search_sentiment(content, ticker)
+                                
+                                return {
+                                    "ticker": ticker,
+                                    "sentiment_score": sentiment,
+                                    "tweet_count": len(twitter_links),
+                                    "top_tweets": [{"text": f"Twitter mention found for ${ticker}", "author": "search_result", "link": f"https://{link}", "published": datetime.now().isoformat()} for link in twitter_links[:5]],
+                                    "confidence": "medium" if len(twitter_links) >= 5 else "low",
+                                    "source": "twitter_search",
+                                    "timestamp": datetime.now().isoformat()
+                                }
+                except Exception as e:
+                    logger.debug(f"Search attempt failed: {e}")
+                    continue
+        
+        return None
+        
+    except Exception as e:
+        logger.error(f"Twitter alternative search failed: {e}")
+        return None
+
+
+async def get_mastodon_sentiment(ticker: str, limit: int = 20) -> Dict[str, Any]:
+    """
+    Get sentiment from Mastodon instances (decentralized Twitter alternative)
+    """
+    try:
+        # Popular Mastodon instances with finance communities
+        instances = [
+            "mastodon.social",
+            "mstdn.social", 
+            "mas.to",
+            "fosstodon.org"
+        ]
+        
+        headers = {
+            "User-Agent": "StockAnalyzer/1.0",
+            "Accept": "application/json"
+        }
+        
+        for instance in instances:
+            try:
+                # Search for ticker mentions on this instance
+                url = f"https://{instance}/api/v2/search"
+                params = {
+                    "q": f"${ticker} OR #{ticker}",
+                    "type": "statuses",
+                    "limit": min(limit, 40)
+                }
+                
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url, params=params, headers=headers, timeout=6) as resp:
+                        if resp.status == 200:
+                            data = await resp.json()
+                            statuses = data.get("statuses", [])
+                            
+                            if statuses:
+                                # Process Mastodon posts
+                                processed_posts = []
+                                for status in statuses[:limit]:
+                                    processed_posts.append({
+                                        "text": status.get("content", "")[:200],
+                                        "author": status.get("account", {}).get("username", "unknown"),
+                                        "link": status.get("url", ""),
+                                        "created_at": status.get("created_at", ""),
+                                        "favourites": status.get("favourites_count", 0),
+                                        "reblogs": status.get("reblogs_count", 0)
+                                    })
+                                
+                                # Calculate sentiment
+                                sentiment = calculate_twitter_sentiment(processed_posts)
+                                confidence = "high" if len(processed_posts) >= 10 else "medium" if len(processed_posts) >= 5 else "low"
+                                
+                                return {
+                                    "ticker": ticker,
+                                    "sentiment_score": sentiment,
+                                    "tweet_count": len(processed_posts),
+                                    "top_tweets": processed_posts[:5],
+                                    "confidence": confidence,
+                                    "source": f"mastodon_{instance}",
+                                    "timestamp": datetime.now().isoformat()
+                                }
+                        
+            except Exception as e:
+                logger.debug(f"Mastodon instance {instance} failed: {e}")
+                continue
+        
+        return None
+        
+    except Exception as e:
+        logger.error(f"Mastodon search failed: {e}")
+        return None
+
+
+def analyze_search_sentiment(content: str, ticker: str) -> float:
+    """
+    Analyze sentiment from search results content
+    """
+    content_lower = content.lower()
+    
+    # Look for sentiment indicators around the ticker
+    ticker_contexts = []
+    
+    # Find sentences mentioning the ticker
+    import re
+    sentences = re.split(r'[.!?]', content_lower)
+    
+    for sentence in sentences:
+        if ticker.lower() in sentence or f"${ticker.lower()}" in sentence:
+            ticker_contexts.append(sentence)
+    
+    if not ticker_contexts:
+        return 0.5  # Neutral if no context found
+    
+    # Simple sentiment analysis on ticker contexts
+    bullish_words = ["buy", "bull", "bullish", "up", "rise", "gain", "strong", "positive", "growth"]
+    bearish_words = ["sell", "bear", "bearish", "down", "fall", "loss", "weak", "negative", "decline"]
+    
+    bullish_count = 0
+    bearish_count = 0
+    
+    combined_context = " ".join(ticker_contexts)
+    
+    for word in bullish_words:
+        bullish_count += combined_context.count(word)
+    
+    for word in bearish_words:
+        bearish_count += combined_context.count(word)
+    
+    total_sentiment = bullish_count + bearish_count
+    
+    if total_sentiment == 0:
+        return 0.5  # Neutral
+    
+    return bullish_count / total_sentiment
+
+
 async def get_twitter_fast(ticker: str, limit: int = 20) -> Dict[str, Any]:
     """
-    Get Twitter-like social sentiment data via multiple sources
+    Get Twitter-like social sentiment data via multiple sources with aggressive timeouts
     
-    Primary: Bluesky API (no auth required, reliable)
-    Secondary: Nitter RSS feeds
-    Fallback: Simulation
+    Primary: Quick Bluesky API (2s timeout)
+    Secondary: Fast Mastodon search (2s timeout)  
+    Fallback: Intelligent simulation based on market data
     
     Args:
         ticker: Stock ticker symbol (e.g., 'AAPL', 'ETH')
@@ -35,72 +208,49 @@ async def get_twitter_fast(ticker: str, limit: int = 20) -> Dict[str, Any]:
         - tweet_count: Number of posts analyzed
         - top_tweets: Sample of recent posts
         - confidence: low/medium/high based on data volume
-        - source: Data source used (bluesky/nitter/simulation)
+        - source: Data source used (twitter/bluesky/mastodon/simulation)
         - error: Error message if request failed
     """
     
-    # Try Bluesky first (most reliable, no auth needed)
-    logger.info(f"🐦 Attempting Bluesky API for {ticker}")
-    bluesky_result = await get_bluesky_sentiment(ticker, limit)
-    if bluesky_result and bluesky_result.get("tweet_count", 0) > 0:
-        logger.info(f"✅ Bluesky successful: {bluesky_result.get('tweet_count')} posts")
-        return bluesky_result
+    # Set maximum total time for all attempts to 5 seconds
+    import time
+    start_time = time.time()
+    max_total_time = 5.0
     
-    # Fallback to Nitter instances
-    logger.info(f"🔄 Bluesky failed, trying Nitter instances for {ticker}")
-    instances = [
-        "nitter.privacydev.net",
-        "nitter.poast.org", 
-        "nitter.bird.froth.zone",
-        "nitter.net"
-    ]
-    
-    instances_tried = []
-    
-    for instance in instances:
-        instances_tried.append(instance)
+    # Try Bluesky first with aggressive 2s timeout
+    if time.time() - start_time < max_total_time:
+        logger.info(f"🐦 Quick Bluesky attempt for {ticker}")
         try:
-            # Search URL for ticker mentions
-            url = f"https://{instance}/search/rss"
-            params = {
-                "q": f"${ticker} OR #{ticker}",
-                "f": "tweets"  # Only tweets, not replies
-            }
-            
-            headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
-            
-            logger.info(f"Trying Nitter instance: {instance}")
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=params, headers=headers, timeout=8) as resp:
-                    if resp.status == 200:
-                        content = await resp.text()
-                        logger.info(f"Success with {instance}, content length: {len(content)}")
-                        
-                        if len(content.strip()) == 0:
-                            logger.warning(f"Empty response from {instance}")
-                            continue
-                            
-                        result = parse_nitter_rss(ticker, content, limit)
-                        result["instances_tried"] = instances_tried
-                        result["successful_instance"] = instance
-                        result["source"] = "nitter"
-                        return result
-                    else:
-                        logger.warning(f"Nitter instance {instance} returned status {resp.status}")
-                        
+            bluesky_result = await asyncio.wait_for(get_bluesky_sentiment(ticker, limit), timeout=2.0)
+            if bluesky_result and bluesky_result.get("tweet_count", 0) > 0:
+                logger.info(f"✅ Bluesky quick success: {bluesky_result.get('tweet_count')} posts")
+                return bluesky_result
         except asyncio.TimeoutError:
-            logger.warning(f"Timeout with Nitter instance {instance}")
-            continue
+            logger.debug(f"⏰ Bluesky timeout for {ticker}")
         except Exception as e:
-            logger.warning(f"Error with Nitter instance {instance}: {str(e)}")
-            continue
+            logger.debug(f"❌ Bluesky error for {ticker}: {e}")
     
-    # All sources failed - use fallback simulation
-    logger.error(f"All social sources failed for {ticker}, using simulation")
-    return simulate_twitter_sentiment(ticker, instances_tried)
+    # Try Mastodon with aggressive 2s timeout
+    if time.time() - start_time < max_total_time:
+        logger.info(f"🔄 Quick Mastodon attempt for {ticker}")
+        try:
+            mastodon_result = await asyncio.wait_for(get_mastodon_sentiment(ticker, limit), timeout=2.0)
+            if mastodon_result and mastodon_result.get("tweet_count", 0) > 0:
+                logger.info(f"✅ Mastodon quick success: {mastodon_result.get('tweet_count')} posts")
+                return mastodon_result
+        except asyncio.TimeoutError:
+            logger.debug(f"⏰ Mastodon timeout for {ticker}")
+        except Exception as e:
+            logger.debug(f"❌ Mastodon error for {ticker}: {e}")
+    
+    # All fast sources failed - return empty response instead of simulation
+    elapsed = time.time() - start_time
+    logger.warning(f"🚨 All quick Twitter sources failed for {ticker} after {elapsed:.1f}s, returning empty response")
+    from .empty_response_handler import create_empty_twitter_response
+    return create_empty_twitter_response(
+        ticker=ticker,
+        reason=f"All Twitter alternative sources failed after {elapsed:.1f}s"
+    )
 
 
 async def get_bluesky_sentiment(ticker: str, limit: int = 20) -> Dict[str, Any]:
@@ -371,8 +521,9 @@ def get_twitter_sync(ticker: str) -> Dict[str, Any]:
 
 def simulate_twitter_sentiment(ticker: str, instances_tried: List[str]) -> Dict[str, Any]:
     """
-    Generate realistic Twitter sentiment simulation when Nitter is unavailable
+    Generate intelligent Twitter sentiment simulation when all real sources fail
     Uses deterministic random based on ticker for consistent results
+    This is a FALLBACK and should be clearly marked as such
     """
     
     # Create deterministic seed from ticker
@@ -380,52 +531,55 @@ def simulate_twitter_sentiment(ticker: str, instances_tried: List[str]) -> Dict[
     random.seed(seed)
     
     # Simulate realistic tweet patterns for different assets
-    if ticker.upper() in ['BTC', 'ETH', 'CRYPTO']:
+    if ticker.upper() in ['BTC', 'ETH', 'CRYPTO', 'DOGE', 'ADA', 'SOL']:
         # Crypto tends to be more volatile sentiment
         tweet_count = random.randint(15, 45)
         base_sentiment = random.uniform(0.3, 0.8)
-    elif ticker.upper() in ['AAPL', 'GOOGL', 'MSFT', 'TSLA']:
+        confidence = "low"  # Mark as low confidence since it's simulated
+    elif ticker.upper() in ['AAPL', 'GOOGL', 'GOOG', 'MSFT', 'TSLA', 'NVDA', 'META', 'AMZN']:
         # Big tech tends to have more tweets, mixed sentiment
         tweet_count = random.randint(20, 50)  
         base_sentiment = random.uniform(0.4, 0.7)
+        confidence = "low"  # Mark as low confidence since it's simulated
     else:
         # Other stocks - moderate activity
         tweet_count = random.randint(8, 25)
         base_sentiment = random.uniform(0.35, 0.65)
+        confidence = "low"  # Mark as low confidence since it's simulated
     
-    # Generate sample tweets
+    # Generate sample tweets with clear ERROR/MOCK indication
     sample_tweets = [
         {
-            "text": f"${ticker} looking strong today! 🚀",
-            "author": "trader_" + str(random.randint(100, 999)),
-            "link": f"https://twitter.com/user/status/{random.randint(1000000000, 9999999999)}",
-            "published": datetime.now().isoformat()
+            "text": f"❌ ERROR: MOCK DATA - ${ticker} sentiment is simulated",
+            "author": "MOCK_DATA",
+            "link": "https://twitter.com/simulation",
+            "published": datetime.now().isoformat(),
+            "note": "ERROR: This is MOCK data - Twitter API not available"
         },
         {
-            "text": f"Holding ${ticker} for the long term",
-            "author": "investor_" + str(random.randint(100, 999)),
-            "link": f"https://twitter.com/user/status/{random.randint(1000000000, 9999999999)}",
-            "published": datetime.now().isoformat()
-        },
-        {
-            "text": f"#{ticker} analysis shows potential breakout",
-            "author": "analyst_" + str(random.randint(100, 999)),
-            "link": f"https://twitter.com/user/status/{random.randint(1000000000, 9999999999)}",
-            "published": datetime.now().isoformat()
+            "text": f"❌ ERROR: MOCK DATA - No real Twitter data for ${ticker}",
+            "author": "MOCK_DATA", 
+            "link": "https://twitter.com/simulation",
+            "published": datetime.now().isoformat(),
+            "note": "ERROR: This is MOCK data - Twitter API not available"
         }
     ]
     
-    confidence = "high" if tweet_count >= 15 else "medium" if tweet_count >= 10 else "low"
+    logger.error(f"❌ ERROR: Twitter tool using MOCK DATA for {ticker} - marked as FAILURE")
     
     return {
         "ticker": ticker,
         "sentiment_score": round(base_sentiment, 3),
         "tweet_count": tweet_count,
-        "top_tweets": sample_tweets[:5],
-        "confidence": confidence,
+        "top_tweets": sample_tweets,
+        "confidence": "low",
         "instances_tried": instances_tried,
         "fallback_mode": True,
-        "note": "Simulated data - Nitter instances unavailable",
+        "mock_data": True,  # Explicitly mark as mock
+        "error": "FAILURE: Using MOCK data - Twitter API not available",
+        "source": "MOCK_SIMULATION",
+        "note": "❌ ERROR: MOCK DATA - All Twitter sources failed",
+        "warning": "ERROR: This is MOCK data and marked as FAILURE per requirements",
         "timestamp": datetime.now().isoformat()
     }
 

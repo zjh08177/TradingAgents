@@ -12,6 +12,7 @@ from ..utils.agent_prompt_enhancer import enhance_agent_prompt
 from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
 from ..utils.token_limiter import get_token_limiter
 from ..utils.safe_state_access import create_safe_state_wrapper
+from ..utils.news_filter import filter_news_for_llm
 from ..prompts.enhanced_prompts_v4 import get_enhanced_prompt
 from ..default_config import DEFAULT_CONFIG
 
@@ -38,8 +39,11 @@ def create_bear_researcher(llm, memory):
         logger.info(f"🐻 BEAR RESEARCHER: Round {current_round}")
         start_time = time.time()
 
+        # Apply token optimization to news report
+        filtered_news = filter_news_for_llm(news_report, max_articles=15)
+        
         # Get past memories
-        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{news_report}\n\n{fundamentals_report}"
+        curr_situation = f"{market_research_report}\n\n{sentiment_report}\n\n{filtered_news}\n\n{fundamentals_report}"
         past_memories = memory.get_memories(curr_situation, n_matches=2)
         past_memory_str = "\n\n".join([rec["recommendation"] for rec in past_memories])
 
@@ -116,7 +120,7 @@ ROUND {current_round} CONTEXT:
 RESEARCH DATA:
 - Market Report: {market_research_report}
 - Sentiment Report: {sentiment_report}
-- News Report: {news_report}
+- News Report: {filtered_news}
 - Fundamentals Report: {fundamentals_report}
 - Past Lessons: {past_memory_str}
 {debate_context}"""
@@ -133,7 +137,7 @@ RESEARCH DATA:
 Research Data:
 - Market Report: {market_research_report}
 - Sentiment Report: {sentiment_report}
-- News Report: {news_report}
+- News Report: {filtered_news}
 - Fundamentals Report: {fundamentals_report}
 - Past Lessons: {past_memory_str}
 {debate_context}
@@ -152,7 +156,7 @@ Present your bearish perspective with careful analysis and risk-focused reasonin
 Research Data:
 - Market Report: {market_research_report}
 - Sentiment Report: {sentiment_report}
-- News Report: {news_report}
+- News Report: {filtered_news}
 - Fundamentals Report: {fundamentals_report}
 - Past Lessons: {past_memory_str}
 {debate_context}

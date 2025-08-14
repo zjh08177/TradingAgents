@@ -8,9 +8,14 @@ from typing import Dict, Any
 from langchain_core.runnables import RunnableConfig
 from .default_config import DEFAULT_CONFIG
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+# Set up logging - use NullHandler to avoid blocking I/O in async context
+# The actual logging configuration should be done by the application, not the library
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    # Only add NullHandler if no handlers are configured
+    # This prevents blocking I/O while still allowing the app to configure logging
+    logger.addHandler(logging.NullHandler())
+logger.setLevel(logging.INFO)
 
 async def run_trading_analysis(company_name: str, analysis_date: str = None) -> dict:
     """Main entry point for running trading analysis"""
@@ -49,8 +54,11 @@ def create_studio_compatible_graph():
     
     try:
         # Dynamic import to avoid circular dependencies
-        trading_graph_module = importlib.import_module('.graph.trading_graph', package='agent')
-        TradingAgentsGraph = trading_graph_module.TradingAgentsGraph
+        # Import using absolute path from src
+        import sys
+        import os
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from agent.graph.trading_graph import TradingAgentsGraph
         
         # Create graph instance with simplified signature
         trading_graph_instance = TradingAgentsGraph(

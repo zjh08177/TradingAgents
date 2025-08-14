@@ -54,6 +54,11 @@ def create_social_media_analyst_old_version(llm, toolkit):
                 logger.info(f"✅ SOCIAL ANALYST: Added get_twitter_mentions")
             else:
                 logger.warning(f"⚠️ SOCIAL ANALYST: get_twitter_mentions NOT AVAILABLE")
+            
+            # IMPORTANT: Do NOT add news tools to social analyst
+            # News analysis is handled by the News Analyst
+            if hasattr(toolkit, 'get_stock_news_openai'):
+                logger.warning(f"🚫 SOCIAL ANALYST: Excluding get_stock_news_openai (handled by News Analyst)")
             logger.info(f"📊 SOCIAL ANALYST: Total tools available: {len(tools)}")
         else:
             tools = []
@@ -69,16 +74,14 @@ You are a Social Media Sentiment Analyst for {ticker}.
 YOUR ROLE: Analyze social media discussions (Reddit, Twitter, StockTwits) to gauge retail investor sentiment.
 NOT YOUR ROLE: News analysis (handled by News Analyst).
 
-CRITICAL REQUIREMENT - CALL EXACTLY 3 TOOLS IN THIS ORDER:
-1. Call get_reddit_stock_info(ticker="{ticker}", curr_date="{current_date}")
-2. Call get_twitter_mentions(ticker="{ticker}")  
-3. Call get_stocktwits_sentiment(ticker="{ticker}")
+WORKFLOW:
+1. Call get_twitter_mentions(ticker="{ticker}") for Twitter sentiment
+2. Call get_stocktwits_sentiment(ticker="{ticker}") for StockTwits data
+3. Call get_reddit_stock_info(ticker="{ticker}", date="{current_date}") for Reddit discussions
+4. Analyze sentiment patterns across all platforms
+5. Generate trading insights from combined social signals
 
-DO NOT PROCEED WITHOUT CALLING ALL 3 TOOLS ABOVE!
-If any tool fails, still call the remaining tools.
-Your analysis MUST include data from Reddit, Twitter, AND StockTwits.
-
-OUTPUT REQUIREMENTS (after calling all 3 tools):
+OUTPUT REQUIREMENTS:
 SENTIMENT SCORE: [-1 to +1] where -1=bearish, 0=neutral, +1=bullish
 CONFIDENCE: [Low/Medium/High] based on data volume and consensus
 TREND: [Rising/Falling/Stable] sentiment momentum
@@ -87,7 +90,6 @@ SIGNAL: [BUY/SELL/HOLD] with brief rationale
 
 Focus on social sentiment only. Do not analyze news articles.
 Available tools: {tool_names}
-Remember: Call ALL THREE tools - get_twitter_mentions, get_stocktwits_sentiment, AND get_reddit_stock_info
         """
 
         prompt = ChatPromptTemplate.from_messages(
@@ -109,7 +111,7 @@ Remember: Call ALL THREE tools - get_twitter_mentions, get_stocktwits_sentiment,
 
         # Format system message with tool names and ticker
         tool_names_str = ", ".join([tool.name for tool in tools])
-        system_message = system_message.format(ticker=ticker, tool_names=tool_names_str)
+        system_message = system_message.format(ticker=ticker, tool_names=tool_names_str, current_date=current_date)
         
         prompt = prompt.partial(system_message=system_message)
         prompt = prompt.partial(tool_names=tool_names_str)
@@ -137,7 +139,7 @@ Remember: Call ALL THREE tools - get_twitter_mentions, get_stocktwits_sentiment,
         log_llm_interaction(
             model="social_analyst_llm",
             prompt_length=len(prompt_text),
-            response_length=len(result.content) if hasattr(result, 'content') else 0,
+            response_length=len(str(result.content)) if hasattr(result, 'content') else 0,
             execution_time=llm_time
         )
 
@@ -145,7 +147,16 @@ Remember: Call ALL THREE tools - get_twitter_mentions, get_stocktwits_sentiment,
         tool_message_count = sum(1 for msg in messages if hasattr(msg, 'type') and str(getattr(msg, 'type', '')) == 'tool')
         
         # CRITICAL FIX: ENFORCE MANDATORY TOOL USAGE
-        if len(result.tool_calls) == 0:
+        tool_calls = getattr(result, 'tool_calls', [])
+        # Handle mock objects in testing
+        try:
+            tool_calls_count = len(tool_calls)
+        except TypeError:
+            # Mock object - assume no tool calls for testing
+            tool_calls_count = 0
+            tool_calls = []
+        
+        if tool_calls_count == 0:
             # No tool calls in current response - THIS IS A PROBLEM!
             if tool_message_count > 0:
                 # Tools were executed previously, this should be the final report
@@ -154,15 +165,15 @@ Remember: Call ALL THREE tools - get_twitter_mentions, get_stocktwits_sentiment,
             else:
                 # CRITICAL ERROR: LLM failed to call tools - force error message
                 logger.error(f"❌ SOCIAL_ANALYST: NO TOOLS CALLED - Report will be marked as failed")
-                report = f"⚠️ WARNING: Social sentiment analysis conducted without current social data for {ticker}. Tool execution failed."
+                report = f"⚠️ Social sentiment analysis for {ticker} completed without live social media data. Please check social media tool availability."
                 logger.warning(f"🚨 SOCIAL_ANALYST: Completed WITHOUT tool calls!")
             
             # Apply token limits
             report = get_token_limiter().truncate_response(report, "Social Media Analyst")
         else:
             # Current response contains tool calls - tools need to be executed first
-            logger.info(f"⚡ SOCIAL_ANALYST: LLM requested {len(result.tool_calls)} tool calls")
-            tool_names = [tc.get('name', 'unknown') for tc in result.tool_calls]
+            logger.info(f"⚡ SOCIAL_ANALYST: LLM requested {tool_calls_count} tool calls")
+            tool_names = [tc.get('name', 'unknown') for tc in tool_calls]
             logger.info(f"⚡ SOCIAL_ANALYST: Tools requested: {tool_names}")
             report = ""  # No report yet, tools need to be executed first
 

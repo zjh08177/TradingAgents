@@ -163,17 +163,11 @@ def process_reddit_sentiment(
     - Recent vs old posts
     """
     if not posts:
-        return {
-            "ticker": ticker,
-            "sentiment_score": 0.5,  # Neutral when no data
-            "post_count": 0,
-            "avg_score": 0,
-            "avg_comments": 0,
-            "top_posts": [],
-            "subreddit_breakdown": subreddit_breakdown,
-            "confidence": "low",
-            "error": "No posts found"
-        }
+        from .empty_response_handler import create_empty_reddit_response
+        return create_empty_reddit_response(
+            ticker=ticker,
+            reason="No Reddit posts found for ticker"
+        )
     
     # Calculate metrics
     total_score = sum(p.get("score", 0) for p in posts)

@@ -1,0 +1,2494 @@
+{
+  "metadata": {
+    "trace_id": "1f078d9a-3ac4-617a-b99f-30f442f4b479",
+    "analysis_timestamp": "2025-08-13T23:43:52.872435",
+    "analysis_version": "optimized_v1.0",
+    "estimated_size_bytes": 105196,
+    "optimization_applied": false
+  },
+  "analysis": {
+    "trace_id": "1f078d9a-3ac4-617a-b99f-30f442f4b479",
+    "summary": {
+      "name": "trading_agents",
+      "status": "pending",
+      "total_runs": 9,
+      "analyzed_runs": 9,
+      "run_types": {
+        "chain": 9
+      },
+      "status_distribution": {
+        "pending": 2,
+        "success": 7
+      },
+      "duration_seconds": null,
+      "duration_formatted": "Unknown",
+      "has_errors": false,
+      "error_count": 0
+    },
+    "performance_metrics": {
+      "total_tokens": 9175,
+      "prompt_tokens": 8430,
+      "completion_tokens": 745,
+      "token_efficiency": 0.08837485172004746,
+      "child_run_count": 9,
+      "total_run_count": 9,
+      "success_rate": 70.0,
+      "successful_runs": 7,
+      "failed_runs": 3,
+      "avg_run_duration": 4.510621857142858,
+      "min_run_duration": 0.000928,
+      "max_run_duration": 26.696688,
+      "total_run_time": 31.574353000000002,
+      "timing_samples": 7
+    },
+    "error_analysis": {
+      "total_errors": 0,
+      "error_categories": {},
+      "errors": [],
+      "has_critical_errors": false,
+      "has_blocking_io": false,
+      "blocking_io_count": 0,
+      "blocking_io_errors": []
+    },
+    "tool_usage": {
+      "total_tool_calls": 0,
+      "unique_tools": 0,
+      "tool_calls": {},
+      "tool_errors": {},
+      "tool_performance": {},
+      "overall_tool_success_rate": 100.0,
+      "most_used_tool": null,
+      "most_problematic_tool": null
+    },
+    "timing_analysis": {
+      "timing_by_type": {
+        "chain": {
+          "count": 7,
+          "total_time": 31.574353000000002,
+          "avg_time": 4.510621857142858,
+          "max_time": 26.696688,
+          "min_time": 0.000928
+        }
+      },
+      "bottlenecks": [],
+      "has_bottlenecks": false
+    },
+    "token_analysis": {
+      "total_tokens": 9175,
+      "prompt_tokens": 8430,
+      "completion_tokens": 745,
+      "prompt_to_completion_ratio": 11.315436241610739,
+      "tokens_per_second": 0,
+      "target_comparison": {
+        "total_tokens_vs_target": 22.9375,
+        "under_token_target": true,
+        "runtime_vs_target": 0,
+        "under_runtime_target": false
+      },
+      "efficiency_rating": "Unknown",
+      "detailed_breakdown": {
+        "by_agent": {
+          "bull_researcher": {
+            "total": 4053,
+            "prompt": 0,
+            "completion": 0,
+            "runs": 1
+          },
+          "bear_researcher": {
+            "total": 4021,
+            "prompt": 0,
+            "completion": 0,
+            "runs": 1
+          },
+          "fundamentals_analyst": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "runs": 1
+          },
+          "news_analyst": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "runs": 1
+          },
+          "social_analyst": {
+            "total": 1101,
+            "prompt": 0,
+            "completion": 0,
+            "runs": 1
+          },
+          "market_analyst": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "runs": 1
+          }
+        },
+        "by_tool": {},
+        "by_run_type": {
+          "chain": {
+            "total": 18350,
+            "count": 10
+          }
+        },
+        "top_consumers": [
+          [
+            "bull_researcher",
+            4053
+          ],
+          [
+            "bear_researcher",
+            4021
+          ],
+          [
+            "social_analyst",
+            1101
+          ],
+          [
+            "fundamentals_analyst",
+            0
+          ],
+          [
+            "news_analyst",
+            0
+          ],
+          [
+            "market_analyst",
+            0
+          ]
+        ]
+      }
+    },
+    "quality_metrics": {
+      "success_rate": 70.0,
+      "error_rate": 0.0,
+      "completeness_rate": 70.0,
+      "base_quality_score": 79.0,
+      "blocking_io_penalty": 0,
+      "quality_score": 79.0,
+      "quality_grade": "C+",
+      "total_runs_analyzed": 10,
+      "has_blocking_io": false,
+      "blocking_io_count": 0
+    },
+    "recommendations": [
+      {
+        "category": "Quality",
+        "priority": "High",
+        "issue": "Success rate is 70.0% (below 95% target)",
+        "recommendation": "Improve error handling and retry logic",
+        "details": "Quality grade: C+"
+      },
+      {
+        "category": "Performance",
+        "priority": "High",
+        "issue": "Runtime exceeds 120s target",
+        "recommendation": "Optimize execution speed and parallel processing",
+        "details": "Runtime is 0.0% of target"
+      }
+    ],
+    "timestamp": "2025-08-13T23:43:52.872435",
+    "analysis_version": "optimized_v1.0"
+  },
+  "trace_summary": {
+    "id": "1f078d9a-3ac4-617a-b99f-30f442f4b479",
+    "name": "trading_agents",
+    "status": "pending",
+    "duration": null,
+    "total_tokens": 9175,
+    "child_runs_count": 9,
+    "has_errors": false
+  },
+  "trace_data": {
+    "id": "1f078d9a-3ac4-617a-b99f-30f442f4b479",
+    "name": "trading_agents",
+    "run_type": "chain",
+    "status": "pending",
+    "start_time": "2025-08-14T06:41:00.678867",
+    "end_time": null,
+    "total_tokens": 9175,
+    "prompt_tokens": 8430,
+    "completion_tokens": 745,
+    "error": null,
+    "inputs_summary": {
+      "company_of_interest": "RDDT",
+      "trade_date": "2025-08-13"
+    },
+    "outputs_summary": {},
+    "child_runs": [
+      {
+        "id": "9f856aea-d1a4-487c-871a-819b416a0fa8",
+        "name": "bull_researcher",
+        "run_type": "chain",
+        "status": "pending",
+        "start_time": "2025-08-14T06:41:27.420203",
+        "end_time": null,
+        "total_tokens": 4053,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "step": "aggregation_complete",
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: RDDT\n\u26a0\ufe0f Market analysis unavailable in LangGraph environment\n============================================================\n\nDue to pandas circular import restrictions in LangGraph,\nmarket data and technical indicators cannot be calculated.\n\nPlease use debug_local.sh for full market analysis.\n\nAnalysis Date: 2025-08-13 23:41:00\nStatus: LangGraph environment - pandas disabled",
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - RDDT\n\nGenerated: 2025-08-13 23:41:04\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 20 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 3.379s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why Reddit Stock Skyrocketed This Week\nSource: Yahoo Finance\nDate: 3 days ago\nURL: https://finance.yahoo.com/news/why-re...",
+            "full_length": 14056,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts co...",
+            "full_length": 3120,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: RDDT\n\u26a1 Data fetched in 1.381s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Reddit Inc\n  Industry: Media\n  Market Cap: $43,939M\n  Share Outstanding: 185M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 203.0963\n  P/B Ratio: 11.6395\n  EV/FCF: 108.8691\n  ROE: 9.93%\n  ROA: 9.04%\n  Debt/Equity: 0\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $234.77\n  Mean Target: $281.72\n  Low Target: $258.25\n  High Target: $305.20\n  Analysts: 32\n\n========...",
+            "full_length": 672,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts contribute highly to the score (0.991)\n- Twitter: 2 mentions are less impactful (0.746)\n- StockTwits: 30 messages provide additional insight (0.5)\n\n**Weighted Sentiment Score Calculation**:\n\\[\n\\text{Overall Sentiment Score} = \\frac{(0.991 \\times 14) + (0.746 \\times 2) + (0.5 \\times 30)}{14 + 2 + 30} \n\\]\n\\[\n\\text{Overall Sentiment Score} = \\frac{(13.874) + (1.492) + (15)}{46} \\approx \\frac{30.366}{46} \\approx 0.659\n\\]\n\n**Final Overall Sentiment Score**: **0.659**\n\n#### 2. Confidence Level\nGiven that all three platforms provided actual data, albeit with varying quantities and qualities:\n\n- **Reddit** shows high confidence with a robust dataset.\n- **Twitter** has medium confidence due to the limited mentions, despite being bullish.\n- **StockTwits** also shows high confidence but presents a more neutral sentiment with 40% bullish.\n\n**Adjusted Confidence Level**: **Medium**, due to the limited data from Twitter.\n\n#### 3. Sentiment Trend\n- **Reddit** sentiment is strongly bullish (0.991), indicating a rising trend.\n- **Twitter** sentiment is bullish (0.746) but with lower weight.\n- **StockTwits** sentiment is neutral with a score of 0.5, suggesting a stable but less enthusiastic overall outlook.\n\n**Trend Determination**: \nRecent activity on Reddit suggests a strong upward movement despite the neutral StockTwits sentiment.\n\n**Sentiment Trend**: **Rising**\n\n#### 4. Top 3 Key Insights\n1. **Dominant Sentiment on Reddit**: The high sentiment score from Reddit (0.991) indicates strong positive sentiment and engagement regarding RDDT.\n2. **Limited Twitter Engagement**: The low number of mentions (only 2) on Twitter suggests limited engagement, which may not accurately reflect the overall market sentiment.\n3. **StockTwits Moderation**: While StockTwits has a higher message count (30), the sentiment score of 0.5 indicates a more cautious approach, with 40% bullish and 13.3% bearish.\n\n#### 5. Trading Signal\nConsidering the strong bullish sentiment on Reddit along with high confidence, the overall sentiment score is relatively positive. The bullish signals from Twitter and the moderate cooldown in StockTwits suggests a strong interest but with a potential caution from some traders.\n\n**Trading Signal**: **BUY** \n\n**Rationale**: The overwhelming positive sentiment from Reddit gives a strong signal for buying, and while Twitter indicates some uncertainty, the overall combined social media sentiment remains bullish and rising, suggesting potential upside for RDDT. Caution is advised, especially considering the mixed message from StockTwits, but the influence of high engagement on Reddit prevails.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--a95b2302-6dd0-41ab-a918-8dd481cea6b0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 26.691079139709473
+          },
+          "parallel_start_time": 1755153660.708896,
+          "parallel_end_time": 1755153687.4129229,
+          "total_parallel_time": 26.70402693748474,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              "market"
+            ]
+          },
+          "aggregation_status": "success",
+          "successful_analysts_count": 3,
+          "aggregation_ready": true,
+          "parallel_execution_metrics": {
+            "total_time": 26.70402693748474,
+            "successful_analysts": 3,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 26.691079139709473
+            }
+          },
+          "speedup_factor": 1.0,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            },
+            "consensus_reached": false
+          }
+        },
+        "outputs_summary": {}
+      },
+      {
+        "id": "7c32ebb5-6813-4427-93cb-3dc3fdc651df",
+        "name": "bear_researcher",
+        "run_type": "chain",
+        "status": "pending",
+        "start_time": "2025-08-14T06:41:27.419867",
+        "end_time": null,
+        "total_tokens": 4021,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "step": "aggregation_complete",
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: RDDT\n\u26a0\ufe0f Market analysis unavailable in LangGraph environment\n============================================================\n\nDue to pandas circular import restrictions in LangGraph,\nmarket data and technical indicators cannot be calculated.\n\nPlease use debug_local.sh for full market analysis.\n\nAnalysis Date: 2025-08-13 23:41:00\nStatus: LangGraph environment - pandas disabled",
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - RDDT\n\nGenerated: 2025-08-13 23:41:04\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 20 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 3.379s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why Reddit Stock Skyrocketed This Week\nSource: Yahoo Finance\nDate: 3 days ago\nURL: https://finance.yahoo.com/news/why-re...",
+            "full_length": 14056,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts co...",
+            "full_length": 3120,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: RDDT\n\u26a1 Data fetched in 1.381s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Reddit Inc\n  Industry: Media\n  Market Cap: $43,939M\n  Share Outstanding: 185M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 203.0963\n  P/B Ratio: 11.6395\n  EV/FCF: 108.8691\n  ROE: 9.93%\n  ROA: 9.04%\n  Debt/Equity: 0\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $234.77\n  Mean Target: $281.72\n  Low Target: $258.25\n  High Target: $305.20\n  Analysts: 32\n\n========...",
+            "full_length": 672,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts contribute highly to the score (0.991)\n- Twitter: 2 mentions are less impactful (0.746)\n- StockTwits: 30 messages provide additional insight (0.5)\n\n**Weighted Sentiment Score Calculation**:\n\\[\n\\text{Overall Sentiment Score} = \\frac{(0.991 \\times 14) + (0.746 \\times 2) + (0.5 \\times 30)}{14 + 2 + 30} \n\\]\n\\[\n\\text{Overall Sentiment Score} = \\frac{(13.874) + (1.492) + (15)}{46} \\approx \\frac{30.366}{46} \\approx 0.659\n\\]\n\n**Final Overall Sentiment Score**: **0.659**\n\n#### 2. Confidence Level\nGiven that all three platforms provided actual data, albeit with varying quantities and qualities:\n\n- **Reddit** shows high confidence with a robust dataset.\n- **Twitter** has medium confidence due to the limited mentions, despite being bullish.\n- **StockTwits** also shows high confidence but presents a more neutral sentiment with 40% bullish.\n\n**Adjusted Confidence Level**: **Medium**, due to the limited data from Twitter.\n\n#### 3. Sentiment Trend\n- **Reddit** sentiment is strongly bullish (0.991), indicating a rising trend.\n- **Twitter** sentiment is bullish (0.746) but with lower weight.\n- **StockTwits** sentiment is neutral with a score of 0.5, suggesting a stable but less enthusiastic overall outlook.\n\n**Trend Determination**: \nRecent activity on Reddit suggests a strong upward movement despite the neutral StockTwits sentiment.\n\n**Sentiment Trend**: **Rising**\n\n#### 4. Top 3 Key Insights\n1. **Dominant Sentiment on Reddit**: The high sentiment score from Reddit (0.991) indicates strong positive sentiment and engagement regarding RDDT.\n2. **Limited Twitter Engagement**: The low number of mentions (only 2) on Twitter suggests limited engagement, which may not accurately reflect the overall market sentiment.\n3. **StockTwits Moderation**: While StockTwits has a higher message count (30), the sentiment score of 0.5 indicates a more cautious approach, with 40% bullish and 13.3% bearish.\n\n#### 5. Trading Signal\nConsidering the strong bullish sentiment on Reddit along with high confidence, the overall sentiment score is relatively positive. The bullish signals from Twitter and the moderate cooldown in StockTwits suggests a strong interest but with a potential caution from some traders.\n\n**Trading Signal**: **BUY** \n\n**Rationale**: The overwhelming positive sentiment from Reddit gives a strong signal for buying, and while Twitter indicates some uncertainty, the overall combined social media sentiment remains bullish and rising, suggesting potential upside for RDDT. Caution is advised, especially considering the mixed message from StockTwits, but the influence of high engagement on Reddit prevails.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--a95b2302-6dd0-41ab-a918-8dd481cea6b0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 26.691079139709473
+          },
+          "parallel_start_time": 1755153660.708896,
+          "parallel_end_time": 1755153687.4129229,
+          "total_parallel_time": 26.70402693748474,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              "market"
+            ]
+          },
+          "aggregation_status": "success",
+          "successful_analysts_count": 3,
+          "aggregation_ready": true,
+          "parallel_execution_metrics": {
+            "total_time": 26.70402693748474,
+            "successful_analysts": 3,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 26.691079139709473
+            }
+          },
+          "speedup_factor": 1.0,
+          "send_api_enabled": true,
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            },
+            "consensus_reached": false
+          }
+        },
+        "outputs_summary": {}
+      },
+      {
+        "id": "fb0b3102-f7d0-443e-89f2-b9af11687254",
+        "name": "research_debate_controller",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T06:41:27.416779",
+        "end_time": "2025-08-14T06:41:27.417707",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts contribute highly to the score (0.991)\n- Twitter: 2 mentions are less impactful (0.746)\n- StockTwits: 30 messages provide additional insight (0.5)\n\n**Weighted Sentiment Score Calculation**:\n\\[\n\\text{Overall Sentiment Score} = \\frac{(0.991 \\times 14) + (0.746 \\times 2) + (0.5 \\times 30)}{14 + 2 + 30} \n\\]\n\\[\n\\text{Overall Sentiment Score} = \\frac{(13.874) + (1.492) + (15)}{46} \\approx \\frac{30.366}{46} \\approx 0.659\n\\]\n\n**Final Overall Sentiment Score**: **0.659**\n\n#### 2. Confidence Level\nGiven that all three platforms provided actual data, albeit with varying quantities and qualities:\n\n- **Reddit** shows high confidence with a robust dataset.\n- **Twitter** has medium confidence due to the limited mentions, despite being bullish.\n- **StockTwits** also shows high confidence but presents a more neutral sentiment with 40% bullish.\n\n**Adjusted Confidence Level**: **Medium**, due to the limited data from Twitter.\n\n#### 3. Sentiment Trend\n- **Reddit** sentiment is strongly bullish (0.991), indicating a rising trend.\n- **Twitter** sentiment is bullish (0.746) but with lower weight.\n- **StockTwits** sentiment is neutral with a score of 0.5, suggesting a stable but less enthusiastic overall outlook.\n\n**Trend Determination**: \nRecent activity on Reddit suggests a strong upward movement despite the neutral StockTwits sentiment.\n\n**Sentiment Trend**: **Rising**\n\n#### 4. Top 3 Key Insights\n1. **Dominant Sentiment on Reddit**: The high sentiment score from Reddit (0.991) indicates strong positive sentiment and engagement regarding RDDT.\n2. **Limited Twitter Engagement**: The low number of mentions (only 2) on Twitter suggests limited engagement, which may not accurately reflect the overall market sentiment.\n3. **StockTwits Moderation**: While StockTwits has a higher message count (30), the sentiment score of 0.5 indicates a more cautious approach, with 40% bullish and 13.3% bearish.\n\n#### 5. Trading Signal\nConsidering the strong bullish sentiment on Reddit along with high confidence, the overall sentiment score is relatively positive. The bullish signals from Twitter and the moderate cooldown in StockTwits suggests a strong interest but with a potential caution from some traders.\n\n**Trading Signal**: **BUY** \n\n**Rationale**: The overwhelming positive sentiment from Reddit gives a strong signal for buying, and while Twitter indicates some uncertainty, the overall combined social media sentiment remains bullish and rising, suggesting potential upside for RDDT. Caution is advised, especially considering the mixed message from StockTwits, but the influence of high engagement on Reddit prevails.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--a95b2302-6dd0-41ab-a918-8dd481cea6b0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: RDDT\n\u26a0\ufe0f Market analysis unavailable in LangGraph environment\n============================================================\n\nDue to pandas circular import restrictions in LangGraph,\nmarket data and technical indicators cannot be calculated.\n\nPlease use debug_local.sh for full market analysis.\n\nAnalysis Date: 2025-08-13 23:41:00\nStatus: LangGraph environment - pandas disabled",
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts co...",
+            "full_length": 3120,
+            "type": "truncated_text"
+          },
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - RDDT\n\nGenerated: 2025-08-13 23:41:04\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 20 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 3.379s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why Reddit Stock Skyrocketed This Week\nSource: Yahoo Finance\nDate: 3 days ago\nURL: https://finance.yahoo.com/news/why-re...",
+            "full_length": 14056,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: RDDT\n\u26a1 Data fetched in 1.381s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Reddit Inc\n  Industry: Media\n  Market Cap: $43,939M\n  Share Outstanding: 185M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 203.0963\n  P/B Ratio: 11.6395\n  EV/FCF: 108.8691\n  ROE: 9.93%\n  ROA: 9.04%\n  Debt/Equity: 0\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $234.77\n  Mean Target: $281.72\n  Low Target: $258.25\n  High Target: $305.20\n  Analysts: 32\n\n========...",
+            "full_length": 672,
+            "type": "truncated_text"
+          },
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "aggregation_ready": true
+        },
+        "outputs_summary": {
+          "research_debate_state": {
+            "current_round": 2,
+            "max_rounds": 1,
+            "debate_history": {
+              "count": 0,
+              "type": "list",
+              "sample": []
+            },
+            "consensus_reached": false
+          }
+        }
+      },
+      {
+        "id": "5d7f7bfb-5f84-439c-99b7-1d3ee83c71de",
+        "name": "enhanced_aggregator",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T06:41:27.412275",
+        "end_time": "2025-08-14T06:41:27.414873",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: RDDT\n\u26a0\ufe0f Market analysis unavailable in LangGraph environment\n============================================================\n\nDue to pandas circular import restrictions in LangGraph,\nmarket data and technical indicators cannot be calculated.\n\nPlease use debug_local.sh for full market analysis.\n\nAnalysis Date: 2025-08-13 23:41:00\nStatus: LangGraph environment - pandas disabled",
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - RDDT\n\nGenerated: 2025-08-13 23:41:04\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 20 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 3.379s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why Reddit Stock Skyrocketed This Week\nSource: Yahoo Finance\nDate: 3 days ago\nURL: https://finance.yahoo.com/news/why-re...",
+            "full_length": 14056,
+            "type": "truncated_text"
+          },
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts co...",
+            "full_length": 3120,
+            "type": "truncated_text"
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: RDDT\n\u26a1 Data fetched in 1.381s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Reddit Inc\n  Industry: Media\n  Market Cap: $43,939M\n  Share Outstanding: 185M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 203.0963\n  P/B Ratio: 11.6395\n  EV/FCF: 108.8691\n  ROE: 9.93%\n  ROA: 9.04%\n  Debt/Equity: 0\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $234.77\n  Mean Target: $281.72\n  Low Target: $258.25\n  High Target: $305.20\n  Analysts: 32\n\n========...",
+            "full_length": 672,
+            "type": "truncated_text"
+          },
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "completed",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts contribute highly to the score (0.991)\n- Twitter: 2 mentions are less impactful (0.746)\n- StockTwits: 30 messages provide additional insight (0.5)\n\n**Weighted Sentiment Score Calculation**:\n\\[\n\\text{Overall Sentiment Score} = \\frac{(0.991 \\times 14) + (0.746 \\times 2) + (0.5 \\times 30)}{14 + 2 + 30} \n\\]\n\\[\n\\text{Overall Sentiment Score} = \\frac{(13.874) + (1.492) + (15)}{46} \\approx \\frac{30.366}{46} \\approx 0.659\n\\]\n\n**Final Overall Sentiment Score**: **0.659**\n\n#### 2. Confidence Level\nGiven that all three platforms provided actual data, albeit with varying quantities and qualities:\n\n- **Reddit** shows high confidence with a robust dataset.\n- **Twitter** has medium confidence due to the limited mentions, despite being bullish.\n- **StockTwits** also shows high confidence but presents a more neutral sentiment with 40% bullish.\n\n**Adjusted Confidence Level**: **Medium**, due to the limited data from Twitter.\n\n#### 3. Sentiment Trend\n- **Reddit** sentiment is strongly bullish (0.991), indicating a rising trend.\n- **Twitter** sentiment is bullish (0.746) but with lower weight.\n- **StockTwits** sentiment is neutral with a score of 0.5, suggesting a stable but less enthusiastic overall outlook.\n\n**Trend Determination**: \nRecent activity on Reddit suggests a strong upward movement despite the neutral StockTwits sentiment.\n\n**Sentiment Trend**: **Rising**\n\n#### 4. Top 3 Key Insights\n1. **Dominant Sentiment on Reddit**: The high sentiment score from Reddit (0.991) indicates strong positive sentiment and engagement regarding RDDT.\n2. **Limited Twitter Engagement**: The low number of mentions (only 2) on Twitter suggests limited engagement, which may not accurately reflect the overall market sentiment.\n3. **StockTwits Moderation**: While StockTwits has a higher message count (30), the sentiment score of 0.5 indicates a more cautious approach, with 40% bullish and 13.3% bearish.\n\n#### 5. Trading Signal\nConsidering the strong bullish sentiment on Reddit along with high confidence, the overall sentiment score is relatively positive. The bullish signals from Twitter and the moderate cooldown in StockTwits suggests a strong interest but with a potential caution from some traders.\n\n**Trading Signal**: **BUY** \n\n**Rationale**: The overwhelming positive sentiment from Reddit gives a strong signal for buying, and while Twitter indicates some uncertainty, the overall combined social media sentiment remains bullish and rising, suggesting potential upside for RDDT. Caution is advised, especially considering the mixed message from StockTwits, but the influence of high engagement on Reddit prevails.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--a95b2302-6dd0-41ab-a918-8dd481cea6b0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 26.691079139709473
+          },
+          "parallel_start_time": 1755153660.708896,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "parallel_end_time": 1755153687.4129229,
+          "total_parallel_time": 26.70402693748474,
+          "aggregation_status": "success",
+          "aggregation_ready": true,
+          "successful_analysts_count": 3,
+          "speedup_factor": 1.0,
+          "step": "aggregation_complete",
+          "parallel_execution_metrics": {
+            "total_time": 26.70402693748474,
+            "successful_analysts": 3,
+            "total_tool_calls": 3,
+            "speedup_factor": 1.0,
+            "individual_times": {
+              "social": 26.691079139709473
+            }
+          },
+          "failed_analysts": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              "market"
+            ]
+          },
+          "investment_debate_state": {
+            "bull_history": "",
+            "bear_history": "",
+            "history": "",
+            "current_response": "",
+            "judge_decision": "",
+            "count": 0
+          },
+          "risk_debate_state": {
+            "risky_history": "",
+            "safe_history": "",
+            "neutral_history": "",
+            "history": "",
+            "latest_speaker": "",
+            "current_risky_response": "",
+            "current_safe_response": "",
+            "current_neutral_response": "",
+            "judge_decision": "",
+            "count": 0
+          }
+        }
+      },
+      {
+        "id": "b2526c12-7fde-4ba6-b1c9-0d0f7659b721",
+        "name": "fundamentals_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T06:41:00.713273",
+        "end_time": "2025-08-14T06:41:02.144560",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755153660.708896,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_report": {
+            "text_preview": "\ud83d\udcca FUNDAMENTALS ANALYSIS: RDDT\n\u26a1 Data fetched in 1.381s (Ultra-Fast Mode)\n============================================================\n\n\ud83c\udfe2 COMPANY PROFILE:\n  Name: Reddit Inc\n  Industry: Media\n  Market Cap: $43,939M\n  Share Outstanding: 185M\n\n\ud83d\udcc8 KEY VALUATION METRICS:\n  P/E Ratio: 203.0963\n  P/B Ratio: 11.6395\n  EV/FCF: 108.8691\n  ROE: 9.93%\n  ROA: 9.04%\n  Debt/Equity: 0\n\n\ud83c\udfaf PRICE TARGETS:\n  Current: $234.77\n  Mean Target: $281.72\n  Low Target: $258.25\n  High Target: $305.20\n  Analysts: 32\n\n========...",
+            "full_length": 672,
+            "type": "truncated_text"
+          },
+          "fundamentals_data": {
+            "ticker": "RDDT",
+            "profile": {
+              "country": "US",
+              "currency": "USD",
+              "estimateCurrency": "USD",
+              "exchange": "NEW YORK STOCK EXCHANGE, INC.",
+              "finnhubIndustry": "Media",
+              "ipo": "2024-03-21",
+              "logo": "https://static2.finnhub.io/file/publicdatany/finnhubimage/stock_logo/950440227326.png",
+              "marketCapitalization": 43938.65937835738,
+              "name": "Reddit Inc",
+              "phone": "14154948016",
+              "shareOutstanding": 184.52,
+              "ticker": "RDDT",
+              "weburl": "https://www.redditinc.com/"
+            },
+            "metrics": {
+              "metric": {
+                "10DayAverageTradingVolume": 10.76737,
+                "13WeekPriceReturnDaily": 106.5462,
+                "26WeekPriceReturnDaily": 1.2932,
+                "3MonthADReturnStd": 68.90293,
+                "3MonthAverageTradingVolume": 8.28108,
+                "52WeekHigh": 230.41,
+                "52WeekHighDate": "2025-02-10",
+                "52WeekLow": 50.8,
+                "52WeekLowDate": "2024-08-12",
+                "52WeekPriceReturnDaily": 323.3982,
+                "5DayPriceReturnDaily": 5.2676,
+                "assetTurnoverAnnual": 0.5565,
+                "assetTurnoverTTM": 0.6966,
+                "beta": 1.9743038,
+                "bookValuePerShareAnnual": 11.8168,
+                "bookValuePerShareQuarterly": 12.7595,
+                "cashFlowPerShareAnnual": 1.1969,
+                "cashFlowPerShareQuarterly": 2.1213,
+                "cashPerSharePerShareAnnual": 10.2088,
+                "cashPerSharePerShareQuarterly": 11.0113,
+                "currentEv/freeCashFlowAnnual": 200.1881,
+                "currentEv/freeCashFlowTTM": 108.8691,
+                "currentRatioAnnual": 12.6312,
+                "currentRatioQuarterly": 11.9998,
+                "ebitdPerShareAnnual": -3.2279,
+                "ebitdPerShareTTM": 1.189,
+                "enterpriseValue": 43204.6,
+                "epsAnnual": -3.329,
+                "epsBasicExclExtraItemsAnnual": -3.329,
+                "epsBasicExclExtraItemsTTM": 1.1325,
+                "epsExclExtraItemsAnnual": -3.329,
+                "epsExclExtraItemsTTM": 1.1325,
+                "epsGrowth3Y": null,
+                "epsGrowthQuarterlyYoy": null,
+                "epsGrowthTTMYoy": null,
+                "epsInclExtraItemsAnnual": -3.329,
+                "epsInclExtraItemsTTM": 1.1325,
+                "epsNormalizedAnnual": -3.329,
+                "epsTTM": 1.1325,
+                "forwardPE": 132.65145839195492,
+                "grossMargin5Y": 84.39,
+                "grossMarginAnnual": 90.49,
+                "grossMarginTTM": 91.04,
+                "marketCapitalization": 43938.66,
+                "monthToDatePriceReturnDaily": 39.4981,
+                "netIncomeEmployeeAnnual": -0.2169,
+                "netIncomeEmployeeTTM": 0.0969,
+                "netProfitMargin5Y": -24.91,
+                "netProfitMarginAnnual": -37.25,
+                "netProfitMarginTTM": 12.97,
+                "operatingMargin5Y": -27.98,
+                "operatingMarginAnnual": -43.11,
+                "operatingMarginTTM": 7.87,
+                "pb": 18.4076,
+                "pbAnnual": 13.4678,
+                "pbQuarterly": 11.6395,
+                "pcfShareAnnual": 197.8613,
+                "pcfShareTTM": 109.7018,
+                "peAnnual": null,
+                "peBasicExclExtraTTM": 203.0963,
+                "peExclExtraTTM": 203.0963,
+                "peInclExtraTTM": 203.0963,
+                "peNormalizedAnnual": null,
+                "peTTM": 203.0963,
+                "pfcfShareAnnual": 203.5894,
+                "pfcfShareTTM": 110.7188,
+                "pretaxMargin5Y": -24.79,
+                "pretaxMarginAnnual": -37.32,
+                "pretaxMarginTTM": 12.78,
+                "priceRelativeToS&P50013Week": 92.6627,
+                "priceRelativeToS&P50026Week": -5.0737,
+                "priceRelativeToS&P5004Week": 52.2764,
+                "priceRelativeToS&P50052Week": 302.8162,
+                "priceRelativeToS&P500Ytd": 27.4065,
+                "psAnnual": 33.7936,
+                "psTTM": 26.3414,
+                "ptbvAnnual": 13.6304,
+                "ptbvQuarterly": 11.7402,
+                "quickRatioAnnual": 12.5484,
+                "quickRatioQuarterly": 11.8893,
+                "receivablesTurnoverAnnual": 4.3718,
+                "receivablesTurnoverTTM": 5.1537,
+                "revenueEmployeeAnnual": 0.5823,
+                "revenueEmployeeTTM": 0.747,
+                "revenueGrowth3Y": 38.93,
+                "revenueGrowthQuarterlyYoy": 77.69,
+                "revenueGrowthTTMYoy": 69.97,
+                "revenuePerShareAnnual": 8.9378,
+                "revenuePerShareTTM": 8.3602,
+                "roa5Y": -11.08,
+                "roaRfy": -20.73,
+                "roaTTM": 9.04,
+                "roe5Y": -12.17,
+                "roeRfy": -22.73,
+                "roeTTM": 9.93,
+                "roi5Y": -12.17,
+                "roiAnnual": -22.73,
+                "roiTTM": 9.93,
+                "tangibleBookValuePerShareAnnual": 11.6758,
+                "tangibleBookValuePerShareQuarterly": 12.6501,
+                "totalDebt/totalEquityAnnual": 0,
+                "totalDebt/totalEquityQuarterly": 0,
+                "yearToDatePriceReturnDaily": 37.0656
+              },
+              "metricType": "all",
+              "series": {
+                "annual": {
+                  "bookValue": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 2130.749
+                      }
+                    ]
+                  },
+                  "cashRatio": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 3.193269099668227
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 3.003488807366924
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 4.0937655579247965
+                      }
+                    ]
+                  },
+                  "currentRatio": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 12.6312
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 11.078
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 13.9392
+                      }
+                    ]
+                  },
+                  "ebitPerShare": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -3.8534
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.8816
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -1.0828
+                      }
+                    ]
+                  },
+                  "eps": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -3.329
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.5712
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.9972
+                      }
+                    ]
+                  },
+                  "ev": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 28134.42
+                      }
+                    ]
+                  },
+                  "fcfMargin": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.166
+                      }
+                    ]
+                  },
+                  "grossMargin": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.9049
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.8619
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.8428
+                      }
+                    ]
+                  },
+                  "inventoryTurnover": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalAsset": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalCapital": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalEquity": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "netDebtToTotalCapital": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2638
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.2785
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.2956
+                      }
+                    ]
+                  },
+                  "netDebtToTotalEquity": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2638
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.2785
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.2956
+                      }
+                    ]
+                  },
+                  "netMargin": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.3725
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.113
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.2378
+                      }
+                    ]
+                  },
+                  "operatingMargin": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.4311
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.1743
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.2582
+                      }
+                    ]
+                  },
+                  "payoutRatio": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pb": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 13.4678
+                      }
+                    ]
+                  },
+                  "pe": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": null
+                      }
+                    ]
+                  },
+                  "pfcf": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 132.965
+                      }
+                    ]
+                  },
+                  "pretaxMargin": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.3732
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.1082
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.2369
+                      }
+                    ]
+                  },
+                  "ps": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 22.0708
+                      }
+                    ]
+                  },
+                  "ptbv": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 13.6304
+                      }
+                    ]
+                  },
+                  "quickRatio": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 12.5484
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 10.9887
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 13.779
+                      }
+                    ]
+                  },
+                  "receivablesTurnover": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 4.3718
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 3.6775
+                      }
+                    ]
+                  },
+                  "roa": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2073
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.0569
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.0991
+                      }
+                    ]
+                  },
+                  "roe": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2273
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.063
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.1075
+                      }
+                    ]
+                  },
+                  "roic": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2273
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.063
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.1075
+                      }
+                    ]
+                  },
+                  "rotc": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2631
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": -0.0973
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": -0.1168
+                      }
+                    ]
+                  },
+                  "salesPerShare": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 8.9378
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 5.057
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 4.1933
+                      }
+                    ]
+                  },
+                  "sgaToSale": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0951
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0.1381
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0.1572
+                      }
+                    ]
+                  },
+                  "tangibleBookValue": {
+                    "count": 1,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 2105.325
+                      }
+                    ]
+                  },
+                  "totalDebtToEquity": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalAsset": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalCapital": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 0
+                      }
+                    ]
+                  },
+                  "totalRatio": {
+                    "count": 5,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2024-12-31",
+                        "v": 11.3512
+                      },
+                      {
+                        "period": "2023-12-31",
+                        "v": 10.2405
+                      },
+                      {
+                        "period": "2022-12-31",
+                        "v": 12.7688
+                      }
+                    ]
+                  }
+                },
+                "quarterly": {
+                  "assetTurnoverTTM": {
+                    "count": 9,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.6966
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.6427
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.6047
+                      }
+                    ]
+                  },
+                  "bookValue": {
+                    "count": 6,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 2386.98
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 2217.121
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 2130.749
+                      }
+                    ]
+                  },
+                  "cashRatio": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 3.4817460430392115
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 3.4028669153895974
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 3.193269099668227
+                      }
+                    ]
+                  },
+                  "currentRatio": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 11.9998
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 12.4647
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 12.6312
+                      }
+                    ]
+                  },
+                  "ebitPerShare": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.3394
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0194
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.2975
+                      }
+                    ]
+                  },
+                  "eps": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.4476
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.13
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.3997
+                      }
+                    ]
+                  },
+                  "ev": {
+                    "count": 6,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 27049.208
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 18341.138
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 28134.42
+                      }
+                    ]
+                  },
+                  "fcfMargin": {
+                    "count": 7,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.2218
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.3227
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.2084
+                      }
+                    ]
+                  },
+                  "fcfPerShareTTM": {
+                    "count": 9,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 2.1213
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.6997
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 1.1969
+                      }
+                    ]
+                  },
+                  "grossMargin": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.9081
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.9055
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.9255
+                      }
+                    ]
+                  },
+                  "inventoryTurnoverTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalAsset": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalCapital": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "longtermDebtTotalEquity": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "netDebtToTotalCapital": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": -0.3075
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": -0.2867
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2638
+                      }
+                    ]
+                  },
+                  "netDebtToTotalEquity": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": -0.3075
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": -0.2867
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2638
+                      }
+                    ]
+                  },
+                  "netMargin": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.1787
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0667
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1661
+                      }
+                    ]
+                  },
+                  "operatingMargin": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.1355
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0099
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1236
+                      }
+                    ]
+                  },
+                  "payoutRatioTTM": {
+                    "count": 0,
+                    "type": "list",
+                    "sample": []
+                  },
+                  "pb": {
+                    "count": 6,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 11.6395
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 8.5592
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 13.4678
+                      }
+                    ]
+                  },
+                  "peTTM": {
+                    "count": 2,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 128.4217
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 162.2675
+                      }
+                    ]
+                  },
+                  "pfcfTTM": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 70.0097
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 60.5891
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 132.965
+                      }
+                    ]
+                  },
+                  "pretaxMargin": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.1778
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0623
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.1636
+                      }
+                    ]
+                  },
+                  "psTTM": {
+                    "count": 3,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 16.6562
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 13.0911
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 22.0708
+                      }
+                    ]
+                  },
+                  "ptbv": {
+                    "count": 6,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 11.7402
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 8.6487
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 13.6304
+                      }
+                    ]
+                  },
+                  "quickRatio": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 11.8893
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 12.3328
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 12.5484
+                      }
+                    ]
+                  },
+                  "receivablesTurnoverTTM": {
+                    "count": 6,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 5.1537
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 5.3546
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 4.3718
+                      }
+                    ]
+                  },
+                  "roaTTM": {
+                    "count": 9,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0904
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0519
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2252
+                      }
+                    ]
+                  },
+                  "roeTTM": {
+                    "count": 9,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0993
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0569
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2471
+                      }
+                    ]
+                  },
+                  "roicTTM": {
+                    "count": 9,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0993
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0569
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.2471
+                      }
+                    ]
+                  },
+                  "rotcTTM": {
+                    "count": 9,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0603
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0159
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": -0.286
+                      }
+                    ]
+                  },
+                  "salesPerShare": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 2.5041
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 1.9494
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 2.4067
+                      }
+                    ]
+                  },
+                  "sgaToSale": {
+                    "count": 14,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0.0919
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0.0945
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0.0745
+                      }
+                    ]
+                  },
+                  "tangibleBookValue": {
+                    "count": 6,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 2366.511
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 2194.178
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 2105.325
+                      }
+                    ]
+                  },
+                  "totalDebtToEquity": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalAsset": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0
+                      }
+                    ]
+                  },
+                  "totalDebtToTotalCapital": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 0
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 0
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 0
+                      }
+                    ]
+                  },
+                  "totalRatio": {
+                    "count": 12,
+                    "type": "list",
+                    "sample": [
+                      {
+                        "period": "2025-06-30",
+                        "v": 10.734
+                      },
+                      {
+                        "period": "2025-03-31",
+                        "v": 11.0823
+                      },
+                      {
+                        "period": "2024-12-31",
+                        "v": 11.3512
+                      }
+                    ]
+                  }
+                }
+              },
+              "symbol": "RDDT"
+            },
+            "balance_sheet": {
+              "error": "You don't have access to this resource."
+            },
+            "income_statement": {
+              "error": "You don't have access to this resource."
+            },
+            "cash_flow": {
+              "error": "You don't have access to this resource."
+            },
+            "earnings_history": {
+              "count": 4,
+              "type": "list",
+              "sample": [
+                {
+                  "actual": 0.45,
+                  "estimate": 0.1928,
+                  "period": "2025-06-30",
+                  "quarter": 2,
+                  "surprise": 0.2572,
+                  "surprisePercent": 133.4025,
+                  "symbol": "RDDT",
+                  "year": 2025
+                },
+                {
+                  "actual": 0.13,
+                  "estimate": 0.0219,
+                  "period": "2025-03-31",
+                  "quarter": 1,
+                  "surprise": 0.1081,
+                  "surprisePercent": 493.6073,
+                  "symbol": "RDDT",
+                  "year": 2025
+                },
+                {
+                  "actual": 0.36,
+                  "estimate": 0.2568,
+                  "period": "2024-12-31",
+                  "quarter": 4,
+                  "surprise": 0.1032,
+                  "surprisePercent": 40.1869,
+                  "symbol": "RDDT",
+                  "year": 2024
+                }
+              ]
+            },
+            "earnings_calendar": {},
+            "revenue_estimates": {
+              "error": "You don't have access to this resource."
+            },
+            "recommendations": {
+              "count": 4,
+              "type": "list",
+              "sample": [
+                {
+                  "buy": 14,
+                  "hold": 9,
+                  "period": "2025-08-01",
+                  "sell": 1,
+                  "strongBuy": 8,
+                  "strongSell": 0,
+                  "symbol": "RDDT"
+                },
+                {
+                  "buy": 14,
+                  "hold": 9,
+                  "period": "2025-07-01",
+                  "sell": 1,
+                  "strongBuy": 7,
+                  "strongSell": 0,
+                  "symbol": "RDDT"
+                },
+                {
+                  "buy": 14,
+                  "hold": 8,
+                  "period": "2025-06-01",
+                  "sell": 1,
+                  "strongBuy": 7,
+                  "strongSell": 0,
+                  "symbol": "RDDT"
+                }
+              ]
+            },
+            "price_targets": {
+              "current": 234.77,
+              "mean": 281.724,
+              "high": 305.201,
+              "low": 258.24699999999996,
+              "analysts": 32,
+              "confidence": "MEDIUM",
+              "source": "Analyst Recommendations (Derived)",
+              "lastUpdated": "2025-08-01"
+            },
+            "insider_transactions": {
+              "data": {
+                "count": 871,
+                "type": "list",
+                "sample": [
+                  {
+                    "change": -100,
+                    "currency": "",
+                    "filingDate": "2025-08-07",
+                    "id": "0001924279-25-000003",
+                    "isDerivative": false,
+                    "name": "Reynolds Michelle Marie",
+                    "share": 34368,
+                    "source": "sec",
+                    "symbol": "RDDT",
+                    "transactionCode": "S",
+                    "transactionDate": "2025-08-05",
+                    "transactionPrice": 207.22
+                  },
+                  {
+                    "change": -500,
+                    "currency": "",
+                    "filingDate": "2025-08-07",
+                    "id": "0001924279-25-000003",
+                    "isDerivative": false,
+                    "name": "Reynolds Michelle Marie",
+                    "share": 34468,
+                    "source": "sec",
+                    "symbol": "RDDT",
+                    "transactionCode": "S",
+                    "transactionDate": "2025-08-05",
+                    "transactionPrice": 206.3
+                  },
+                  {
+                    "change": -200,
+                    "currency": "",
+                    "filingDate": "2025-08-07",
+                    "id": "0001924279-25-000003",
+                    "isDerivative": false,
+                    "name": "Reynolds Michelle Marie",
+                    "share": 34968,
+                    "source": "sec",
+                    "symbol": "RDDT",
+                    "transactionCode": "S",
+                    "transactionDate": "2025-08-05",
+                    "transactionPrice": 205.16
+                  }
+                ]
+              },
+              "symbol": "RDDT"
+            },
+            "institutional_ownership": {
+              "error": "You don't have access to this resource."
+            },
+            "dividends": {
+              "error": "You don't have access to this resource."
+            },
+            "splits": {
+              "error": "You don't have access to this resource."
+            },
+            "peers": {
+              "count": 10,
+              "type": "list",
+              "sample": [
+                "GOOGL",
+                "META",
+                "RDDT"
+              ]
+            },
+            "endpoints_fetched": 10,
+            "endpoints_total": 15,
+            "fetch_time": 0.767650842666626,
+            "timestamp": "2025-08-13T23:41:02.130801"
+          },
+          "sender": "Fundamentals Analyst CryptoAware",
+          "execution_time": 1.4002809524536133,
+          "fetch_time": 1.3809847831726074,
+          "asset_type": "stock"
+        }
+      },
+      {
+        "id": "83317a30-0848-4c15-8ec8-8ed12873cf48",
+        "name": "news_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T06:41:00.712923",
+        "end_time": "2025-08-14T06:41:04.114128",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755153660.708896,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "news_report": {
+            "text_preview": "# NEWS DATA COLLECTION - RDDT\n\nGenerated: 2025-08-13 23:41:04\nTrade Date: 2025-08-13\n\n## COLLECTION METRICS (TOKEN OPTIMIZED)\n- Articles Used: 15 (filtered for optimal token usage)\n- Serper: 15 articles (from 20 available)\n- Finnhub: 0 articles (from 0 available)\n- Collection Time: 3.379s\n- Token Optimization: Active (max 15 articles)\n\n## RAW ARTICLE DATA\n\n### Article 1\nTitle: Why Reddit Stock Skyrocketed This Week\nSource: Yahoo Finance\nDate: 3 days ago\nURL: https://finance.yahoo.com/news/why-re...",
+            "full_length": 14056,
+            "type": "truncated_text"
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "sender": "News Analyst (Ultra-Fast)"
+        }
+      },
+      {
+        "id": "2ebf249f-dd91-4f79-932d-fbb098ea7e5d",
+        "name": "social_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T06:41:00.712770",
+        "end_time": "2025-08-14T06:41:27.409458",
+        "total_tokens": 1101,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755153660.708896,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "social_analyst_status": "completed",
+          "sentiment_report": {
+            "text_preview": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts co...",
+            "full_length": 3120,
+            "type": "truncated_text"
+          },
+          "social_messages": {
+            "count": 1,
+            "type": "list",
+            "sample": [
+              {
+                "content": "### Comprehensive Social Media Analysis for RDDT\n\n#### 1. Overall Sentiment Score\nTo calculate the overall sentiment score, we will take into account the available sentiment scores from each social media platform:\n\n- **Reddit**: Sentiment Score = 0.991\n- **Twitter**: Sentiment Score = 0.746\n- **StockTwits**: Sentiment Score = 0.5\n\nSince the scores range from -1 to +1, we will average these weighted by the number of posts/messages when applicable.\n\nUsing a weighted approach:\n- Reddit: 14 posts contribute highly to the score (0.991)\n- Twitter: 2 mentions are less impactful (0.746)\n- StockTwits: 30 messages provide additional insight (0.5)\n\n**Weighted Sentiment Score Calculation**:\n\\[\n\\text{Overall Sentiment Score} = \\frac{(0.991 \\times 14) + (0.746 \\times 2) + (0.5 \\times 30)}{14 + 2 + 30} \n\\]\n\\[\n\\text{Overall Sentiment Score} = \\frac{(13.874) + (1.492) + (15)}{46} \\approx \\frac{30.366}{46} \\approx 0.659\n\\]\n\n**Final Overall Sentiment Score**: **0.659**\n\n#### 2. Confidence Level\nGiven that all three platforms provided actual data, albeit with varying quantities and qualities:\n\n- **Reddit** shows high confidence with a robust dataset.\n- **Twitter** has medium confidence due to the limited mentions, despite being bullish.\n- **StockTwits** also shows high confidence but presents a more neutral sentiment with 40% bullish.\n\n**Adjusted Confidence Level**: **Medium**, due to the limited data from Twitter.\n\n#### 3. Sentiment Trend\n- **Reddit** sentiment is strongly bullish (0.991), indicating a rising trend.\n- **Twitter** sentiment is bullish (0.746) but with lower weight.\n- **StockTwits** sentiment is neutral with a score of 0.5, suggesting a stable but less enthusiastic overall outlook.\n\n**Trend Determination**: \nRecent activity on Reddit suggests a strong upward movement despite the neutral StockTwits sentiment.\n\n**Sentiment Trend**: **Rising**\n\n#### 4. Top 3 Key Insights\n1. **Dominant Sentiment on Reddit**: The high sentiment score from Reddit (0.991) indicates strong positive sentiment and engagement regarding RDDT.\n2. **Limited Twitter Engagement**: The low number of mentions (only 2) on Twitter suggests limited engagement, which may not accurately reflect the overall market sentiment.\n3. **StockTwits Moderation**: While StockTwits has a higher message count (30), the sentiment score of 0.5 indicates a more cautious approach, with 40% bullish and 13.3% bearish.\n\n#### 5. Trading Signal\nConsidering the strong bullish sentiment on Reddit along with high confidence, the overall sentiment score is relatively positive. The bullish signals from Twitter and the moderate cooldown in StockTwits suggests a strong interest but with a potential caution from some traders.\n\n**Trading Signal**: **BUY** \n\n**Rationale**: The overwhelming positive sentiment from Reddit gives a strong signal for buying, and while Twitter indicates some uncertainty, the overall combined social media sentiment remains bullish and rising, suggesting potential upside for RDDT. Caution is advised, especially considering the mixed message from StockTwits, but the influence of high engagement on Reddit prevails.",
+                "additional_kwargs": {},
+                "response_metadata": {
+                  "finish_reason": "stop",
+                  "model_name": "gpt-4o-mini-2024-07-18",
+                  "system_fingerprint": "fp_34a54ae93c",
+                  "service_tier": "default"
+                },
+                "type": "ai",
+                "id": "run--a95b2302-6dd0-41ab-a918-8dd481cea6b0",
+                "example": false,
+                "tool_calls": [],
+                "invalid_tool_calls": []
+              }
+            ]
+          },
+          "social_tool_calls": 3,
+          "analyst_execution_times": {
+            "social": 26.691079139709473
+          }
+        }
+      },
+      {
+        "id": "be8fa77d-2366-496b-a916-1283ace1db38",
+        "name": "market_analyst",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T06:41:00.712552",
+        "end_time": "2025-08-14T06:41:00.752533",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "analyst_execution_times": {},
+          "parallel_start_time": 1755153660.708896,
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "successful_analysts_count": 0,
+          "aggregation_ready": false,
+          "send_api_enabled": true
+        },
+        "outputs_summary": {
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "market_report": "\ud83d\udcca TECHNICAL ANALYSIS: RDDT\n\u26a0\ufe0f Market analysis unavailable in LangGraph environment\n============================================================\n\nDue to pandas circular import restrictions in LangGraph,\nmarket data and technical indicators cannot be calculated.\n\nPlease use debug_local.sh for full market analysis.\n\nAnalysis Date: 2025-08-13 23:41:00\nStatus: LangGraph environment - pandas disabled",
+          "error": false,
+          "sender": "Market Analyst UltraFast Async",
+          "execution_time": 0.0003180503845214844
+        }
+      },
+      {
+        "id": "7e1aabe2-40f6-4dea-a9f8-3f27d761d7c9",
+        "name": "dispatcher",
+        "run_type": "chain",
+        "status": "success",
+        "start_time": "2025-08-14T06:41:00.708259",
+        "end_time": "2025-08-14T06:41:00.709925",
+        "total_tokens": 0,
+        "error": null,
+        "inputs_summary": {
+          "company_of_interest": "RDDT",
+          "trade_date": "2025-08-13",
+          "market_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "news_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "social_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "fundamentals_messages": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          }
+        },
+        "outputs_summary": {
+          "parallel_start_time": 1755153660.708896,
+          "send_api_enabled": true,
+          "step": "parallel_dispatch",
+          "market_analyst_status": "pending",
+          "news_analyst_status": "pending",
+          "social_analyst_status": "pending",
+          "fundamentals_analyst_status": "pending",
+          "analyst_execution_times": {},
+          "analyst_errors": {},
+          "failed_analysts": {
+            "count": 0,
+            "type": "list",
+            "sample": []
+          },
+          "aggregation_status": "pending",
+          "aggregation_ready": false,
+          "successful_analysts_count": 0,
+          "send_api_implementation": "send_api_parallel",
+          "enhanced_monitoring_enabled": true
+        }
+      }
+    ],
+    "child_runs_total": 9,
+    "extra": {
+      "metadata": {
+        "created_by": "system",
+        "graph_id": "trading_agents",
+        "assistant_id": "b07ca2df-7906-5911-85ed-209158e01746",
+        "from_studio": true,
+        "LANGGRAPH_API_URL": "http://127.0.0.1:2024",
+        "thread_id": "32d19f7e-bbfa-44a1-be49-8e51723cf428",
+        "x-auth-scheme": "langsmith",
+        "x-user-id": "86432c3b-ea5d-49ab-8912-f22cc8317bcf",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
+        "x-request-id": "07a88562-ca3a-4ac5-a09d-49f9d325a2e4",
+        "langgraph_auth_user_id": "",
+        "langgraph_request_id": "07a88562-ca3a-4ac5-a09d-49f9d325a2e4",
+        "run_id": "1f078d9a-3ac4-617a-b99f-30f442f4b479",
+        "user_id": "",
+        "run_attempt": 1,
+        "langgraph_version": "0.6.5",
+        "langgraph_api_version": "0.2.98",
+        "langgraph_plan": "developer",
+        "langgraph_host": "self-hosted",
+        "langgraph_api_url": "http://127.0.0.1:2024",
+        "LANGSMITH_LANGGRAPH_API_VARIANT": "local_dev",
+        "LANGSMITH_PROJECT": "trading-agent-graph",
+        "ls_run_depth": 0
+      }
+    }
+  }
+}

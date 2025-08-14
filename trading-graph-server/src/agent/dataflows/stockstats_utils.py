@@ -220,6 +220,11 @@ class StockstatsUtils:
                 return indicator_value
             else:
                 return "N/A: Not a trading day (weekend or holiday)"
+        except AttributeError as e:
+            from .empty_response_handler import create_empty_technical_indicators_response
+            error_msg = f"AttributeError in stockstats processing: {str(e)}"
+            print(f"AttributeError getting stockstats indicator data for {symbol}: {e}")
+            return create_empty_technical_indicators_response(symbol, indicator, error_msg)
         except KeyError as e:
             print(f"Error: Indicator '{indicator}' not found. Available indicators: {list(df.columns)}")
             return f"Error: Invalid indicator '{indicator}'"

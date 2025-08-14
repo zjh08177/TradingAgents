@@ -117,7 +117,12 @@ Focus on actionable trading insights from current news data.
                 report = f"⚠️ WARNING: News analysis conducted without current news data for {ticker}. Tool execution failed."
                 logger.warning(f"🚨 NEWS_ANALYST: Completed WITHOUT tool calls!")
             
-            # Apply token limits
+            # CRITICAL: Apply news filtering BEFORE token limiting to prevent massive prompt tokens
+            from ..utils.news_filter import filter_news_for_llm
+            logger.info(f"📰 NEWS_ANALYST: Applying news filtering to prevent token explosion")
+            report = filter_news_for_llm(report, max_articles=15)
+            
+            # Apply token limits after filtering
             from ..utils.token_limiter import get_token_limiter
             report = get_token_limiter().truncate_response(report, "News Analyst")
         else:

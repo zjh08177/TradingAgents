@@ -12,9 +12,13 @@ from functools import wraps
 
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
+# Set up logging - use NullHandler to avoid blocking I/O in async context
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    # Only add NullHandler if no handlers are configured
+    # This prevents blocking I/O while still allowing the app to configure logging
+    logger.addHandler(logging.NullHandler())
+logger.setLevel(logging.INFO)
 
 # Import from local agent modules
 from ..utils.agent_utils import Toolkit, create_msg_delete

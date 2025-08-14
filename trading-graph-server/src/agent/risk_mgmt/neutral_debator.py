@@ -5,10 +5,18 @@ from ..utils.agent_prompt_enhancer import enhance_agent_prompt
 from ..utils.prompt_compressor import get_prompt_compressor, compress_prompt
 from ..utils.token_limiter import get_token_limiter
 from ..utils.safe_state_access import create_safe_state_wrapper
+from ..utils.news_filter import filter_news_for_llm
 
 
 def create_neutral_debator(llm):
     async def neutral_node(state) -> dict:
+        # 🚨 RUNTIME VERIFICATION: Confirm neutral debator version is running
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.critical("🔥🔥🔥 RUNTIME VERIFICATION: neutral_debator.py VERSION ACTIVE 🔥🔥🔥")
+        logger.critical(f"🔥 TOKEN REDUCTION ENABLED: MAX_RISK_RESPONSE_TOKENS=2000 limit is ACTIVE")
+        logger.critical(f"🔥 Code version timestamp: 2025-01-14 - Neutral with token limits")
+        
         # CRITICAL FIX: Use safe state wrapper to prevent KeyError
         safe_state = create_safe_state_wrapper(state)
         
@@ -26,6 +34,9 @@ def create_neutral_debator(llm):
         news_report = safe_state.get("news_report", "")
         fundamentals_report = safe_state.get("fundamentals_report", "")
 
+        # Apply token optimization to news report (balanced view, minimal articles)
+        filtered_news = filter_news_for_llm(news_report, max_articles=8)
+
         trader_decision = safe_state.get("trader_investment_plan", "")
 
         prompt = f"""As the Neutral Risk Analyst, your role is to provide a balanced perspective, weighing both the potential benefits and risks of the trader's decision or plan. You prioritize a well-rounded approach, evaluating the upsides and downsides while factoring in broader market trends, potential economic shifts, and diversification strategies.Here is the trader's decision:
@@ -36,7 +47,7 @@ Your task is to challenge both the Risky and Safe Analysts, pointing out where e
 
 Market Research Report: {market_research_report}
 Social Media Sentiment Report: {sentiment_report}
-Latest World Affairs Report: {news_report}
+Latest World Affairs Report: {filtered_news}
 Company Fundamentals Report: {fundamentals_report}
 
 Here is the current conversation history: {history}
@@ -50,7 +61,28 @@ Provide a balanced perspective that considers both risk and opportunity.
         messages = [{"role": "user", "content": prompt}]
         response = await safe_llm_invoke(llm, messages)
 
-        argument = f"Neutral Analyst: {response.content}"
+        # CRITICAL: Apply token limiting to prevent massive debate responses
+        raw_content = response.content
+        MAX_RISK_RESPONSE_TOKENS = 2000  # ~500 words max for risk analysis
+        MAX_RISK_RESPONSE_CHARS = MAX_RISK_RESPONSE_TOKENS * 4
+        
+        # 🚨 RUNTIME VERIFICATION: Log token limiting behavior
+        logger.critical(f"🔥🔥🔥 NEUTRAL RISK TOKEN LIMIT VERIFICATION 🔥🔥🔥")
+        logger.critical(f"🔥 Response length before truncation: {len(raw_content)} chars")
+        logger.critical(f"🔥 MAX_RISK_RESPONSE_CHARS limit: {MAX_RISK_RESPONSE_CHARS}")
+        
+        if len(raw_content) > MAX_RISK_RESPONSE_CHARS:
+            logger.critical(f"🔥 TRUNCATING NEUTRAL RESPONSE: {len(raw_content)} > {MAX_RISK_RESPONSE_CHARS}")
+            from ..utils.minimalist_logging import minimalist_log
+            minimalist_log("TOKEN_OPT", f"Neutral analyst truncating from {len(raw_content)} to {MAX_RISK_RESPONSE_CHARS} chars")
+            # Keep first part of analysis
+            truncated_content = raw_content[:MAX_RISK_RESPONSE_CHARS] + "\n\n[Analysis truncated for token optimization]"
+            raw_content = truncated_content
+            logger.critical(f"✅ Neutral response truncated to: {len(raw_content)} chars")
+        else:
+            logger.critical(f"✅ No truncation needed for neutral: {len(raw_content)} ≤ {MAX_RISK_RESPONSE_CHARS}")
+
+        argument = f"Neutral Analyst: {raw_content}"
 
         new_risk_debate_state = {
             "history": history + "\n" + argument,
