@@ -109,6 +109,35 @@ async def get_pandas_modules() -> tuple:
     
     return _pandas_modules.get('pd'), _pandas_modules.get('ta')
 
+def normalize_ticker_for_yahoo(ticker: str) -> str:
+    """
+    Convert crypto tickers to Yahoo Finance format.
+    Following KISS principle - simple, direct solution.
+    
+    Args:
+        ticker: Raw ticker symbol (e.g., 'BTC', 'ETH', 'NVDA')
+    
+    Returns:
+        Normalized ticker for Yahoo Finance API (e.g., 'BTC-USD', 'ETH-USD', 'NVDA')
+    """
+    # Common crypto tickers that need -USD suffix for Yahoo Finance
+    CRYPTO_TICKERS = {
+        'BTC', 'ETH', 'SOL', 'DOGE', 'ADA', 'XRP', 'DOT', 'AVAX', 
+        'MATIC', 'LINK', 'UNI', 'ATOM', 'LTC', 'BCH', 'ALGO', 'VET',
+        'FIL', 'AAVE', 'EOS', 'XTZ', 'XLM', 'TRX', 'SHIB', 'LUNA'
+    }
+    
+    ticker_upper = ticker.upper()
+    
+    # Check if it's a known crypto ticker
+    if ticker_upper in CRYPTO_TICKERS:
+        normalized = f"{ticker_upper}-USD"
+        logger.info(f"🪙 Crypto ticker detected: {ticker} → {normalized}")
+        return normalized
+    
+    # Return as-is for regular stocks
+    return ticker_upper
+
 # Market Data Service
 class MarketDataService:
     """Simple async market data fetching - fail fast on errors"""
@@ -116,7 +145,14 @@ class MarketDataService:
     @staticmethod
     async def fetch_ohlcv(ticker: str, period: str = "3mo") -> Optional[Dict[str, List[float]]]:
         """Fetch OHLCV data from Yahoo Finance - no retries, no mock data"""
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}"
+        # Normalize ticker for Yahoo Finance (handles crypto tickers)
+        yahoo_ticker = normalize_ticker_for_yahoo(ticker)
+        
+        # Log the normalization for debugging
+        if yahoo_ticker != ticker.upper():
+            logger.critical(f"🔄 Ticker normalized: {ticker} → {yahoo_ticker}")
+        
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_ticker}"
         params = {"range": period, "interval": "1d"}
         
         # Basic headers to identify as browser

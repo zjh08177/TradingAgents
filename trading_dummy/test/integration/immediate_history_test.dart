@@ -12,6 +12,7 @@ import 'package:trading_dummy/jobs/domain/entities/analysis_job.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_status.dart';
 import 'package:trading_dummy/jobs/domain/value_objects/job_priority.dart';
 import 'package:trading_dummy/jobs/infrastructure/persistence/analysis_record.dart';
+import 'package:trading_dummy/jobs/domain/events/job_event.dart';
 
 @GenerateMocks([
   AnalysisDatabase,
@@ -56,33 +57,34 @@ void main() {
       
       // Mock database operations
       when(mockDatabase.getAllAnalyses()).thenAnswer((_) async => []);
-      when(mockDatabase.saveAnalysis(any)).thenAnswer((_) async => {});
+      when(mockDatabase.saveAnalysis(argThat(isA<AnalysisRecord>()))).thenAnswer((_) async => {});
       
       // Mock API response
       when(mockApiService.startAnalysis(
         ticker: ticker,
         tradeDate: tradeDate,
-      )).thenAnswer((_) async => RunResponse(
+      )).thenAnswer((_) async => StartAnalysisResponse(
         runId: 'test-run-123',
         threadId: 'test-thread-456',
         status: 'running',
+        createdAt: DateTime.now(),
       ));
       
       // Mock polling service
-      when(mockPollingService.startPollingForRun(any, any))
+      when(mockPollingService.onAnalysisSubmitted(any(), any()))
           .thenAnswer((_) async => {});
       
       // Mock event bus
-      when(mockEventBus.publish(any)).thenReturn(null);
+      when(mockEventBus.publish(argThat(isA<JobEvent>()))).thenReturn(null);
       
       // Act
       final result = await useCase.execute(ticker, tradeDate);
       
       // Assert - Verify immediate database save happened
-      verify(mockDatabase.saveAnalysis(any)).called(2); // Once for initial save, once for update
+      verify(mockDatabase.saveAnalysis(argThat(isA<AnalysisRecord>()))).called(2); // Once for initial save, once for update
       
       // Verify event was published for UI update
-      verify(mockEventBus.publish(any)).called(1);
+      verify(mockEventBus.publish(argThat(isA<JobEvent>()))).called(1);
       
       // Verify API was called after database save
       verify(mockApiService.startAnalysis(
@@ -91,7 +93,7 @@ void main() {
       )).called(1);
       
       // Verify polling started
-      verify(mockPollingService.startPollingForRun(any, any)).called(1);
+      verify(mockPollingService.onAnalysisSubmitted(any(), any())).called(1);
       
       // Verify result
       expect(result.ticker, equals(ticker));
@@ -106,8 +108,8 @@ void main() {
       
       // Mock database operations
       when(mockDatabase.getAllAnalyses()).thenAnswer((_) async => []);
-      when(mockDatabase.saveAnalysis(any)).thenAnswer((_) async => {});
-      when(mockDatabase.updateStatus(any, 
+      when(mockDatabase.saveAnalysis(argThat(isA<AnalysisRecord>()))).thenAnswer((_) async => {});
+      when(mockDatabase.updateStatus(any(), 
         status: anyNamed('status'),
         error: anyNamed('error'),
       )).thenAnswer((_) async => {});
@@ -119,7 +121,7 @@ void main() {
       )).thenThrow(Exception('API Error'));
       
       // Mock event bus
-      when(mockEventBus.publish(any)).thenReturn(null);
+      when(mockEventBus.publish(argThat(isA<JobEvent>()))).thenReturn(null);
       
       // Act & Assert
       expect(
@@ -131,14 +133,14 @@ void main() {
       await Future.delayed(Duration(milliseconds: 100));
       
       // Verify database was updated with error status
-      verify(mockDatabase.saveAnalysis(any)).called(1); // Initial save
-      verify(mockDatabase.updateStatus(any, 
+      verify(mockDatabase.saveAnalysis(argThat(isA<AnalysisRecord>()))).called(1); // Initial save
+      verify(mockDatabase.updateStatus(any(), 
         status: 'error',
         error: anyNamed('error'),
       )).called(1);
       
       // Verify event was still published for initial UI update
-      verify(mockEventBus.publish(any)).called(1);
+      verify(mockEventBus.publish(argThat(isA<JobEvent>()))).called(1);
     });
     
     test('Should prevent duplicate pending requests', () async {
@@ -166,21 +168,10 @@ void main() {
       );
       
       // Verify no new database saves were attempted
-      verifyNever(mockDatabase.saveAnalysis(any));
+      verifyNever(mockDatabase.saveAnalysis(argThat(isA<AnalysisRecord>())));
       verifyNever(mockApiService.startAnalysis(ticker: ticker, tradeDate: tradeDate));
     });
   });
 }
 
-// Mock classes for API responses
-class RunResponse {
-  final String runId;
-  final String threadId;
-  final String status;
-  
-  RunResponse({
-    required this.runId,
-    required this.threadId,
-    required this.status,
-  });
-}
+// Note: StartAnalysisResponse is imported from langgraph_api_service.dart

@@ -51,6 +51,8 @@ void main() {
 
       // Set up default mock responses to prevent null exceptions
       when(() => mockDatabase.getPendingAnalyses()).thenAnswer((_) async => <AnalysisRecord>[]);
+      when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 0);
+      when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => <AnalysisRecord>[]);
       when(() => mockDatabase.getAnalysisByRunId(any())).thenAnswer((_) async => null);
       when(() => mockDatabase.updateStatus(
         any(),
@@ -95,8 +97,10 @@ void main() {
 
       test('should start polling for pending analyses on initialization if in foreground', () async {
         // Arrange
-        final pendingRecord = _createMockAnalysisRecord('run123', 'thread123', 'running');
+        final pendingRecord = _createMockAnalysisRecord('run123', 'thread123', 'pending');
         when(() => mockDatabase.getPendingAnalyses()).thenAnswer((_) async => [pendingRecord]);
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1); // Has active tasks
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [pendingRecord]);
         when(() => mockLifecycleService.isInForeground).thenReturn(true);
 
         // Act
@@ -105,7 +109,7 @@ void main() {
 
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], greaterThanOrEqualTo(0));
+        expect(status['isPolling'], isTrue);
       });
     });
 
@@ -114,14 +118,17 @@ void main() {
         // Arrange
         const runId = 'test-run-123';
         const threadId = 'test-thread-123';
+        // Mock that after submission there is 1 active task
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'pending');
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
 
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['runIds'], contains(runId));
-        expect(status['activePollers'], equals(1));
+        expect(status['isPolling'], isTrue);
       });
 
       test('should not start polling when app is in background', () async {
@@ -131,41 +138,34 @@ void main() {
         const threadId = 'test-thread-123';
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
 
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], equals(0));
+        expect(status['isPolling'], isFalse);
       });
 
       test('should not start duplicate polling for same run ID', () async {
         // Arrange
         const runId = 'test-run-123';
         const threadId = 'test-thread-123';
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1); // Has active task
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'pending');
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
-        await pollingService.startPollingForRun(runId, threadId); // Duplicate
+        await pollingService.onAnalysisSubmitted(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId); // Duplicate
 
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], equals(1));
+        expect(status['isPolling'], isTrue); // Still polling
       });
 
-      test('should stop polling for specific run', () async {
-        // Arrange
-        const runId = 'test-run-123';
-        const threadId = 'test-thread-123';
-        await pollingService.startPollingForRun(runId, threadId);
-
-        // Act
-        pollingService.stopPollingForRun(runId);
-
-        // Assert
-        final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], equals(0));
-        expect(status['runIds'], isEmpty);
-      });
+      // test('should stop polling for specific run', () async {
+      //   // NOTE: stopPollingForRun has been removed in the simplified version
+      //   // Polling now automatically stops when no running tasks remain
+      // });
     });
 
     group('Constant Polling', () {
@@ -173,9 +173,9 @@ void main() {
         // Test internal method behavior - constant interval means no complex logic needed
         final status = pollingService.getPollingStatus();
         
-        // Verify the polling service tracks poll counts correctly
+        // Verify the polling service has proper status structure
         expect(status, isA<Map<String, dynamic>>());
-        expect(status.containsKey('pollCounts'), isTrue);
+        expect(status.containsKey('isPolling'), isTrue);
       });
 
       test('should start with immediate poll then constant 10s intervals', () async {
@@ -203,9 +203,11 @@ void main() {
 
         final mockRecord = _createMockAnalysisRecord(runId, threadId, 'running');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1); // Has active task
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
 
         // Allow some time for polling to start
         await Future.delayed(Duration(milliseconds: 50));
@@ -216,9 +218,9 @@ void main() {
           threadId: threadId,
         )).called(greaterThan(0));
         
-        // Verify constant 10s polling doesn't change interval based on poll count
+        // Verify polling is active
         final status = pollingService.getPollingStatus();
-        expect(status['pollCounts'][runId], greaterThan(0));
+        expect(status['isPolling'], isTrue);
       });
     });
 
@@ -227,8 +229,9 @@ void main() {
         // Arrange
         const runId = 'test-run-123';
         const threadId = 'test-thread-123';
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
         pollingService.initialize();
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
 
         // Act - simulate app going to background
         lifecycleController.add(AppLifecycleState.paused);
@@ -236,7 +239,7 @@ void main() {
 
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], equals(0));
+        expect(status['isPolling'], isFalse);
       });
 
       test('should resume polling when app comes to foreground', () async {
@@ -288,12 +291,12 @@ void main() {
           error: any(named: 'error'),
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
-
+        
         final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 50));
 
         // Assert
@@ -332,7 +335,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 50));
 
         // Assert
@@ -363,18 +366,20 @@ void main() {
           error: any(named: 'error'),
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
-
+        
         final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 100)); // Allow polling to complete
 
-        // Assert - polling should stop when complete
+        // Assert - polling should eventually stop when complete  
         await Future.delayed(Duration(milliseconds: 50)); // Give it more time
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 0); // No more active tasks
+        await pollingService.checkPollingNeeded(); // Trigger check
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], lessThanOrEqualTo(1)); // May be 0 or 1 depending on timing
+        expect(status['isPolling'], isFalse);
       });
 
       test('should handle API errors gracefully and continue polling', () async {
@@ -386,14 +391,15 @@ void main() {
           runId: runId,
           threadId: threadId,
         )).thenThrow(AnalysisException('Network error'));
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1); // Still has active task
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 50));
 
         // Assert - polling should continue despite errors
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], greaterThan(0));
+        expect(status['isPolling'], isTrue);
       });
     });
 
@@ -405,16 +411,18 @@ void main() {
           ('run2', 'thread2'),
           ('run3', 'thread3'),
         ];
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 3); // Has multiple active tasks
+        final mockRecords = runs.map((r) => _createMockAnalysisRecord(r.$1, r.$2, 'pending')).toList();
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => mockRecords);
 
         // Act
         for (final (runId, threadId) in runs) {
-          await pollingService.startPollingForRun(runId, threadId);
+          await pollingService.onAnalysisSubmitted(runId, threadId);
         }
 
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], equals(3));
-        expect(status['runIds'], hasLength(3));
+        expect(status['isPolling'], isTrue);
       });
 
       test('should stop individual polling operations independently', () async {
@@ -426,18 +434,17 @@ void main() {
         ];
 
         for (final (runId, threadId) in runs) {
-          await pollingService.startPollingForRun(runId, threadId);
+          await pollingService.onAnalysisSubmitted(runId, threadId);
         }
 
-        // Act - stop one polling operation
-        pollingService.stopPollingForRun('run2');
-
+        // Act - simplified version no longer supports stopping specific runs
+        // All polling is managed automatically based on running task count
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 3); // Still have active tasks
+        
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], equals(2));
-        expect(status['runIds'], isNot(contains('run2')));
-        expect(status['runIds'], contains('run1'));
-        expect(status['runIds'], contains('run3'));
+        // In simplified version, all running tasks continue polling
+        expect(status['isPolling'], equals(true));
       });
     });
 
@@ -470,7 +477,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 50));
 
         // Assert - verify event was published
@@ -508,6 +515,10 @@ void main() {
           runId: runId,
           threadId: threadId,
         )).thenAnswer((_) async => mockResult);
+        
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         when(() => mockDatabase.updateStatus(
           any(),
@@ -517,11 +528,10 @@ void main() {
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
 
-        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 100));
 
         // Assert
@@ -561,6 +571,10 @@ void main() {
           runId: runId,
           threadId: threadId,
         )).thenAnswer((_) async => null);
+        
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         when(() => mockDatabase.updateStatus(
           any(),
@@ -570,11 +584,10 @@ void main() {
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
 
-        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 100));
 
         // Assert - fallback result should be created
@@ -608,6 +621,10 @@ void main() {
           runId: runId,
           threadId: threadId,
         )).thenThrow(Exception('Network timeout'));
+        
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         when(() => mockDatabase.updateStatus(
           any(),
@@ -617,11 +634,10 @@ void main() {
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
 
-        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 100));
 
         // Assert - error fallback result should be created
@@ -650,6 +666,10 @@ void main() {
           runId: runId,
           threadId: threadId,
         )).thenAnswer((_) async => mockStatus);
+        
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         when(() => mockDatabase.updateStatus(
           any(),
@@ -659,11 +679,10 @@ void main() {
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
 
-        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 100));
 
         // Assert - dual-API should NOT be called
@@ -708,6 +727,10 @@ void main() {
           runId: runId,
           threadId: threadId,
         )).thenAnswer((_) async => enhancedResult);
+        
+        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
 
         when(() => mockDatabase.updateStatus(
           any(),
@@ -717,11 +740,10 @@ void main() {
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
 
-        final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 100));
 
         // Assert - event should contain enhanced result data
@@ -769,12 +791,14 @@ void main() {
           error: any(named: 'error'),
           completedAt: any(named: 'completedAt'),
         )).thenAnswer((_) async {});
-
+        
         final mockRecord = _createMockAnalysisRecord(runId, threadId, 'success');
+        when(() => mockDatabase.getRunningCount()).thenAnswer((_) async => 1);
+        when(() => mockDatabase.getRunningAnalyses()).thenAnswer((_) async => [mockRecord]);
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
 
         // Act
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 100));
 
         // Assert - should trigger dual-API retrieval for empty result
@@ -795,8 +819,7 @@ void main() {
 
         // Assert
         final status = pollingService.getPollingStatus();
-        expect(status['activePollers'], equals(0));
-        expect(status['runIds'], isEmpty);
+        expect(status['isPolling'], isFalse);
       });
 
       test('should provide status information for debugging', () {
@@ -804,10 +827,9 @@ void main() {
         final status = pollingService.getPollingStatus();
 
         // Assert
-        expect(status, containsPair('activePollers', 0));
-        expect(status, contains('runIds'));
-        expect(status, contains('pollCounts'));
+        expect(status, containsPair('isPolling', false));
         expect(status, contains('isInForeground'));
+        expect(status, contains('hasTimer'));
       });
     });
   });

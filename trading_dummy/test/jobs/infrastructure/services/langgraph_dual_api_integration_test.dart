@@ -127,7 +127,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
         
         // Act: Start polling
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 200));
         
         // Assert: Verify complete flow
@@ -223,7 +223,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
         
         // Act: Start polling
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 300));
         
         // Assert: Verify fallback strategy worked
@@ -317,7 +317,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
         
         // Act: Start polling
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 400));
         
         // Assert: Verify messages strategy worked
@@ -418,7 +418,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
         
         // Act: Start polling
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 500));
         
         // Assert: Verify events strategy worked
@@ -483,7 +483,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
         
         // Act: Start polling
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 600));
         
         // Assert: Verify fallback result was created
@@ -543,7 +543,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
         
         // Act: Start polling
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 600));
         
         // Assert: Verify error fallback result was created
@@ -639,7 +639,7 @@ void main() {
         when(() => mockDatabase.getAnalysisByRunId(runId)).thenAnswer((_) async => mockRecord);
         
         // Act: Start polling
-        await pollingService.startPollingForRun(runId, threadId);
+        await pollingService.onAnalysisSubmitted(runId, threadId);
         await Future.delayed(Duration(milliseconds: 400));
         
         // Assert: Verify realistic scenario worked
