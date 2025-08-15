@@ -17,18 +17,20 @@ dependencies = [
     "python-dotenv==1.0.1",
     "pydantic-settings>=2.0.0",  # For configuration management
     "httpx>=0.25.0",  # For async HTTP requests
+    "aiohttp>=3.8.0",  # For async HTTP requests (social media APIs)
     "aioredis>=2.0.0",  # For Redis async caching support
     "h2>=4.0.0",  # For HTTP/2 protocol support
     "beautifulsoup4",
     "tenacity",
     "yfinance",
-    "pandas",
+    "pandas>=2.0.0",  # Explicit version for better compatibility
     "numpy",
     "stockstats",
     "simfin",
     "finnhub-python",
     "tqdm",
     "pandas-ta>=0.3.14b0",  # For technical indicators
+    "setuptools>=65.0.0",  # For pkg_resources support
 ]
 
 

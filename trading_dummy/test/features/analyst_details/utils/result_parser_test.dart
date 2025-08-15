@@ -258,6 +258,107 @@ void main() {
       });
     });
     
+    group('Investment Recommendation extraction (BUG FIX)', () {
+      test('should correctly extract HOLD from Investment Recommendation in risk_manager_report', () {
+        // This test replicates the exact issue from the screenshot
+        final jsonResult = jsonEncode({
+          'risk_manager_report': '''
+# Risk Manager Report
+
+Investment Recommendation: HOLD with Medium Confidence
+
+Given the mixed market indicators, we recommend a HOLD position on Tesla (TSLA) at this time. 
+The current market environment presents both opportunities and risks, as outlined below. 
+This positions us to benefit from any potential upsides while cautiously monitoring for potential risks.
+
+Some analysts might say BUY based on innovation potential, while others suggest SELL due to valuation concerns.
+
+Position Sizing: 5% of Total Portfolio
+''',
+          'market_report': 'Technical indicators show bullish momentum with BUY signals',
+          'fundamentals_report': 'Strong fundamentals suggest BUY opportunity',
+        });
+
+        final decision = ResultParser.parseDecision(jsonResult);
+
+        // The decision should be HOLD, not BUY
+        expect(decision, equals(TradeDecision.hold));
+      });
+
+      test('should not be confused by mentions of BUY/SELL/HOLD in other text', () {
+        final jsonResult = jsonEncode({
+          'risk_manager_report': '''
+Some analysts recommend BUY due to strong earnings.
+Others suggest SELL because of high valuation.
+Many prefer to HOLD and wait for clarity.
+
+Investment Recommendation: HOLD with Medium Confidence
+
+After considering all factors, we recommend holding current positions.
+''',
+        });
+
+        final decision = ResultParser.parseDecision(jsonResult);
+
+        // Should extract HOLD from the explicit recommendation, not BUY from earlier text
+        expect(decision, equals(TradeDecision.hold));
+      });
+
+      test('should extract BUY when it is the actual Investment Recommendation', () {
+        final jsonResult = jsonEncode({
+          'risk_manager_report': '''
+# Risk Manager Report
+
+Investment Recommendation: BUY with High Confidence
+
+Strong fundamentals and positive market sentiment support a buy recommendation.
+''',
+        });
+
+        final decision = ResultParser.parseDecision(jsonResult);
+
+        expect(decision, equals(TradeDecision.buy));
+      });
+
+      test('should extract SELL when it is the actual Investment Recommendation', () {
+        final jsonResult = jsonEncode({
+          'risk_manager_report': '''
+Investment Recommendation: SELL with Low Confidence
+
+Deteriorating fundamentals suggest exiting positions.
+''',
+        });
+
+        final decision = ResultParser.parseDecision(jsonResult);
+
+        expect(decision, equals(TradeDecision.sell));
+      });
+
+      test('complete real-world scenario with all report types', () {
+        final jsonResult = jsonEncode({
+          'market_report': 'Technical analysis shows BUY signals',
+          'fundamentals_report': 'Fundamentals indicate BUY opportunity',
+          'sentiment_report': 'Social sentiment is bullish',
+          'news_report': 'News coverage is positive',
+          'risk_manager_report': '''
+# Risk Manager Report
+
+The analysis presents both bullish and bearish perspectives. Bulls point to innovation and growth potential suggesting BUY positions. 
+Bears cite valuation concerns recommending SELL strategies.
+
+Investment Recommendation: HOLD with Medium Confidence
+
+Given the mixed signals, we recommend maintaining current positions while monitoring for clearer signals.
+''',
+        });
+
+        final decision = ResultParser.parseDecision(jsonResult);
+
+        // Should extract HOLD from Investment Recommendation, not BUY from other mentions
+        expect(decision, equals(TradeDecision.hold));
+      });
+    });
+    
     group('edge cases', () {
       test('handles malformed but valid JSON', () {
         const malformed = '{"final_decision":"BUY","confidence":0.85}';

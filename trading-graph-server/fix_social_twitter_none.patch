@@ -1,0 +1,24 @@
+--- a/src/agent/dataflows/twitter_simple.py
++++ b/src/agent/dataflows/twitter_simple.py
+@@ -453,6 +453,10 @@ def calculate_sentiment_score(tweets: List[Dict[str, Any]]) -> float:
+     bullish_count = 0
+     bearish_count = 0
+     total_words = 0
++    
++    # Ensure tweets is not None and is a list
++    if not tweets or not isinstance(tweets, list):
++        return 0.5  # Return neutral if no valid tweets
+     
+     for tweet in tweets:
+         text = tweet["text"].lower()
+@@ -474,6 +478,10 @@ def calculate_sentiment_score(tweets: List[Dict[str, Any]]) -> float:
+     # Calculate sentiment score
+     total_sentiment = bullish_count + bearish_count
+     
++    # Add safety check for None values
++    if total_sentiment is None or not isinstance(total_sentiment, (int, float)):
++        return 0.5  # Return neutral on error
++    
+     if total_sentiment == 0:
+         # No explicit sentiment words found
+         return 0.5  # Neutral
