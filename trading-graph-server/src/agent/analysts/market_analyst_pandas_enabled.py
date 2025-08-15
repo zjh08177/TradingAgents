@@ -758,17 +758,5 @@ def create_ultra_fast_market_analyst(llm=None, toolkit=None):
     
     return ultra_fast_market_analyst_node
 
-# Testing
-if __name__ == "__main__":
-    async def test():
-        print("Testing async-compatible market analyst...")
-        pandas_available = await check_pandas_availability()
-        print(f"Pandas available: {pandas_available}")
-        
-        state = {"company_of_interest": "AAPL"}
-        result = await market_analyst_node(state)
-        print(result['market_report'])
-        print(f"\nEngine: {result.get('market_data', {}).get('engine', 'unknown')}")
-        print(f"Indicators: {result.get('market_data', {}).get('indicator_count', 0)}")
-    
-    asyncio.run(test())
+# Testing code removed for production deployment
+# Use debug_local.sh or test files for testing
