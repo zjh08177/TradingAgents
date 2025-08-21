@@ -50,8 +50,8 @@ class TradingConfig(BaseSettings):
     # === LLM CONFIGURATION (properly reads from .env with explicit env parameter) ===
     llm_provider: str = Field(default="openai", env="LLM_PROVIDER")
     # Explicitly map to environment variables using env parameter
-    deep_think_model: str = Field(default="gpt-4o", env="DEEP_THINK_MODEL")  # Reads DEEP_THINK_MODEL from .env
-    quick_think_model: str = Field(default="gpt-4o-mini", env="QUICK_THINK_MODEL")  # Reads QUICK_THINK_MODEL from .env
+    deep_think_model: str = Field(default="o3", env="DEEP_THINK_MODEL")  # Reads DEEP_THINK_MODEL from .env
+    quick_think_model: str = Field(default="gpt-4o", env="QUICK_THINK_MODEL")  # Reads QUICK_THINK_MODEL from .env
     backend_url: str = Field(default="https://api.openai.com/v1", env="BACKEND_URL")  # Reads BACKEND_URL from .env
     
     # === EXECUTION LIMITS (preserved from default_config.py) ===
