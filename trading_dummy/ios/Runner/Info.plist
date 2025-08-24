@@ -56,5 +56,19 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSPrivacyPolicyURL</key>
+	<string>https://zjh08177.github.io/trading-dummy-legal/privacy</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+	</array>
 </dict>
 </plist>
